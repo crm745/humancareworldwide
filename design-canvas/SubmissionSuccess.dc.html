@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; }
+  .display { font-family:'Plus Jakarta Sans',sans-serif; }
+</style>
+</helmet>
+
+<div style="width:390px;height:844px;background:#0D2340;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;color:#fff;padding:24px;">
+
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:24px;margin:auto 0;">
+    <div style="width:76px;height:76px;border-radius:999px;background:rgba(16,185,129,0.15);border:2px solid #34D399;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <span style="padding:5px 12px;border-radius:999px;background:rgba(79,195,247,0.2);color:#4FC3F7;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:8px;">Our team will contact you</span>
+    <h2 class="display" style="font-size:22px;font-weight:800;margin:0;">Request Received!</h2>
+
+    <div style="margin:18px 0;padding:16px;border-radius:16px;background:#132E50;border:1px solid rgba(79,195,247,0.4);width:100%;max-width:280px;text-align:center;">
+      <span style="font-size:10px;font-weight:800;text-transform:uppercase;color:#94A3B8;letter-spacing:0.05em;">Reference Code</span>
+      <p style="font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#4FC3F7;margin:4px 0 0;">#HC-2026-8841</p>
+    </div>
+
+    <div style="width:100%;text-align:left;padding:14px;border-radius:16px;background:rgba(19,46,80,0.6);border:1px solid #1E4270;">
+      <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:#4FC3F7;margin:0 0 10px;">What Happens Next</h4>
+      <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:10px;">
+        <div style="width:19px;height:19px;border-radius:999px;background:#10B981;color:#0D2340;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;flex-shrink:0;margin-top:1px;">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div>
+          <p style="font-size:12px;font-weight:700;margin:0;">Request Received</p>
+          <p style="font-size:10px;color:#64748B;margin:2px 0 0;">Details synced into Bitrix24 CRM queue.</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:9px;">
+        <div style="width:19px;height:19px;border-radius:999px;background:#4FC3F7;color:#0D2340;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;flex-shrink:0;margin-top:1px;">2</div>
+        <div>
+          <p style="font-size:12px;font-weight:700;margin:0;color:#4FC3F7;">Medical Coordinator Review (&lt;15m)</p>
+          <p style="font-size:10px;color:#64748B;margin:2px 0 0;">Physician verifies flight clearances and route feasibility.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding-bottom:8px;">
+    <button onClick="{{tapTrack}}" style="width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,#4FC3F7,#38BDF8);color:#0D2340;font-weight:800;font-size:13px;border:none;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;margin-bottom:8px;">Track This Request Live →</button>
+    <button onClick="{{tapHome}}" style="width:100%;padding:12px;border-radius:12px;background:transparent;border:1px solid #1E4270;color:#CBD5E1;font-weight:700;font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;">Return to Home Services</button>
+    <sc-if value="{{showAck}}" hint-placeholder-val="{{false}}">
+      <p style="text-align:center;font-size:11px;color:#4FC3F7;margin-top:10px;">{{ackText}}</p>
+    </sc-if>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { ack: '' };
+  }
+  renderVals() {
+    return {
+      showAck: !!this.state.ack,
+      ackText: this.state.ack,
+      tapTrack: () => this.setState({ ack: 'Opening live mission telemetry →' }),
+      tapHome: () => this.setState({ ack: 'Returning to Home →' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

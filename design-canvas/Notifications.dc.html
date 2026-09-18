@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; }
+  .display { font-family:'Plus Jakarta Sans',sans-serif; }
+  @keyframes ping { 75%,100% { transform:scale(2); opacity:0; } }
+</style>
+</helmet>
+
+<div style="width:390px;height:844px;background:#0D2340;display:flex;flex-direction:column;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;color:#fff;">
+
+  <div style="flex-shrink:0;background:#0D2340;border-bottom:1px solid #1E4270;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#94A3B8;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Home
+    </div>
+    <span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:#4FC3F7;">Notifications</span>
+    <span onClick="{{markRead}}" style="cursor:pointer;font-size:11px;font-weight:700;color:#4FC3F7;text-decoration:underline;">Mark read</span>
+  </div>
+
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+
+    <div style="padding:12px;border-radius:16px;background:#132E50;border:1px solid #1E4270;display:flex;align-items:flex-start;gap:10px;opacity:{{op1}};">
+      <div style="width:32px;height:32px;border-radius:11px;background:rgba(239,68,68,0.15);color:#EF4444;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;position:relative;">
+        <span style="width:9px;height:9px;border-radius:999px;background:#EF4444;"></span>
+      </div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;"><h4 style="font-size:12px;font-weight:700;margin:0;">Flight Airborne Live</h4><span style="font-size:9px;color:#64748B;">10m ago</span></div>
+        <p style="font-size:11px;color:#94A3B8;margin:4px 0 0;line-height:1.5;">Learjet 60XR (BKK ➔ FRA) entered Indian Airspace. Vitals SpO2 99%, hemodynamically stable.</p>
+      </div>
+    </div>
+
+    <div style="padding:12px;border-radius:16px;background:#132E50;border:1px solid #1E4270;display:flex;align-items:flex-start;gap:10px;opacity:{{op2}};">
+      <div style="width:32px;height:32px;border-radius:11px;background:rgba(16,185,129,0.15);color:#34D399;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;"><h4 style="font-size:12px;font-weight:700;margin:0;">Clearance Approved</h4><span style="font-size:9px;color:#64748B;">35m ago</span></div>
+        <p style="font-size:11px;color:#94A3B8;margin:4px 0 0;line-height:1.5;">Diplomatic overflight permission granted by Turkish CAA for Medevac corridor entry.</p>
+      </div>
+    </div>
+
+    <div style="padding:12px;border-radius:16px;background:#132E50;border:1px solid #1E4270;display:flex;align-items:flex-start;gap:10px;opacity:{{op3}};">
+      <div style="width:32px;height:32px;border-radius:11px;background:rgba(79,195,247,0.15);color:#4FC3F7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+      </div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;"><h4 style="font-size:12px;font-weight:700;margin:0;">Quotation Ready &amp; Approved</h4><span style="font-size:9px;color:#64748B;">2h ago</span></div>
+        <p style="font-size:11px;color:#94A3B8;margin:4px 0 0;line-height:1.5;">Commercial escort inquiry #HC-2026-094 approved by insurer. Aircraft stretcher allocated.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="flex-shrink:0;padding:14px 16px;border-top:1px solid #1E4270;">
+    <button style="width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#4FC3F7,#38BDF8);color:#0D2340;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.03em;border:none;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;">Return to Home</button>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { allRead: false };
+  }
+  renderVals() {
+    const op = this.state.allRead ? '0.55' : '1';
+    return {
+      op1: op, op2: op, op3: op,
+      markRead: () => this.setState({ allRead: true }),
+    };
+  }
+}
+</script>
+</body>
+</html>

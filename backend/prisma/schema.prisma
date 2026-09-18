@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  mobile       String   @unique
+  passwordHash String   @map("password_hash")
+  countryCode  String   @default("+91") @map("country_code")
+  createdAt    DateTime @default(now()) @map("created_at")
+  requests     ServiceRequest[]
+
+  @@map("users")
+}
+
+model OtpCode {
+  id         Int       @id @default(autoincrement())
+  identifier String    // mobile number or email, depending on purpose
+  codeHash   String    @map("code_hash")
+  purpose    String    // "patient_login" | "vendor_login"
+  expiresAt  DateTime  @map("expires_at")
+  consumedAt DateTime? @map("consumed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@index([identifier, purpose])
+  @@map("otp_codes")
+}
+
+model Vendor {
+  id          Int      @id @default(autoincrement())
+  companyName String   @map("company_name")
+  type        String   // "insurance" | "government" | "tpa" | "corporate"
+  createdAt   DateTime @default(now()) @map("created_at")
+  users       VendorUser[]
+  cases       Case[]
+
+  @@map("vendors")
+}
+
+model VendorUser {
+  id           Int      @id @default(autoincrement())
+  vendorId     Int      @map("vendor_id")
+  vendor       Vendor   @relation(fields: [vendorId], references: [id])
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("viewer") // "admin" | "viewer"
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("vendor_users")
+}
+
+model ServiceRequest {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @map("user_id")
+  user              User     @relation(fields: [userId], references: [id])
+  serviceType       String   @map("service_type")
+  patientName       String   @map("patient_name")
+  patientAge        Int?     @map("patient_age")
+  patientGender     String?  @map("patient_gender")
+  patientLocation   String?  @map("patient_location")
+  patientContact    String?  @map("patient_contact")
+  origin            String
+  destination       String
+  preferredDate     DateTime? @map("preferred_date")
+  careLevel         String?   @map("care_level")
+  description       String?   @db.Text
+  medicalSummary    String?   @db.Text @map("medical_summary")
+  additionalInfo    String?   @map("additional_info")
+  specialRequirements String? @db.Text @map("special_requirements")
+  referralSource    String?   @map("referral_source")
+  documentUrl       String?   @map("document_url")
+  referenceNumber   String    @unique @map("reference_number")
+  status            String    @default("submitted")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  case              Case?
+
+  @@map("service_requests")
+}
+
+// A Case is the vendor/ops-side tracking record for a request once it's being worked.
+// Most Cases originate from a patient's ServiceRequest, but a vendor can also open one
+// directly (e.g. a TPA filing on a member's behalf) — hence serviceRequestId is optional.
+model Case {
+  id                  Int       @id @default(autoincrement())
+  serviceRequestId    Int?      @unique @map("service_request_id")
+  serviceRequest      ServiceRequest? @relation(fields: [serviceRequestId], references: [id])
+  vendorId            Int?      @map("vendor_id")
+  vendor              Vendor?   @relation(fields: [vendorId], references: [id])
+  referenceNumber     String    @unique @map("reference_number")
+  patientName         String    @map("patient_name")
+  patientContact      String?   @map("patient_contact")
+  serviceType         String    @map("service_type")
+  origin              String
+  destination         String
+  urgency             String?   @default("routine") // "routine" | "urgent" | "critical"
+  policyReference      String?  @map("policy_reference")
+  notes               String?   @db.Text
+  status              String    @default("submitted") // "submitted" | "scheduled" | "in_progress" | "completed" | "cancelled"
+  attendingPhysician  String?   @map("attending_physician")
+  caseCoordinator     String?   @map("case_coordinator")
+  aircraft            String?
+  hospitalFacility    String?   @map("hospital_facility")
+  hospitalContact     String?   @map("hospital_contact")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  stageEvents         CaseStageEvent[]
+  documents           Document[]
+
+  @@index([vendorId, status])
+  @@map("cases")
+}
+
+model CaseStageEvent {
+  id         Int      @id @default(autoincrement())
+  caseId     Int      @map("case_id")
+  case       Case     @relation(fields: [caseId], references: [id])
+  stage      String
+  note       String?  @db.Text
+  occurredAt DateTime @default(now()) @map("occurred_at")
+
+  @@index([caseId])
+  @@map("case_stage_events")
+}
+
+model Document {
+  id            Int      @id @default(autoincrement())
+  caseId        Int      @map("case_id")
+  case          Case     @relation(fields: [caseId], references: [id])
+  name          String
+  fileUrl       String   @map("file_url")
+  fileSizeBytes Int?     @map("file_size_bytes")
+  uploadedAt    DateTime @default(now()) @map("uploaded_at")
+
+  @@index([caseId])
+  @@map("documents")
+}
+
+model Notification {
+  id            Int       @id @default(autoincrement())
+  recipientType String    @map("recipient_type") // "patient" | "vendor_user"
+  recipientId   Int       @map("recipient_id")
+  kind          String    @default("system") // "stage_update" | "quotation_ready" | "document" | "system"
+  title         String
+  body          String?   @db.Text
+  readAt        DateTime? @map("read_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@index([recipientType, recipientId, readAt])
+  @@map("notifications")
+}

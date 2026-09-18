@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; }
+  .display { font-family:'Plus Jakarta Sans',sans-serif; }
+  .noscroll::-webkit-scrollbar { width:0; height:0; }
+  .chip { cursor:pointer; padding:7px 12px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; border:1px solid #1E4270; background:#132E50; color:#94A3B8; }
+  .chip.on { background:#4FC3F7; color:#0D2340; border-color:#4FC3F7; }
+  .case-card { padding:14px; border-radius:16px; background:#132E50; border:1px solid #1E4270; margin-bottom:12px; }
+</style>
+</helmet>
+
+<div style="width:390px;height:844px;background:#0D2340;display:flex;flex-direction:column;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;color:#fff;position:relative;">
+
+  <div style="flex-shrink:0;background:#0D2340;border-bottom:1px solid #1E4270;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <div style="width:28px;height:28px;border-radius:9px;background:#132E50;border:1px solid rgba(79,195,247,0.4);display:flex;align-items:center;justify-content:center;color:#4FC3F7;font-weight:800;font-size:10px;">HC</div>
+      <div>
+        <span style="display:block;font-size:11px;font-weight:700;line-height:1.2;">Bupa Global Assistance</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#4FC3F7;">TPA Partner #HC-CORP-482</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;">
+      <div onClick="{{tapBell}}" style="cursor:pointer;position:relative;width:30px;height:30px;border-radius:999px;background:#132E50;display:flex;align-items:center;justify-content:center;color:#94A3B8;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>
+        <span style="position:absolute;top:5px;right:6px;width:6px;height:6px;border-radius:999px;background:#EF4444;"></span>
+      </div>
+      <span style="font-size:10px;color:#64748B;">Sign Out</span>
+    </div>
+  </div>
+
+  <div class="noscroll" style="flex:1;overflow-y:auto;scrollbar-width:none;padding:14px 16px;padding-bottom:150px;">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+      <div style="padding:10px;border-radius:14px;background:#132E50;border:1px solid #1E4270;text-align:center;">
+        <span style="font-size:9px;font-weight:700;color:#64748B;text-transform:uppercase;">Total</span>
+        <span style="display:block;font-size:18px;font-weight:800;margin-top:3px;">24</span>
+      </div>
+      <div style="padding:10px;border-radius:14px;background:rgba(79,195,247,0.15);border:1px solid rgba(79,195,247,0.4);text-align:center;">
+        <span style="font-size:9px;font-weight:700;color:#4FC3F7;text-transform:uppercase;">Active</span>
+        <span style="display:block;font-size:18px;font-weight:800;margin-top:3px;color:#4FC3F7;">4</span>
+      </div>
+      <div style="padding:10px;border-radius:14px;background:#132E50;border:1px solid #1E4270;text-align:center;">
+        <span style="font-size:9px;font-weight:700;color:#34D399;text-transform:uppercase;">Done</span>
+        <span style="display:block;font-size:18px;font-weight:800;margin-top:3px;color:#34D399;">20</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;">
+      <span onClick="{{filterAll}}" class="chip {{onAll}}">All (4)</span>
+      <span onClick="{{filterProgress}}" class="chip {{onProgress}}">In Progress (2)</span>
+      <span onClick="{{filterScheduled}}" class="chip {{onScheduled}}">Scheduled (1)</span>
+      <span onClick="{{filterQuoted}}" class="chip {{onQuoted}}">Quoted (1)</span>
+    </div>
+
+    <sc-if value="{{show1}}" hint-placeholder-val="{{true}}">
+      <div class="case-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #1E4270;">
+          <span style="font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#4FC3F7;">#HC-2026-089</span>
+          <span style="padding:3px 8px;border-radius:999px;background:rgba(245,158,11,0.2);color:#FBBF24;font-size:9px;font-weight:800;text-transform:uppercase;">Stage 6: In Progress</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <h4 style="font-size:13px;font-weight:800;margin:0;">Robert Evans (Learjet 60XR)</h4>
+            <p style="font-size:11px;color:#64748B;margin:3px 0 0;">BKK (Bangkok) → FRA (Frankfurt)</p>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:#4FC3F7;">ETA 22:15</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{show2}}" hint-placeholder-val="{{true}}">
+      <div class="case-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #1E4270;">
+          <span style="font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#4FC3F7;">#HC-2026-094</span>
+          <span style="padding:3px 8px;border-radius:999px;background:rgba(79,195,247,0.2);color:#4FC3F7;font-size:9px;font-weight:800;text-transform:uppercase;">Stage 5: Scheduled</span>
+        </div>
+        <h4 style="font-size:13px;font-weight:800;margin:0;">Sarah Jenkins (Commercial Escort)</h4>
+        <p style="font-size:11px;color:#64748B;margin:3px 0 0;">DXB (Dubai) → BOM (Mumbai)</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{show3}}" hint-placeholder-val="{{true}}">
+      <div class="case-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #1E4270;">
+          <span style="font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#4FC3F7;">#HC-2026-102</span>
+          <span style="padding:3px 8px;border-radius:999px;background:rgba(245,158,11,0.2);color:#FBBF24;font-size:9px;font-weight:800;text-transform:uppercase;">Stage 4: Cleared</span>
+        </div>
+        <h4 style="font-size:13px;font-weight:800;margin:0;">Elena Rostova (Challenger 604)</h4>
+        <p style="font-size:11px;color:#64748B;margin:3px 0 0;">DOH (Doha) → LHR (London)</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{show4}}" hint-placeholder-val="{{true}}">
+      <div class="case-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #1E4270;">
+          <span style="font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#4FC3F7;">#HC-2026-107</span>
+          <span style="padding:3px 8px;border-radius:999px;background:#334155;color:#CBD5E1;font-size:9px;font-weight:800;text-transform:uppercase;">Stage 3: GOP Approved</span>
+        </div>
+        <h4 style="font-size:13px;font-weight:800;margin:0;">Klaus Weber (Ground ICU)</h4>
+        <p style="font-size:11px;color:#64748B;margin:3px 0 0;">MUC (Munich) → BER (Berlin)</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{showEmpty}}" hint-placeholder-val="{{false}}">
+      <div style="text-align:center;padding:30px 0;color:#64748B;font-size:12px;">No cases in this stage.</div>
+    </sc-if>
+
+  </div>
+
+  <div style="position:absolute;bottom:62px;left:0;right:0;background:#0D2340;border-top:1px solid #1E4270;padding:12px 16px;z-index:20;">
+    <button onClick="{{tapNewCase}}" style="width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#4FC3F7,#38BDF8);color:#0D2340;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.03em;border:none;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      {{newCaseLabel}}
+    </button>
+  </div>
+
+  <div style="position:absolute;bottom:0;left:0;right:0;height:62px;background:rgba(13,35,64,0.97);border-top:1px solid #1E4270;display:flex;align-items:center;justify-content:space-around;z-index:30;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#64748B;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span style="font-size:9px;font-weight:700;">Home</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#64748B;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+      <span style="font-size:9px;font-weight:700;">Services</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#64748B;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+      <span style="font-size:9px;font-weight:700;">Track</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#4FC3F7;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg>
+      <span style="font-size:9px;font-weight:700;">Vendor</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#64748B;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span style="font-size:9px;font-weight:700;">Profile</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: 'all', newCaseTapped: false };
+  }
+  renderVals() {
+    const f = this.state.filter;
+    const stageOf = { 1: 'progress', 2: 'scheduled', 3: 'progress', 4: 'quoted' };
+    const visible = (n) => f === 'all' || stageOf[n] === f;
+    const anyVisible = [1, 2, 3, 4].some(visible);
+    return {
+      onAll: f === 'all' ? 'on' : '', filterAll: () => this.setState({ filter: 'all' }),
+      onProgress: f === 'progress' ? 'on' : '', filterProgress: () => this.setState({ filter: 'progress' }),
+      onScheduled: f === 'scheduled' ? 'on' : '', filterScheduled: () => this.setState({ filter: 'scheduled' }),
+      onQuoted: f === 'quoted' ? 'on' : '', filterQuoted: () => this.setState({ filter: 'quoted' }),
+      show1: visible(1), show2: visible(2), show3: visible(3), show4: visible(4),
+      showEmpty: !anyVisible,
+      tapBell: () => {},
+      newCaseLabel: this.state.newCaseTapped ? 'Opening New Case Form →' : 'Initiate New Corporate Case',
+      tapNewCase: () => this.setState({ newCaseTapped: true }),
+    };
+  }
+}
+</script>
+</body>
+</html>

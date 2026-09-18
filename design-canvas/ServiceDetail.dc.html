@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; }
+  .display { font-family:'Plus Jakarta Sans',sans-serif; }
+  .noscroll::-webkit-scrollbar { width:0; height:0; }
+  .noscroll { -ms-overflow-style: none; scrollbar-width: none; }
+  .tab-pill { cursor:pointer; padding:6px 10px; border-radius:999px; font-size:10px; font-weight:700; white-space:nowrap; border:1px solid #1E4270; background:#132E50; color:#94A3B8; }
+  .tab-pill.on { background:#4FC3F7; color:#0D2340; border-color:#4FC3F7; }
+</style>
+</helmet>
+
+<div style="width:390px;height:844px;background:#0D2340;display:flex;flex-direction:column;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;color:#fff;position:relative;">
+
+  <div style="flex-shrink:0;background:#0D2340;border-bottom:1px solid #1E4270;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;background:#132E50;color:#CBD5E1;font-size:11px;font-weight:700;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Back
+    </div>
+    <span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:#4FC3F7;">Service Specification</span>
+    <span style="width:20px;"></span>
+  </div>
+
+  <div class="noscroll" style="flex-shrink:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 16px;border-bottom:1px solid #1E4270;">
+    <span onClick="{{pick_charter}}" class="tab-pill {{on_charter}}">Charter</span>
+    <span onClick="{{pick_commercial}}" class="tab-pill {{on_commercial}}">Commercial</span>
+    <span onClick="{{pick_ground}}" class="tab-pill {{on_ground}}">Ground</span>
+    <span onClick="{{pick_wheelchair}}" class="tab-pill {{on_wheelchair}}">Wheelchair</span>
+    <span onClick="{{pick_hospital}}" class="tab-pill {{on_hospital}}">Hospital</span>
+    <span onClick="{{pick_homecare}}" class="tab-pill {{on_homecare}}">Home Care</span>
+  </div>
+
+  <div class="noscroll" style="flex:1;overflow-y:auto;scrollbar-width:none;padding:16px;padding-bottom:100px;">
+
+    <div style="position:relative;border-radius:16px;overflow:hidden;height:172px;margin-bottom:16px;background:radial-gradient(circle at 30% 20%, rgba(79,195,247,0.35), transparent 55%), linear-gradient(155deg,#183A64,#08172B 75%);border:1px solid #1E4270;">
+      <div style="position:absolute;inset:0;opacity:0.5;background-image:repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 26px);"></div>
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="width:76px;height:76px;border-radius:22px;background:rgba(79,195,247,0.18);border:1px solid rgba(79,195,247,0.4);color:#4FC3F7;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(0,0,0,0.35);">
+          <sc-if value="{{isCharter}}" hint-placeholder-val="{{false}}">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+          </sc-if>
+          <sc-if value="{{isCommercial}}" hint-placeholder-val="{{true}}">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg>
+          </sc-if>
+          <sc-if value="{{isGround}}" hint-placeholder-val="{{false}}">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          </sc-if>
+          <sc-if value="{{isWheelchair}}" hint-placeholder-val="{{false}}">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg>
+          </sc-if>
+          <sc-if value="{{isHospital}}" hint-placeholder-val="{{false}}">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg>
+          </sc-if>
+          <sc-if value="{{isHomecare}}" hint-placeholder-val="{{false}}">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+          </sc-if>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:12px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="padding:4px 10px;border-radius:999px;background:#4FC3F7;color:#0D2340;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;">{{badge}}</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.35);padding:3px 8px;border-radius:6px;">ISO 9001 Certified</span>
+      </div>
+    </div>
+
+    <h2 class="display" style="font-size:19px;font-weight:800;margin:0;">{{title}}</h2>
+    <p style="font-size:12px;color:#CBD5E1;margin-top:8px;line-height:1.6;">{{desc}}</p>
+
+    <div style="margin-top:16px;padding:14px;border-radius:16px;background:#132E50;border:1px solid #1E4270;">
+      <h4 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:#4FC3F7;margin:0 0 10px;display:flex;align-items:center;gap:6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+        Clinical Equipment &amp; Capabilities
+      </h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="padding:8px;border-radius:9px;background:#08172B;">
+          <span style="display:block;font-size:9px;color:#64748B;text-transform:uppercase;font-weight:700;">Ventilator</span>
+          <span style="font-size:11px;font-weight:700;">{{ventilator}}</span>
+        </div>
+        <div style="padding:8px;border-radius:9px;background:#08172B;">
+          <span style="display:block;font-size:9px;color:#64748B;text-transform:uppercase;font-weight:700;">ECMO &amp; Telemetry</span>
+          <span style="font-size:11px;font-weight:700;">{{ecmo}}</span>
+        </div>
+        <div style="padding:8px;border-radius:9px;background:#08172B;">
+          <span style="display:block;font-size:9px;color:#64748B;text-transform:uppercase;font-weight:700;">Medical Crew</span>
+          <span style="font-size:11px;font-weight:700;">{{crew}}</span>
+        </div>
+        <div style="padding:8px;border-radius:9px;background:#08172B;">
+          <span style="display:block;font-size:9px;color:#64748B;text-transform:uppercase;font-weight:700;">Response Launch</span>
+          <span style="font-size:11px;font-weight:700;">{{response}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;padding:12px;border-radius:12px;background:#08172B;border:1px solid #1E4270;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg>
+        <div>
+          <p style="font-size:11px;font-weight:700;margin:0;">Need immediate physician triage?</p>
+          <p style="font-size:10px;color:#64748B;margin:2px 0 0;">Direct alarm line: +91 9699999065</p>
+        </div>
+      </div>
+      <a href="tel:+919699999065" style="padding:5px 10px;border-radius:8px;background:#132E50;color:#4FC3F7;font-size:11px;font-weight:700;text-decoration:none;">Call</a>
+    </div>
+
+  </div>
+
+  <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(13,35,64,0.95);border-top:1px solid #1E4270;padding:14px 16px;">
+    <button onClick="{{tapRequest}}" style="width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,#4FC3F7,#38BDF8);color:#0D2340;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;border:none;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;">
+      {{ctaLabel}}
+    </button>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script>
+const DATA = {
+  charter: { title:'Private Charter Air Ambulance', badge:'Critical ICU High-Acuity', desc:"A dedicated air ambulance or medical jet equipped for critical patient transport, with full ICU setup and a trained aero-medical crew on board.", ventilator:'Hamilton-T1 / Oxylog 3000+', ecmo:'ECMO Capable & Corpuls3', crew:'Dual Doctor + Flight RN', response:'< 120 Minutes',
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>' },
+  commercial: { title:'Commercial Air Repatriation', badge:'Cost-Optimized Medical Escort', desc:"Airline travel with medical escort doctor, stretcher & oxygen on scheduled widebody flights. Rear-cabin curtained conversion with aero-medical monitoring.", ventilator:'Portable Transport O2 Kit', ecmo:'Non-invasive BiPAP/CPAP', crew:'Aero-Physician Seated', response:'24-48h Clearance',
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg>' },
+  ground: { title:'Ground Ambulance Logistics', badge:'ACLS & BLS Fleet', desc:"State-of-the-art road ambulances with transport ventilators, multi-parameter monitoring, and certified emergency trauma physicians.", ventilator:'Hamilton T1 Transport', ecmo:'Zoll X Series Telemetry', crew:'Emergency Physician + Paramedic', response:'< 30 Minutes',
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>' },
+  wheelchair: { title:'Wheelchair Assistance', badge:'Mobility & Terminal Ramp', desc:"Dedicated mobility support at airport terminals, transit customs escorts, and tarmac ambulift arrangements.", ventilator:'N/A (Standard Transit)', ecmo:'Pulse Oximeter & First Aid', crew:'Aero-Mobility Officer', response:'Immediate Ramp Sync',
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg>' },
+  hospital: { title:'Hospital Assistance', badge:'Global Healthcare Network', desc:"One-point access to 3,500+ accredited hospitals and 11,000+ medical facilities across 168 countries with direct bedside admissions.", ventilator:'Facility ICU Reserved', ecmo:'Comprehensive CCU Tier', crew:'Hospital Admission Officer', response:'24/7 Desk Sync',
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg>' },
+  homecare: { title:'Home Health Care & More', badge:'In-Home & Specialized Care', desc:"Specialized in-home nursing, doctor teleconsultations, corporate employee wellness, and dignified mortal remains repatriation.", ventilator:'Home Oxygen Concentrator', ecmo:'Clinical Tele-triage', crew:'Registered Community Nurse', response:'Same-Day Dispatch',
+    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>' },
+};
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { key: 'commercial', ack: false };
+  }
+  renderVals() {
+    const d = DATA[this.state.key];
+    const out = {
+      title: d.title, badge: d.badge, desc: d.desc,
+      ventilator: d.ventilator, ecmo: d.ecmo, crew: d.crew, response: d.response,
+      isCharter: this.state.key === 'charter',
+      isCommercial: this.state.key === 'commercial',
+      isGround: this.state.key === 'ground',
+      isWheelchair: this.state.key === 'wheelchair',
+      isHospital: this.state.key === 'hospital',
+      isHomecare: this.state.key === 'homecare',
+      ctaLabel: this.state.ack ? 'Opening Request Form →' : 'Request This Service',
+      tapRequest: () => this.setState({ ack: true }),
+    };
+    Object.keys(DATA).forEach((key) => {
+      out['pick_' + key] = () => this.setState({ key, ack: false });
+      out['on_' + key] = this.state.key === key ? 'on' : '';
+    });
+    return out;
+  }
+}
+</script>
+</body>
+</html>

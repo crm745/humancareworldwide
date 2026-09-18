@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; }
+  .display { font-family:'Plus Jakarta Sans',sans-serif; }
+  @keyframes pulseRing { 0% { transform:scale(0.9); opacity:0.7; } 70% { transform:scale(1.3); opacity:0; } 100% { opacity:0; } }
+</style>
+</helmet>
+
+<div style="width:390px;height:844px;background:#0D2340;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;color:#fff;padding:32px;position:relative;">
+
+  <div style="width:100%;display:flex;justify-content:flex-end;">
+    <span style="font-size:12px;color:#4FC3F7;font-weight:700;text-decoration:underline;">Skip to Home →</span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+    <div style="position:relative;width:220px;height:130px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+      <div style="position:absolute;width:120px;height:120px;border-radius:999px;border:2px solid #4FC3F7;animation:pulseRing 2.2s ease-out infinite;"></div>
+      <img src="humancare-logo.png" alt="HumanCare WorldWide" style="position:relative;width:200px;height:auto;"/>
+    </div>
+    <p style="font-size:12px;color:#CBD5E1;font-weight:500;letter-spacing:0.02em;margin:14px 0 0;">One Stop Global Medical Solution Provider</p>
+    <span style="display:inline-block;margin-top:14px;padding:6px 14px;border-radius:999px;background:rgba(79,195,247,0.15);border:1px solid rgba(79,195,247,0.3);color:#4FC3F7;font-size:11px;font-weight:600;">Operating Worldwide Since 2004</span>
+  </div>
+
+  <div style="width:100%;display:flex;flex-direction:column;align-items:center;padding-bottom:12px;">
+    <p style="font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(79,195,247,0.8);margin:0;">Care Without Borders</p>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

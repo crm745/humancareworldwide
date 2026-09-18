@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; }
+  .display { font-family:'Plus Jakarta Sans',sans-serif; }
+  .noscroll::-webkit-scrollbar { width:0; height:0; }
+  .noscroll { -ms-overflow-style: none; scrollbar-width: none; }
+  .svc-row { cursor:pointer; padding:14px; border-radius:16px; background:#132E50; border:1px solid #1E4270; display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+</style>
+</helmet>
+
+<div style="width:390px;height:844px;background:#0D2340;display:flex;flex-direction:column;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;color:#fff;position:relative;">
+
+  <div style="flex-shrink:0;background:rgba(13,35,64,0.95);border-bottom:1px solid #1E4270;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <img src="humancare-logo.png" alt="HumanCare WorldWide" style="height:36px;width:auto;display:block;"/>
+    <div onClick="{{tapBell}}" style="cursor:pointer;position:relative;width:32px;height:32px;border-radius:999px;background:#132E50;display:flex;align-items:center;justify-content:center;color:#CBD5E1;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>
+      <span style="position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:999px;background:#EF4444;"></span>
+    </div>
+  </div>
+
+  <div class="noscroll" style="flex:1;overflow-y:auto;scrollbar-width:none;padding:18px 16px 78px;">
+
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#4FC3F7;margin:0 0 4px;">All Services</p>
+    <h2 class="display" style="font-size:19px;font-weight:800;margin:0 0 20px;">Every way we get you home safely.</h2>
+
+    <div class="svc-row" onClick="{{tap_charter}}">
+      <div style="width:44px;height:44px;border-radius:13px;background:rgba(79,195,247,0.15);color:#4FC3F7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+      </div>
+      <div style="flex:1;">
+        <h4 style="font-size:13px;font-weight:700;margin:0;">Private Charter Air Ambulance</h4>
+        <p style="font-size:11px;color:#94A3B8;margin:3px 0 0;line-height:1.4;">Dedicated medical jet, full ICU setup, for critical repatriation.</p>
+      </div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+
+    <div class="svc-row" onClick="{{tap_commercial}}">
+      <div style="width:44px;height:44px;border-radius:13px;background:rgba(79,195,247,0.15);color:#4FC3F7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg>
+      </div>
+      <div style="flex:1;">
+        <h4 style="font-size:13px;font-weight:700;margin:0;">Commercial Air Repatriation</h4>
+        <p style="font-size:11px;color:#94A3B8;margin:3px 0 0;line-height:1.4;">Airline travel with medical escort, stretcher &amp; oxygen.</p>
+      </div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+
+    <div class="svc-row" onClick="{{tap_ground}}">
+      <div style="width:44px;height:44px;border-radius:13px;background:rgba(79,195,247,0.15);color:#4FC3F7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+      </div>
+      <div style="flex:1;">
+        <h4 style="font-size:13px;font-weight:700;margin:0;">Ground Ambulance</h4>
+        <p style="font-size:11px;color:#94A3B8;margin:3px 0 0;line-height:1.4;">BLS / ACLS ambulance, origin to destination.</p>
+      </div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+
+    <div class="svc-row" onClick="{{tap_wheelchair}}">
+      <div style="width:44px;height:44px;border-radius:13px;background:rgba(79,195,247,0.15);color:#4FC3F7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg>
+      </div>
+      <div style="flex:1;">
+        <h4 style="font-size:13px;font-weight:700;margin:0;">Wheelchair Assistance</h4>
+        <p style="font-size:11px;color:#94A3B8;margin:3px 0 0;line-height:1.4;">Mobility support at airports, terminals &amp; transfers.</p>
+      </div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+
+    <div class="svc-row" onClick="{{tap_hospital}}">
+      <div style="width:44px;height:44px;border-radius:13px;background:rgba(79,195,247,0.15);color:#4FC3F7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg>
+      </div>
+      <div style="flex:1;">
+        <h4 style="font-size:13px;font-weight:700;margin:0;">Hospital Assistance</h4>
+        <p style="font-size:11px;color:#94A3B8;margin:3px 0 0;line-height:1.4;">Access to 3,500+ hospitals &amp; 11,000+ facilities.</p>
+      </div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+
+    <div class="svc-row" onClick="{{tap_homecare}}" style="margin-bottom:0;">
+      <div style="width:44px;height:44px;border-radius:13px;background:rgba(79,195,247,0.15);color:#4FC3F7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+      </div>
+      <div style="flex:1;">
+        <h4 style="font-size:13px;font-weight:700;margin:0;">Home Health Care &amp; More</h4>
+        <p style="font-size:11px;color:#94A3B8;margin:3px 0 0;line-height:1.4;">In-home nursing, teleconsultation, corporate care.</p>
+      </div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+
+    <sc-if value="{{hasSelection}}" hint-placeholder-val="{{false}}">
+      <div style="text-align:center;padding:10px;border-radius:12px;background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.3);font-size:12px;color:#4FC3F7;font-weight:600;margin-top:14px;">Opening {{selectedLabel}} details →</div>
+    </sc-if>
+
+  </div>
+
+  <div style="position:absolute;bottom:0;left:0;right:0;height:62px;background:rgba(13,35,64,0.97);border-top:1px solid #1E4270;display:flex;align-items:center;justify-content:space-around;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#64748B;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span style="font-size:9px;font-weight:700;">Home</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#4FC3F7;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+      <span style="font-size:9px;font-weight:700;">Services</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#64748B;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+      <span style="font-size:9px;font-weight:700;">Track</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#64748B;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg>
+      <span style="font-size:9px;font-weight:700;">Vendor</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#64748B;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span style="font-size:9px;font-weight:700;">Profile</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script>
+const SERVICES = {
+  charter: 'Private Charter Air Ambulance',
+  commercial: 'Commercial Air Repatriation',
+  ground: 'Ground Ambulance',
+  wheelchair: 'Wheelchair Assistance',
+  hospital: 'Hospital Assistance',
+  homecare: 'Home Health Care & More',
+};
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { selected: null };
+  }
+  renderVals() {
+    const out = {
+      hasSelection: !!this.state.selected,
+      selectedLabel: this.state.selected ? SERVICES[this.state.selected] : '',
+      tapBell: () => {},
+    };
+    Object.keys(SERVICES).forEach((key) => {
+      out['tap_' + key] = () => this.setState({ selected: key });
+    });
+    return out;
+  }
+}
+</script>
+</body>
+</html>
