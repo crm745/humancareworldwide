@@ -13,3 +13,6 @@ Thumbs.db
 
 # Prisma generated client (regenerated from schema on install)
 backend/generated/
+
+# Uploaded files (medical reports/documents) — real user data, not code
+backend/uploads/

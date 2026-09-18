@@ -6,6 +6,7 @@ const {
   createCaseByVendor,
   updateCaseStage,
 } = require('./cases.service');
+const { addDocumentToCase } = require('../documents/documents.service');
 
 async function listMyCases(req, res, next) {
   try {
@@ -70,4 +71,22 @@ async function updateStage(req, res, next) {
   }
 }
 
-module.exports = { listMyCases, listUnassigned, getCase, claimCase, createCase, updateStage };
+async function uploadCaseDocument(req, res, next) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'file is required' });
+    const caseRecord = await getCaseById(req.params.id);
+    if (caseRecord.vendorId && caseRecord.vendorId !== req.user.vendorId) {
+      return res.status(403).json({ error: 'This case belongs to a different vendor.' });
+    }
+    const document = await addDocumentToCase(caseRecord.id, {
+      name: req.file.originalname,
+      fileUrl: `/uploads/${req.file.filename}`,
+      fileSizeBytes: req.file.size,
+    });
+    res.status(201).json({ document });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { listMyCases, listUnassigned, getCase, claimCase, createCase, updateStage, uploadCaseDocument };

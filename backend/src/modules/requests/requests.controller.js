@@ -4,6 +4,7 @@ const {
   getRequestForUser,
   getRequestByReferenceForGuest,
 } = require('./requests.service');
+const { addDocumentToCase } = require('../documents/documents.service');
 
 const REQUIRED_FIELDS = ['serviceType', 'patientName', 'origin', 'destination'];
 
@@ -49,9 +50,26 @@ async function trackByReference(req, res, next) {
   }
 }
 
+async function uploadRequestDocument(req, res, next) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'file is required' });
+    const request = await getRequestForUser(req.user.id, req.params.id);
+    if (!request.case) return res.status(409).json({ error: 'This request has no case yet.' });
+    const document = await addDocumentToCase(request.case.id, {
+      name: req.file.originalname,
+      fileUrl: `/uploads/${req.file.filename}`,
+      fileSizeBytes: req.file.size,
+    });
+    res.status(201).json({ document });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   submitRequest,
   listMyRequests,
   getMyRequestById,
   trackByReference,
+  uploadRequestDocument,
 };

@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const { authRouter } = require('./modules/auth/auth.routes');
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.use('/auth', authRouter);
 app.use('/requests', requestsRouter);
 app.use('/vendor/cases', casesRouter);
@@ -23,7 +25,8 @@ app.use((req, res) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(err);
-  const status = err.statusCode || 500;
+  const isUploadError = err.name === 'MulterError' || /Unsupported file type/.test(err.message || '');
+  const status = err.statusCode || (isUploadError ? 400 : 500);
   res.status(status).json({ error: status === 500 ? 'Internal server error' : err.message });
 });
 
