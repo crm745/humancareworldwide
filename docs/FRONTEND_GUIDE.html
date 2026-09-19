@@ -26,7 +26,7 @@
     --code-border:rgba(255,255,255,0.14);
     --ok:#3FCB74; --warn:#E0B26B; --pending:#7B8CA8;
   }
-
+/* the winner takes it all */
   *{ box-sizing:border-box; }
   body{
     margin:0; background:var(--bg); color:var(--body);
@@ -526,6 +526,12 @@ cp .env.example .env</pre>
           <div style="flex:1;">
             <div class="road-t">Google / Apple sign-in <span class="chip planned">on hold</span></div>
             <div class="road-d">Needs a Google Cloud project and a paid Apple Developer account ($99/yr) registered to the company — a business decision, not a coding one.</div>
+          </div>
+        </div>
+        <div class="road-item">
+          <div style="flex:1;">
+            <div class="road-t">Admin dashboard (website) <span class="chip planned">planned, not started</span></div>
+            <div class="road-d">A separate internal website (not the patient/vendor app) for HumanCare staff — single admin login, no permission tiers needed for now (just 1–2 trusted staff). Scope: add new vendor companies + their logins (currently done by hand via a script), a god-view across every vendor's cases, an editor for the Services list (currently a code file only a developer can change), and patient account lookup for support. Deliberately deferred — nothing urgently needs it while there's only one vendor; revisit once real vendor partners start onboarding.</div>
           </div>
         </div>
       </div>
