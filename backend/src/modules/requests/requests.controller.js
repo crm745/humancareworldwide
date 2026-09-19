@@ -5,6 +5,7 @@ const {
   getRequestByReferenceForGuest,
 } = require('./requests.service');
 const { addDocumentToCase } = require('../documents/documents.service');
+const { streamRequestSummaryPdf } = require('./request-summary.pdf');
 
 const REQUIRED_FIELDS = ['serviceType', 'patientName', 'origin', 'destination'];
 
@@ -66,10 +67,20 @@ async function uploadRequestDocument(req, res, next) {
   }
 }
 
+async function downloadRequestSummary(req, res, next) {
+  try {
+    const request = await getRequestForUser(req.user.id, req.params.id);
+    streamRequestSummaryPdf(res, request);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   submitRequest,
   listMyRequests,
   getMyRequestById,
   trackByReference,
   uploadRequestDocument,
+  downloadRequestSummary,
 };

@@ -449,6 +449,7 @@ cp .env.example .env</pre>
           <tr><td><span class="method get">GET</span></td><td class="path">/requests/me</td><td class="auth-badge">patient</td><td class="desc-cell">List my own requests. Optional <code>?status=</code> filter.</td></tr>
           <tr><td><span class="method get">GET</span></td><td class="path">/requests/me/:id</td><td class="auth-badge">patient</td><td class="desc-cell">One request, including its case timeline and documents.</td></tr>
           <tr><td><span class="method post">POST</span></td><td class="path">/requests/me/:id/documents</td><td class="auth-badge">patient</td><td class="desc-cell">Attach a file (form-data, key <code>file</code>). PDF/JPG/PNG/WEBP/DOC/DOCX, max 10MB.</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="path">/requests/me/:id/summary</td><td class="auth-badge">patient</td><td class="desc-cell">Download a branded PDF summary (details + timeline) — powers "Download Summary" on Request Details.</td></tr>
           <tr><td><span class="method get">GET</span></td><td class="path">/requests/track/:ref</td><td class="auth-badge">guest*</td><td class="desc-cell">Track by reference number. Needs <code>?mobile=</code> to match — no login needed.</td></tr>
         </table>
       </div>

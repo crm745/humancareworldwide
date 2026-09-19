@@ -1,0 +1,51 @@
+const PDFDocument = require('pdfkit');
+
+function row(doc, label, value) {
+  if (value === null || value === undefined || value === '') return;
+  doc.fontSize(11).fillColor('#5B6B84').text(label, { continued: true });
+  doc.fillColor('#0D2340').text(`  ${value}`);
+}
+
+function streamRequestSummaryPdf(res, request) {
+  const doc = new PDFDocument({ margin: 50 });
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="${request.referenceNumber}-summary.pdf"`);
+  doc.pipe(res);
+
+  doc.fontSize(18).fillColor('#1A73E8').text('HumanCare WorldWide');
+  doc.fontSize(10).fillColor('#5B6B84').text('Global Medical Assistance Company');
+  doc.moveDown(1.5);
+
+  doc.fontSize(14).fillColor('#0D2340').text(`Request Summary — ${request.referenceNumber}`);
+  doc.fontSize(9).fillColor('#97A4B8').text(`Generated ${new Date().toLocaleString()}`);
+  doc.moveDown(1);
+
+  row(doc, 'Patient Name:', request.patientName);
+  row(doc, 'Age / Gender:', [request.patientAge, request.patientGender].filter(Boolean).join(' / '));
+  row(doc, 'Service:', request.serviceType);
+  row(doc, 'From:', request.origin);
+  row(doc, 'To:', request.destination);
+  row(doc, 'Preferred Date:', request.preferredDate ? new Date(request.preferredDate).toDateString() : null);
+  row(doc, 'Status:', request.status);
+  row(doc, 'Submitted:', new Date(request.createdAt).toLocaleString());
+  if (request.description) row(doc, 'Description:', request.description);
+  if (request.specialRequirements) row(doc, 'Special Requirements:', request.specialRequirements);
+
+  const stageEvents = request.case && request.case.stageEvents;
+  if (stageEvents && stageEvents.length) {
+    doc.moveDown(1);
+    doc.fontSize(12).fillColor('#0D2340').text('Timeline');
+    doc.moveDown(0.3);
+    stageEvents.forEach((ev) => {
+      doc.fontSize(10).fillColor('#5B6B84').text(`${new Date(ev.occurredAt).toLocaleString()}  —  `, { continued: true });
+      doc.fillColor('#0D2340').text(`${ev.stage}${ev.note ? '  (' + ev.note + ')' : ''}`);
+    });
+  }
+
+  doc.moveDown(2);
+  doc.fontSize(8).fillColor('#97A4B8').text('"Your Care, Our Responsibility" — humancareworldwide.com');
+
+  doc.end();
+}
+
+module.exports = { streamRequestSummaryPdf };
