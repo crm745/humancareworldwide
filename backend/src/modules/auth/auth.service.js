@@ -65,6 +65,12 @@ function signRefreshToken(payload) {
   return jwt.sign(payload, secret, { expiresIn: '30d' });
 }
 
+function verifyRefreshToken(token) {
+  const secret = process.env.JWT_REFRESH_SECRET;
+  if (!secret) throw new Error('JWT_REFRESH_SECRET is not set');
+  return jwt.verify(token, secret);
+}
+
 async function hashPassword(plain) {
   return bcrypt.hash(plain, 10);
 }
@@ -78,6 +84,7 @@ module.exports = {
   verifyOtp,
   signAccessToken,
   signRefreshToken,
+  verifyRefreshToken,
   hashPassword,
   comparePassword,
 };
