@@ -6,6 +6,7 @@ const { authRouter } = require('./modules/auth/auth.routes');
 const { requestsRouter } = require('./modules/requests/requests.routes');
 const { casesRouter } = require('./modules/cases/cases.routes');
 const { notificationsRouter } = require('./modules/notifications/notifications.routes');
+const { servicesRouter } = require('./modules/services/services.routes');
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,7 @@ app.use(express.json());
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.use('/auth', authRouter);
+app.use('/services', servicesRouter);
 app.use('/requests', requestsRouter);
 app.use('/vendor/cases', casesRouter);
 app.use('/notifications', notificationsRouter);

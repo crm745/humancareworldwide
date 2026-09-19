@@ -429,6 +429,18 @@ cp .env.example .env</pre>
     </div>
 
     <div class="api-group">
+      <div class="api-group-title">Services</div>
+      <div class="card api-wrap">
+        <table class="api">
+          <tr><th>Method</th><th>Path</th><th>Auth</th><th>What it does</th></tr>
+          <tr><td><span class="method get">GET</span></td><td class="path">/services</td><td class="auth-badge">—</td><td class="desc-cell">The service grid (Air Ambulance, Ground Ambulance, etc.) with description and "We Provide" bullets, for Select Service.</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="path">/services/:slug</td><td class="auth-badge">—</td><td class="desc-cell">One service's detail, for Service Details. <code>slug</code> is also the value to send as <code>serviceType</code> when submitting a request.</td></tr>
+        </table>
+      </div>
+      <div class="note" style="margin-top:10px;">Static reference data (not a database table) — only Air Ambulance's copy came from the shared design; the other 7 are placeholder text for the team to review/edit in <code>backend/src/modules/services/services.data.js</code>.</div>
+    </div>
+
+    <div class="api-group">
       <div class="api-group-title">Requests — patient</div>
       <div class="card api-wrap">
         <table class="api">
