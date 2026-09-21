@@ -106,6 +106,12 @@
   @media (max-width: 460px) {
     .device-shell { transform: scale(0.92); transform-origin: top center; margin-bottom: -70px; }
   }
+  @keyframes cta-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
+    70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  }
+  .cta-pulse-dot { animation: cta-pulse 2s ease-out infinite; }
 </style>
 
 <div class="page">
@@ -124,14 +130,17 @@
     <div class="phone" id="phone">
 
       <!-- SPLASH -->
-      <section id="screen-splash" class="screen" style="align-items:center;justify-content:center;padding:36px;position:relative;overflow:hidden;background:#FFFFFF;">
+      <section id="screen-splash" class="screen" style="align-items:center;justify-content:center;padding:36px;overflow:hidden;background:#FFFFFF;">
         <div style="position:absolute;inset:0;opacity:0.06;background-image:radial-gradient(circle at 20% 30%, #1A73E8 2px, transparent 2px),radial-gradient(circle at 60% 15%, #1A73E8 2px, transparent 2px),radial-gradient(circle at 80% 45%, #1A73E8 2px, transparent 2px),radial-gradient(circle at 35% 60%, #1A73E8 2px, transparent 2px),radial-gradient(circle at 70% 70%, #1A73E8 2px, transparent 2px);background-size:220px 220px;"></div>
         <div style="display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;">
-          <svg width="88" height="88" viewBox="0 0 88 88" style="margin-bottom:14px;">
-            <circle cx="44" cy="44" r="42" fill="#EAF2FE"/>
-            <circle cx="44" cy="33" r="10" fill="#1A73E8"/>
-            <path d="M22 62c2-14 11-21 22-21s20 7 22 21" stroke="#1A73E8" stroke-width="7" stroke-linecap="round" fill="none"/>
-            <path d="M14 66c9-9 15 7 22-1s14 8 22-1" stroke="#2FA84F" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+          <svg width="170" height="60" viewBox="0 0 240 80" style="margin-bottom:14px;">
+            <circle cx="10" cy="40" r="5" fill="none" stroke="#17233D" stroke-width="3"/>
+            <circle cx="230" cy="40" r="5" fill="none" stroke="#17233D" stroke-width="3"/>
+            <path d="M10 40 H60 L66 20 L74 58 L80 40 H92" fill="none" stroke="#E5484D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M148 40 H160 L166 58 L174 20 L180 40 H230" fill="none" stroke="#E5484D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <g transform="translate(92,16) scale(2.35)">
+              <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" fill="#17233D"/>
+            </g>
           </svg>
           <div style="font-size:21px;font-weight:800;letter-spacing:-0.01em;"><span style="color:#1A73E8;">HUMAN CARE</span></div>
           <div style="font-size:15px;font-weight:800;letter-spacing:0.12em;color:#2FA84F;margin-top:-2px;">WORLDWIDE</div>
@@ -271,7 +280,7 @@
                 <div style="font-size:14px;font-weight:800;">Create New Request</div>
                 <div style="font-size:11.5px;opacity:0.9;margin-top:3px;">Request any medical assistance</div>
               </div>
-              <div style="width:34px;height:34px;border-radius:999px;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
+              <div class="cta-pulse-dot" style="width:34px;height:34px;border-radius:999px;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
             </div>
           </div>
 
@@ -990,9 +999,16 @@
   function toggleUpload() {
     uploaded = !uploaded;
     var box = document.getElementById('req-upload');
-    box.innerHTML = uploaded
-      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span style="font-size:12px;font-weight:700;color:#2FA84F;">Medical_Report.pdf attached</span><span style="font-size:10px;color:#97A4B8;">Tap to remove</span>'
-      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg><span style="font-size:12px;font-weight:700;color:#1A73E8;">Upload File</span><span style="font-size:10px;color:#97A4B8;">PDF, JPG, PNG (Max 5MB)</span>';
+    if (uploaded) {
+      box.style.cssText = 'cursor:pointer;padding:12px;border-radius:14px;border:1px solid #E4E9F2;background:#fff;display:flex;align-items:center;gap:10px;text-align:left;';
+      box.innerHTML =
+        '<div style="width:34px;height:34px;border-radius:9px;background:#FDECEC;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D64545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>' +
+        '<div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:700;color:#17233D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">medical_report.pdf</div><div style="font-size:10px;color:#97A4B8;">Tap to remove</div></div>' +
+        '<div style="width:22px;height:22px;border-radius:999px;background:#1A73E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>';
+    } else {
+      box.style.cssText = 'cursor:pointer;padding:16px;border-radius:12px;border:1.5px dashed #C7D3E5;background:#F7F9FC;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;';
+      box.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg><span style="font-size:12px;font-weight:700;color:#1A73E8;">Upload File</span><span style="font-size:10px;color:#97A4B8;">PDF, JPG, PNG (Max 5MB)</span>';
+    }
   }
   function populateReview() {
     document.getElementById('rv-name').textContent = document.getElementById('req-name').value || '—';
