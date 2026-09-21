@@ -1195,4 +1195,7 @@
   // ---- boot ----
   renderWizard();
   renderNavBars('splash');
+  setTimeout(function () {
+    if (historyStack[historyStack.length - 1] === 'splash') navReplace('welcome');
+  }, 2000);
 </script>
