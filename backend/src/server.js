@@ -7,6 +7,7 @@ const { requestsRouter } = require('./modules/requests/requests.routes');
 const { casesRouter } = require('./modules/cases/cases.routes');
 const { notificationsRouter } = require('./modules/notifications/notifications.routes');
 const { servicesRouter } = require('./modules/services/services.routes');
+const { adminRouter } = require('./modules/admin/admin.routes');
 
 const app = express();
 app.use(cors());
@@ -19,6 +20,7 @@ app.use('/services', servicesRouter);
 app.use('/requests', requestsRouter);
 app.use('/vendor/cases', casesRouter);
 app.use('/notifications', notificationsRouter);
+app.use('/admin', adminRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: `No route for ${req.method} ${req.path}` });
