@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HumanCare Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F2F6FC; --surface:#FFFFFF; --surface-2:#EEF2F8; --border:#E1E7F0;
+    --ink:#0D2340; --body:#1B2B44; --muted:#5B6B84; --faint:#97A4B8;
+    --blue:#1A73E8; --green:#2FA84F; --red:#D64545; --warn:#B7791F;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--body); font-family:'Inter',-apple-system,sans-serif; }
+  code,.mono{ font-family:'JetBrains Mono',monospace; }
+  input,select,button,textarea{ font-family:inherit; font-size:13.5px; }
+  h1,h2,h3{ color:var(--ink); margin:0; }
+
+  /* ---- login ---- */
+  #login-screen{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .login-card{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:36px 32px; width:100%; max-width:360px; }
+  .login-card .mark{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .mark-dot{ width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg,var(--blue),var(--green)); flex-shrink:0; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px; }
+  .field input, .field select, .field textarea{
+    width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:9px; background:var(--surface-2); color:var(--ink);
+  }
+  .field textarea{ resize:vertical; min-height:60px; }
+  .btn{
+    border:none; border-radius:9px; padding:10px 16px; font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+  .btn-primary{ background:var(--blue); color:#fff; }
+  .btn-primary:hover{ background:#155ec2; }
+  .btn-secondary{ background:var(--surface-2); color:var(--ink); border:1px solid var(--border); }
+  .btn-danger{ background:color-mix(in srgb, var(--red) 12%, transparent); color:var(--red); }
+  .btn-block{ width:100%; }
+  .btn-sm{ padding:6px 10px; font-size:12px; border-radius:7px; }
+  .error-text{ color:var(--red); font-size:12.5px; margin-top:10px; display:none; }
+
+  /* ---- app shell ---- */
+  #app-shell{ display:none; min-height:100vh; }
+  .sidebar{ width:220px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); padding:20px 14px; position:fixed; top:0; bottom:0; overflow-y:auto; }
+  .sidebar .mark{ display:flex; align-items:center; gap:9px; padding:0 8px 22px; }
+  .sidebar .mark-text{ font-weight:800; font-size:14px; color:var(--ink); }
+  .nav-item{
+    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:9px; color:var(--muted); font-weight:600; font-size:13.5px;
+    cursor:pointer; margin-bottom:2px;
+  }
+  .nav-item:hover{ background:var(--surface-2); }
+  .nav-item.active{ background:color-mix(in srgb, var(--blue) 12%, transparent); color:var(--blue); }
+  .sidebar-footer{ position:absolute; bottom:16px; left:14px; right:14px; }
+  .main{ margin-left:220px; flex:1; padding:32px 36px; max-width:1100px; }
+  @media (max-width:760px){
+    .sidebar{ position:static; width:100%; height:auto; border-right:none; border-bottom:1px solid var(--border); }
+    .main{ margin-left:0; padding:20px; }
+    #app-shell{ display:flex; flex-direction:column; }
+  }
+  #app-shell.open{ display:flex; }
+
+  .page{ display:none; }
+  .page.active{ display:block; }
+  .page-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:10px; }
+  .page-head h1{ font-size:22px; }
+  .page-dek{ color:var(--muted); font-size:13px; margin-top:4px; }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+  @media (max-width:700px){ .stat-grid{ grid-template-columns:1fr 1fr; } }
+  .stat-tile{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; }
+  .stat-tile .num{ font-size:26px; font-weight:800; color:var(--ink); font-family:'JetBrains Mono',monospace; }
+  .stat-tile .label{ font-size:12px; color:var(--muted); margin-top:4px; }
+
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:18px; }
+  .card-title{ font-size:14px; font-weight:700; color:var(--ink); margin-bottom:14px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--faint); font-weight:700; padding:0 10px 8px; }
+  td{ padding:10px; border-top:1px solid var(--border); vertical-align:middle; color:var(--body); }
+  tr:first-child td{ border-top:none; }
+  .table-wrap{ overflow-x:auto; }
+
+  .pill{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:3px 9px; border-radius:100px; text-transform:capitalize; }
+  .pill::before{ content:''; width:6px; height:6px; border-radius:50%; }
+  .pill.submitted{ background:color-mix(in srgb, var(--faint) 20%, transparent); color:var(--muted); }
+  .pill.submitted::before{ background:var(--faint); }
+  .pill.scheduled{ background:color-mix(in srgb, var(--warn) 16%, transparent); color:var(--warn); }
+  .pill.scheduled::before{ background:var(--warn); }
+  .pill.in_progress{ background:color-mix(in srgb, var(--blue) 15%, transparent); color:var(--blue); }
+  .pill.in_progress::before{ background:var(--blue); }
+  .pill.completed{ background:color-mix(in srgb, var(--green) 15%, transparent); color:var(--green); }
+  .pill.completed::before{ background:var(--green); }
+  .pill.cancelled{ background:color-mix(in srgb, var(--red) 14%, transparent); color:var(--red); }
+  .pill.cancelled::before{ background:var(--red); }
+
+  .row-flex{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
+  .row-flex .field{ margin-bottom:0; flex:1; min-width:140px; }
+  .muted{ color:var(--muted); }
+  .faint{ color:var(--faint); font-size:12px; }
+  .toast{
+    position:fixed; bottom:20px; right:20px; background:var(--ink); color:#fff; padding:12px 18px; border-radius:10px;
+    font-size:13px; font-weight:600; opacity:0; transform:translateY(10px); transition:all .25s; pointer-events:none; z-index:999; max-width:320px;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+  .toast.err{ background:var(--red); }
+  select.status-filter{ padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface); }
+  .empty-state{ color:var(--faint); font-size:13px; padding:20px 0; text-align:center; }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="mark"><div class="mark-dot"></div><div style="font-weight:800;font-size:15px;color:var(--ink);">HumanCare Admin</div></div>
+    <div class="field">
+      <label for="lg-email">Email</label>
+      <input id="lg-email" type="email" placeholder="admin@humancareworldwide.com" autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="lg-pwd">Password</label>
+      <input id="lg-pwd" type="password" placeholder="Enter password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Log In</button>
+    <div class="error-text" id="login-error"></div>
+  </div>
+</div>
+
+<div id="app-shell">
+  <div class="sidebar">
+    <div class="mark"><div class="mark-dot"></div><div class="mark-text">HumanCare Admin</div></div>
+    <div class="nav-item active" data-page="dashboard" onclick="nav('dashboard')">Dashboard</div>
+    <div class="nav-item" data-page="vendors" onclick="nav('vendors')">Vendors</div>
+    <div class="nav-item" data-page="cases" onclick="nav('cases')">Cases</div>
+    <div class="nav-item" data-page="services" onclick="nav('services')">Services</div>
+    <div class="nav-item" data-page="patients" onclick="nav('patients')">Patients</div>
+    <div class="sidebar-footer">
+      <button class="btn btn-secondary btn-block" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page" id="page-dashboard">
+      <div class="page-head"><div><h1>Dashboard</h1><div class="page-dek">Quick overview across the whole system.</div></div></div>
+      <div class="stat-grid" id="stat-grid">
+        <div class="stat-tile"><div class="num">—</div><div class="label">Total Cases</div></div>
+        <div class="stat-tile"><div class="num">—</div><div class="label">Unassigned</div></div>
+        <div class="stat-tile"><div class="num">—</div><div class="label">Vendors</div></div>
+        <div class="stat-tile"><div class="num">—</div><div class="label">Patients</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Cases</div>
+        <div class="table-wrap"><table id="dash-recent-table"><tbody></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- VENDORS -->
+    <div class="page" id="page-vendors">
+      <div class="page-head"><div><h1>Vendors</h1><div class="page-dek">Add vendor companies and their login accounts.</div></div></div>
+
+      <div class="card">
+        <div class="card-title">Add a New Vendor Company</div>
+        <div class="row-flex">
+          <div class="field"><label>Company Name</label><input id="nv-name" placeholder="e.g. Meridian Global Assistance"></div>
+          <div class="field"><label>Type</label>
+            <select id="nv-type">
+              <option value="tpa">TPA</option>
+              <option value="insurance">Insurance</option>
+              <option value="government">Government</option>
+              <option value="corporate">Corporate</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="createVendor()">Add Vendor</button>
+        </div>
+      </div>
+
+      <div id="vendors-list"></div>
+    </div>
+
+    <!-- CASES -->
+    <div class="page" id="page-cases">
+      <div class="page-head">
+        <div><h1>Cases</h1><div class="page-dek">Every case across every vendor.</div></div>
+        <select class="status-filter" id="case-status-filter" onchange="loadCases()">
+          <option value="all">All statuses</option>
+          <option value="submitted">Submitted</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reference</th><th>Patient</th><th>Service</th><th>Status</th><th>Vendor</th><th>Reassign</th></tr></thead>
+            <tbody id="cases-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="page" id="page-services">
+      <div class="page-head"><div><h1>Services</h1><div class="page-dek">Edit what patients see on the Select Service screen.</div></div></div>
+
+      <div class="card">
+        <div class="card-title">Add a New Service</div>
+        <div class="field"><label>Slug (used internally, e.g. <span class="mono">home_healthcare</span>)</label><input id="ns-slug"></div>
+        <div class="row-flex" style="margin-top:10px;">
+          <div class="field"><label>Name</label><input id="ns-name"></div>
+          <div class="field"><label>Subtitle</label><input id="ns-subtitle"></div>
+        </div>
+        <div class="field" style="margin-top:10px;"><label>Description</label><textarea id="ns-description"></textarea></div>
+        <div class="field" style="margin-top:10px;"><label>"We Provide" bullets (comma-separated)</label><input id="ns-provides"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="createService()">Add Service</button>
+      </div>
+
+      <div id="services-list"></div>
+    </div>
+
+    <!-- PATIENTS -->
+    <div class="page" id="page-patients">
+      <div class="page-head"><div><h1>Patients</h1><div class="page-dek">Look up an account for support purposes.</div></div></div>
+      <div class="card">
+        <div class="row-flex">
+          <div class="field"><label>Search by name, email, or mobile</label><input id="patient-search" placeholder="Type to search..." oninput="debouncedPatientSearch()"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Joined</th></tr></thead>
+            <tbody id="patients-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API_BASE = 'http://localhost:4000';
+  let TOKEN = localStorage.getItem('hc_admin_token') || null;
+  let vendorsCache = [];
+
+  function toast(msg, isErr) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (isErr ? ' err' : '');
+    setTimeout(() => { t.className = 'toast'; }, 3200);
+  }
+
+  async function api(path, opts) {
+    opts = opts || {};
+    const headers = Object.assign({}, opts.headers || {});
+    if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+    if (opts.body && !(opts.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+      opts.body = JSON.stringify(opts.body);
+    }
+    const res = await fetch(API_BASE + path, Object.assign({}, opts, { headers }));
+    if (res.status === 401) {
+      logout();
+      throw new Error('Session expired. Please log in again.');
+    }
+    let data = {};
+    try { data = await res.json(); } catch (e) { /* no body, e.g. 204 */ }
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  }
+
+  // ---- auth ----
+  async function doLogin() {
+    const email = document.getElementById('lg-email').value.trim();
+    const password = document.getElementById('lg-pwd').value;
+    const errBox = document.getElementById('login-error');
+    errBox.style.display = 'none';
+    if (!email || !password) { errBox.textContent = 'Enter email and password.'; errBox.style.display = 'block'; return; }
+    try {
+      const res = await fetch(API_BASE + '/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      TOKEN = data.token;
+      localStorage.setItem('hc_admin_token', TOKEN);
+      showApp();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  function logout() {
+    TOKEN = null;
+    localStorage.removeItem('hc_admin_token');
+    document.getElementById('app-shell').classList.remove('open');
+    document.getElementById('app-shell').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+
+  function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-shell').style.display = 'flex';
+    nav('dashboard');
+  }
+
+  // ---- nav ----
+  function nav(page) {
+    document.querySelectorAll('.page').forEach((p) => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach((n) => n.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelector('.nav-item[data-page="' + page + '"]').classList.add('active');
+    if (page === 'dashboard') loadDashboard();
+    if (page === 'vendors') loadVendors();
+    if (page === 'cases') loadCases();
+    if (page === 'services') loadServices();
+    if (page === 'patients') loadPatients();
+  }
+
+  function statusPill(status) {
+    return '<span class="pill ' + status + '">' + status.replace('_', ' ') + '</span>';
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // ---- dashboard ----
+  async function loadDashboard() {
+    try {
+      const [casesRes, vendorsRes, patientsRes] = await Promise.all([
+        api('/admin/cases'),
+        api('/admin/vendors'),
+        api('/admin/patients'),
+      ]);
+      const cases = casesRes.cases;
+      const unassigned = cases.filter((c) => !c.vendorId).length;
+      const tiles = document.querySelectorAll('#stat-grid .num');
+      tiles[0].textContent = cases.length;
+      tiles[1].textContent = unassigned;
+      tiles[2].textContent = vendorsRes.vendors.length;
+      tiles[3].textContent = patientsRes.patients.length;
+
+      const tbody = document.querySelector('#dash-recent-table tbody');
+      tbody.innerHTML = cases.slice(0, 6).map((c) => (
+        '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td><td>' + esc(c.vendor ? c.vendor.companyName : 'Unassigned') + '</td></tr>'
+      )).join('') || '<tr><td class="empty-state" colspan="5">No cases yet.</td></tr>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // ---- vendors ----
+  async function loadVendors() {
+    try {
+      const { vendors } = await api('/admin/vendors');
+      vendorsCache = vendors;
+      const el = document.getElementById('vendors-list');
+      el.innerHTML = vendors.map((v) => (
+        '<div class="card">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">' +
+            '<div><div class="card-title" style="margin-bottom:2px;">' + esc(v.companyName) + '</div><div class="faint">' + esc(v.type) + '</div></div>' +
+          '</div>' +
+          '<table style="margin-top:12px;"><thead><tr><th>Login Email</th><th>Role</th></tr></thead><tbody>' +
+            (v.users.length ? v.users.map((u) => '<tr><td>' + esc(u.email) + '</td><td>' + esc(u.role) + '</td></tr>').join('') : '<tr><td class="empty-state" colspan="2">No logins yet.</td></tr>') +
+          '</tbody></table>' +
+          '<div class="row-flex" style="margin-top:14px;">' +
+            '<div class="field"><label>New login email</label><input id="vu-email-' + v.id + '" placeholder="ops@company.com"></div>' +
+            '<div class="field"><label>Password</label><input id="vu-pwd-' + v.id + '" type="text" placeholder="min 8 characters"></div>' +
+            '<div class="field" style="max-width:120px;"><label>Role</label><select id="vu-role-' + v.id + '"><option value="admin">admin</option><option value="viewer">viewer</option></select></div>' +
+            '<button class="btn btn-secondary" onclick="createVendorUser(' + v.id + ')">Add Login</button>' +
+          '</div>' +
+        '</div>'
+      )).join('') || '<div class="empty-state">No vendors yet — add one above.</div>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function createVendor() {
+    const companyName = document.getElementById('nv-name').value.trim();
+    const type = document.getElementById('nv-type').value;
+    if (!companyName) return toast('Enter a company name.', true);
+    try {
+      await api('/admin/vendors', { method: 'POST', body: { companyName, type } });
+      document.getElementById('nv-name').value = '';
+      toast('Vendor added.');
+      loadVendors();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function createVendorUser(vendorId) {
+    const email = document.getElementById('vu-email-' + vendorId).value.trim();
+    const password = document.getElementById('vu-pwd-' + vendorId).value;
+    const role = document.getElementById('vu-role-' + vendorId).value;
+    if (!email || !password) return toast('Enter an email and password.', true);
+    try {
+      await api('/admin/vendors/' + vendorId + '/users', { method: 'POST', body: { email, password, role } });
+      toast('Login created.');
+      loadVendors();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // ---- cases ----
+  async function loadCases() {
+    try {
+      const status = document.getElementById('case-status-filter').value;
+      const [casesRes, vendorsRes] = await Promise.all([
+        api('/admin/cases' + (status !== 'all' ? '?status=' + status : '')),
+        vendorsCache.length ? Promise.resolve({ vendors: vendorsCache }) : api('/admin/vendors'),
+      ]);
+      vendorsCache = vendorsRes.vendors;
+      const options = vendorsCache.map((v) => '<option value="' + v.id + '">' + esc(v.companyName) + '</option>').join('');
+      const tbody = document.getElementById('cases-table-body');
+      tbody.innerHTML = casesRes.cases.map((c) => (
+        '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td>' +
+        '<td>' + esc(c.vendor ? c.vendor.companyName : 'Unassigned') + '</td>' +
+        '<td><div style="display:flex;gap:6px;"><select id="reassign-' + c.id + '"><option value="">Choose vendor...</option>' + options + '</select>' +
+        '<button class="btn btn-secondary btn-sm" onclick="reassign(' + c.id + ')">Assign</button></div></td></tr>'
+      )).join('') || '<tr><td class="empty-state" colspan="6">No cases match this filter.</td></tr>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function reassign(caseId) {
+    const sel = document.getElementById('reassign-' + caseId);
+    const vendorId = sel.value;
+    if (!vendorId) return toast('Choose a vendor first.', true);
+    try {
+      await api('/admin/cases/' + caseId + '/assign', { method: 'PATCH', body: { vendorId } });
+      toast('Case reassigned.');
+      loadCases();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // ---- services ----
+  async function loadServices() {
+    try {
+      const { services } = await api('/admin/services');
+      const el = document.getElementById('services-list');
+      el.innerHTML = services.map((s) => (
+        '<div class="card">' +
+          '<div class="row-flex">' +
+            '<div class="field"><label>Name</label><input id="s-name-' + s.id + '" value="' + esc(s.name) + '"></div>' +
+            '<div class="field"><label>Subtitle</label><input id="s-subtitle-' + s.id + '" value="' + esc(s.subtitle || '') + '"></div>' +
+          '</div>' +
+          '<div class="field" style="margin-top:10px;"><label>Description</label><textarea id="s-desc-' + s.id + '">' + esc(s.description || '') + '</textarea></div>' +
+          '<div class="field" style="margin-top:10px;"><label>"We Provide" bullets (comma-separated)</label><input id="s-provides-' + s.id + '" value="' + esc((s.provides || []).join(', ')) + '"></div>' +
+          '<div style="display:flex;gap:8px;margin-top:12px;">' +
+            '<button class="btn btn-primary btn-sm" onclick="saveService(\'' + s.slug + '\',' + s.id + ')">Save</button>' +
+            '<button class="btn btn-danger btn-sm" onclick="removeService(\'' + s.slug + '\')">Delete</button>' +
+          '</div>' +
+        '</div>'
+      )).join('') || '<div class="empty-state">No services yet — add one above.</div>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function createService() {
+    const slug = document.getElementById('ns-slug').value.trim();
+    const name = document.getElementById('ns-name').value.trim();
+    const subtitle = document.getElementById('ns-subtitle').value.trim();
+    const description = document.getElementById('ns-description').value.trim();
+    const provides = document.getElementById('ns-provides').value.split(',').map((s) => s.trim()).filter(Boolean);
+    if (!slug || !name) return toast('Slug and name are required.', true);
+    try {
+      await api('/admin/services', { method: 'POST', body: { slug, name, subtitle, description, provides } });
+      ['ns-slug', 'ns-name', 'ns-subtitle', 'ns-description', 'ns-provides'].forEach((id) => document.getElementById(id).value = '');
+      toast('Service added.');
+      loadServices();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function saveService(slug, id) {
+    const name = document.getElementById('s-name-' + id).value.trim();
+    const subtitle = document.getElementById('s-subtitle-' + id).value.trim();
+    const description = document.getElementById('s-desc-' + id).value.trim();
+    const provides = document.getElementById('s-provides-' + id).value.split(',').map((s) => s.trim()).filter(Boolean);
+    try {
+      await api('/admin/services/' + slug, { method: 'PATCH', body: { name, subtitle, description, provides } });
+      toast('Saved.');
+      loadServices();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function removeService(slug) {
+    if (!confirm('Delete this service? This cannot be undone.')) return;
+    try {
+      await api('/admin/services/' + slug, { method: 'DELETE' });
+      toast('Service deleted.');
+      loadServices();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // ---- patients ----
+  let patientDebounce;
+  function debouncedPatientSearch() {
+    clearTimeout(patientDebounce);
+    patientDebounce = setTimeout(loadPatients, 300);
+  }
+  async function loadPatients() {
+    try {
+      const search = document.getElementById('patient-search').value.trim();
+      const { patients } = await api('/admin/patients' + (search ? '?search=' + encodeURIComponent(search) : ''));
+      const tbody = document.getElementById('patients-table-body');
+      tbody.innerHTML = patients.map((p) => (
+        '<tr><td>' + esc(p.name) + '</td><td>' + esc(p.email) + '</td><td>' + esc(p.mobile) + '</td><td class="faint">' + new Date(p.createdAt).toLocaleDateString() + '</td></tr>'
+      )).join('') || '<tr><td class="empty-state" colspan="4">No patients found.</td></tr>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // ---- boot ----
+  document.getElementById('lg-pwd').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+  if (TOKEN) { showApp(); } else { logout(); }
+</script>
+
+</body>
+</html>
