@@ -3,22 +3,18 @@ const { requireAuth } = require('../../middleware/auth.middleware');
 const { upload } = require('../../middleware/upload.middleware');
 const {
   listMyCases,
-  listUnassigned,
   getCase,
-  claimCase,
   createCase,
-  updateStage,
   uploadCaseDocument,
 } = require('./cases.controller');
 
 const casesRouter = Router();
 
+// Insurance/Government/Corporate vendors submit on behalf of someone they cover, and
+// track it — they don't claim or work cases themselves. See cases.service.js.
 casesRouter.get('/', requireAuth(['vendor']), listMyCases);
-casesRouter.get('/unassigned', requireAuth(['vendor']), listUnassigned);
 casesRouter.get('/:id', requireAuth(['vendor']), getCase);
 casesRouter.post('/', requireAuth(['vendor']), createCase);
-casesRouter.post('/:id/claim', requireAuth(['vendor']), claimCase);
-casesRouter.patch('/:id/stage', requireAuth(['vendor']), updateStage);
 casesRouter.post('/:id/documents', requireAuth(['vendor']), upload.single('file'), uploadCaseDocument);
 
 module.exports = { casesRouter };

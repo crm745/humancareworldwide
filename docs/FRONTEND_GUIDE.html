@@ -460,15 +460,13 @@ cp .env.example .env</pre>
       <div class="card api-wrap">
         <table class="api">
           <tr><th>Method</th><th>Path</th><th>Auth</th><th>What it does</th></tr>
-          <tr><td><span class="method get">GET</span></td><td class="path">/</td><td class="auth-badge">vendor</td><td class="desc-cell">Cases assigned to my company. Optional <code>?status=</code>.</td></tr>
-          <tr><td><span class="method get">GET</span></td><td class="path">/unassigned</td><td class="auth-badge">vendor</td><td class="desc-cell">New requests nobody has claimed yet.</td></tr>
-          <tr><td><span class="method get">GET</span></td><td class="path">/:id</td><td class="auth-badge">vendor</td><td class="desc-cell">One case, full detail.</td></tr>
-          <tr><td><span class="method post">POST</span></td><td class="path">/</td><td class="auth-badge">vendor</td><td class="desc-cell">Open a case directly (not from a patient request).</td></tr>
-          <tr><td><span class="method post">POST</span></td><td class="path">/:id/claim</td><td class="auth-badge">vendor</td><td class="desc-cell">Claim an unassigned case for my company.</td></tr>
-          <tr><td><span class="method patch">PATCH</span></td><td class="path">/:id/stage</td><td class="auth-badge">vendor</td><td class="desc-cell">Move stage (submitted → scheduled → in_progress → completed/cancelled). Notifies the patient.</td></tr>
-          <tr><td><span class="method post">POST</span></td><td class="path">/:id/documents</td><td class="auth-badge">vendor</td><td class="desc-cell">Attach a file to a case I own.</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="path">/</td><td class="auth-badge">vendor</td><td class="desc-cell">Cases my organization has submitted. Optional <code>?status=</code>.</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="path">/:id</td><td class="auth-badge">vendor</td><td class="desc-cell">One case my organization submitted, full detail.</td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="path">/</td><td class="auth-badge">vendor</td><td class="desc-cell">Submit a case on behalf of someone my organization covers.</td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="path">/:id/documents</td><td class="auth-badge">vendor</td><td class="desc-cell">Attach a supporting file to a case I submitted.</td></tr>
         </table>
       </div>
+      <div class="note" style="margin-top:10px;"><b>Vendor = submit &amp; track, not claim &amp; manage.</b> Insurance/Government/Corporate vendors submit on behalf of someone they cover and track status — they don't pick up or work cases themselves. That's done by HumanCare's own Operations team in Bitrix24 (see Roadmap); status updates flow back into this system from there, not from a vendor-side "update stage" action.</div>
     </div>
 
     <div class="api-group">
@@ -495,7 +493,7 @@ cp .env.example .env</pre>
         <div class="road-item">
           <div style="flex:1;">
             <div class="road-t">Backend core (auth, requests, cases, notifications, file upload) <span class="chip progress">in progress</span></div>
-            <div class="road-d">Password login, token refresh, profile, and password reset all work for patients; vendor password login works too. Submitting a request auto-opens a case; vendors claim &amp; update cases; patients get notified; documents can be attached by either side. Not every planned auth option is built yet.</div>
+            <div class="road-d">Password login, token refresh, profile, and password reset all work for patients; vendor password login works too. Submitting a request auto-opens a case; vendors (Insurance/Government/Corporate) submit and track cases on behalf of who they cover; patients get notified; documents can be attached by either side. Not every planned auth option is built yet.</div>
           </div>
         </div>
         <div class="road-item">
@@ -518,8 +516,8 @@ cp .env.example .env</pre>
         </div>
         <div class="road-item">
           <div style="flex:1;">
-            <div class="road-t">Bitrix24 CRM sync <span class="chip planned">planned</span></div>
-            <div class="road-d">Requests/cases currently only live in our own MySQL database — not pushed to the company CRM yet.</div>
+            <div class="road-t">Bitrix24 CRM sync <span class="chip planned">planned — scoped</span></div>
+            <div class="road-d">Two one-way flows, not one complex two-way sync: (1) new request/case → auto-creates a lead in Bitrix24, so Operations works entirely in Bitrix24 as they do today; (2) a Bitrix24 automation rule calls a webhook on our backend whenever Operations moves a lead's stage, which updates that case's status here and notifies the patient/vendor. Needs Bitrix24 account access + API credentials before it can be built.</div>
           </div>
         </div>
         <div class="road-item">

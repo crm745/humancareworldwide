@@ -7,6 +7,10 @@ const CASE_INCLUDE = {
   serviceRequest: { select: { id: true, userId: true, referenceNumber: true } },
 };
 
+// vendorId here means "which institution requested this," not "who is working it" —
+// vendors (insurance/government/corporate) submit and track, they don't claim or
+// fulfill cases themselves. Actual case work happens in Bitrix24 by HumanCare's own
+// Operations team; see updateCaseStage below for how that flows back in.
 async function listCasesForVendor(vendorId, { status } = {}) {
   const where = { vendorId };
   if (status && status !== 'all') {
@@ -20,30 +24,20 @@ async function listCasesForVendor(vendorId, { status } = {}) {
   return prisma.case.findMany({ where, orderBy: { updatedAt: 'desc' } });
 }
 
-// Cases land unassigned (vendorId null) when a patient submits a request. Any vendor
-// user can see the unassigned queue and claim one into their own company's list.
-async function listUnassignedCases() {
-  return prisma.case.findMany({ where: { vendorId: null }, orderBy: { createdAt: 'asc' } });
-}
-
 async function getCaseById(id) {
-  const caseRecord = await prisma.case.findUnique({ where: { id: Number(id) }, include: CASE_INCLUDE });
+  const numericId = Number(id);
+  if (!Number.isInteger(numericId)) {
+    const err = new Error('Invalid case id');
+    err.statusCode = 400;
+    throw err;
+  }
+  const caseRecord = await prisma.case.findUnique({ where: { id: numericId }, include: CASE_INCLUDE });
   if (!caseRecord) {
     const err = new Error('Case not found');
     err.statusCode = 404;
     throw err;
   }
   return caseRecord;
-}
-
-async function assignCaseToVendor(caseId, vendorId) {
-  const caseRecord = await getCaseById(caseId);
-  if (caseRecord.vendorId) {
-    const err = new Error('Case is already assigned to a vendor.');
-    err.statusCode = 409;
-    throw err;
-  }
-  return prisma.case.update({ where: { id: caseRecord.id }, data: { vendorId } });
 }
 
 async function createCaseByVendor(vendorId, data) {
@@ -65,9 +59,11 @@ async function createCaseByVendor(vendorId, data) {
     },
   });
 
+  // Prefixed CASE- (not REQ-) so this can never collide with a patient-submitted
+  // ServiceRequest's reference number — those use a separate id sequence.
   const caseRecord = await prisma.case.update({
     where: { id: created.id },
-    data: { referenceNumber: `REQ-${1000 + created.id}` },
+    data: { referenceNumber: `CASE-${1000 + created.id}` },
   });
 
   await prisma.caseStageEvent.create({
@@ -77,6 +73,8 @@ async function createCaseByVendor(vendorId, data) {
   return caseRecord;
 }
 
+// Not exposed to vendors directly — reserved for the future Bitrix24 webhook, which
+// will call this whenever Operations moves a lead's stage in Bitrix24.
 async function updateCaseStage(caseId, stage, note) {
   if (!VALID_CASE_STATUSES.includes(stage)) {
     const err = new Error(`Invalid stage. Use one of: ${VALID_CASE_STATUSES.join(', ')}`);
@@ -112,9 +110,7 @@ async function notifyPatient(userId, { kind, title, body }) {
 module.exports = {
   VALID_CASE_STATUSES,
   listCasesForVendor,
-  listUnassignedCases,
   getCaseById,
-  assignCaseToVendor,
   createCaseByVendor,
   updateCaseStage,
 };
