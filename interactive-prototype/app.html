@@ -130,19 +130,8 @@
     <div class="phone" id="phone">
 
       <!-- SPLASH -->
-      <section id="screen-splash" class="screen" style="align-items:center;justify-content:center;padding:36px;overflow:hidden;background:#FFFFFF;">
-        <div style="position:absolute;inset:0;opacity:0.06;background-image:radial-gradient(circle at 20% 30%, #1A73E8 2px, transparent 2px),radial-gradient(circle at 60% 15%, #1A73E8 2px, transparent 2px),radial-gradient(circle at 80% 45%, #1A73E8 2px, transparent 2px),radial-gradient(circle at 35% 60%, #1A73E8 2px, transparent 2px),radial-gradient(circle at 70% 70%, #1A73E8 2px, transparent 2px);background-size:220px 220px;"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;">
-          <img src="assets/logo-mark.png" alt="HumanCare WorldWide" style="width:260px;height:auto;margin-bottom:22px;"/>
-          <div style="font-size:22px;font-weight:800;letter-spacing:-0.01em;"><span style="color:#1A73E8;">HUMAN CARE</span></div>
-          <div style="font-size:15.5px;font-weight:800;letter-spacing:0.14em;color:#2FA84F;margin-top:2px;">WORLDWIDE</div>
-          <p style="font-size:12.5px;color:#5B6B84;margin:18px 0 0;">Global Medical Assistance Company</p>
-          <p style="font-size:12.5px;color:#97A4B8;font-style:italic;margin:18px 0 0;">"Your Care, Our Responsibility"</p>
-        </div>
-        <div onclick="navReplace('welcome')" style="position:absolute;bottom:56px;left:0;right:0;display:flex;justify-content:center;cursor:pointer;">
-          <span style="font-size:11.5px;font-weight:700;color:#1A73E8;">Tap to continue →</span>
-        </div>
-        <div style="position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(100deg,#1A73E8,#2FA84F);opacity:0.9;border-radius:50% 50% 0 0 / 100% 100% 0 0;transform:scaleX(1.4);"></div>
+      <section id="screen-splash" class="screen" style="padding:0;overflow:hidden;cursor:pointer;" onclick="navReplace('welcome')">
+        <img src="assets/splash-bg.png" alt="HumanCare WorldWide" style="width:100%;height:100%;object-fit:cover;display:block;"/>
       </section>
 
       <!-- WELCOME -->
