@@ -181,7 +181,7 @@
               </div>
             </div>
           </div>
-          <div style="text-align:right;"><span style="font-size:11.5px;color:#1A73E8;font-weight:700;">Forgot Password?</span></div>
+          <div style="text-align:right;"><span onclick="startForgotPassword('login')" style="cursor:pointer;font-size:11.5px;color:#1A73E8;font-weight:700;">Forgot Password?</span></div>
         </div>
         <button id="lg-submit" class="btn-primary" style="margin-top:22px;opacity:0.45;" onclick="loginSubmit()">Login</button>
         <p style="text-align:center;font-size:11px;color:#97A4B8;margin:16px 0;">or continue with</p>
@@ -191,6 +191,44 @@
         </div>
         <p style="text-align:center;font-size:12px;color:#5B6B84;margin-top:22px;">Don't have an account? <span onclick="nav('register')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Sign Up</span></p>
         <p style="text-align:center;font-size:11px;color:#97A4B8;margin-top:10px;">Signing in as a <span onclick="nav('vendor-login')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Vendor / Corporate Partner?</span></p>
+      </section>
+
+      <!-- FORGOT PASSWORD -->
+      <section id="screen-forgot-password" class="screen hidden" style="padding:26px;">
+        <div class="back-btn" onclick="back()" style="margin-bottom:20px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+        <h2 class="display" style="font-size:21px;margin:0;color:#0D2340;">Forgot Password?</h2>
+        <p style="font-size:13px;color:#5B6B84;margin:6px 0 22px;line-height:1.55;">Enter the mobile number or email on your account and we'll send you a code to reset your password.</p>
+        <div><span class="field-label">Mobile Number / Email</span><input id="fp-id" class="field-input" placeholder="Enter mobile or email" oninput="checkForgotPassword()"/></div>
+        <button id="fp-submit" class="btn-primary" style="margin-top:22px;opacity:0.45;" onclick="forgotPasswordSubmit()">Send Reset Code</button>
+        <p style="text-align:center;font-size:12px;color:#5B6B84;margin-top:22px;">Remembered it? <span onclick="back()" style="cursor:pointer;color:#1A73E8;font-weight:700;">Back to Login</span></p>
+      </section>
+
+      <!-- RESET PASSWORD -->
+      <section id="screen-reset-password" class="screen hidden" style="padding:26px;">
+        <div class="back-btn" onclick="back()" style="margin-bottom:22px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+        <h2 class="display" style="font-size:21px;margin:0;color:#0D2340;">Enter Reset Code</h2>
+        <p style="font-size:12.5px;color:#5B6B84;margin:6px 0 22px;">6-digit code sent to <span id="rp-identifier" style="color:#0D2340;font-weight:700;"></span></p>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;" data-otp-group="reset">
+          <input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/>
+        </div>
+        <div style="text-align:center;margin:14px 0 22px;"><span style="font-size:12px;color:#97A4B8;">Resend code in 00:28</span></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <span class="field-label">New Password</span>
+            <div style="position:relative;">
+              <input id="rp-pwd1" type="password" class="field-input" style="padding-right:44px;" placeholder="Minimum 8 characters" oninput="checkResetPassword()"/>
+              <div onclick="togglePwd('rp-pwd1','rp-eye1')" style="cursor:pointer;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#97A4B8;"><svg id="rp-eye1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            </div>
+          </div>
+          <div>
+            <span class="field-label">Confirm New Password</span>
+            <div style="position:relative;">
+              <input id="rp-pwd2" type="password" class="field-input" style="padding-right:44px;" placeholder="Re-enter new password" oninput="checkResetPassword()"/>
+              <div onclick="togglePwd('rp-pwd2','rp-eye2')" style="cursor:pointer;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#97A4B8;"><svg id="rp-eye2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            </div>
+          </div>
+        </div>
+        <button id="rp-submit" class="btn-primary" style="margin-top:22px;opacity:0.45;" onclick="resetPasswordSubmit()">Reset Password</button>
       </section>
 
       <!-- REGISTER -->
@@ -716,7 +754,7 @@
               </div>
             </div>
           </div>
-          <div style="text-align:right;margin-top:8px;"><span style="font-size:11px;color:#1A73E8;font-weight:700;">Forgot password?</span></div>
+          <div style="text-align:right;margin-top:8px;"><span onclick="startForgotPassword('vendor-login')" style="cursor:pointer;font-size:11px;color:#1A73E8;font-weight:700;">Forgot password?</span></div>
           <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px;">
             <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:11px;color:#5B6B84;line-height:1.5;">I agree to the Terms &amp; Conditions and Privacy Policy.</span></label>
             <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:11px;color:#5B6B84;line-height:1.5;">I confirm I am authorized to submit and manage cases for this organization.</span></label>
@@ -997,6 +1035,48 @@
   function loginSubmit() {
     if (document.getElementById('lg-submit').style.opacity !== '1') return;
     navReplace('home');
+  }
+
+  // ---- forgot / reset password ----
+  var fpOrigin = 'login';
+  function startForgotPassword(origin) {
+    fpOrigin = origin;
+    document.getElementById('fp-id').value = '';
+    checkForgotPassword();
+    nav('forgot-password');
+  }
+  function checkForgotPassword() {
+    var ok = document.getElementById('fp-id').value;
+    document.getElementById('fp-submit').style.opacity = ok ? '1' : '0.45';
+  }
+  function forgotPasswordSubmit() {
+    if (document.getElementById('fp-submit').style.opacity !== '1') return;
+    document.getElementById('rp-identifier').textContent = document.getElementById('fp-id').value;
+    document.querySelectorAll('[data-otp-group="reset"] input').forEach(function (i) { i.value = ''; });
+    document.getElementById('rp-pwd1').value = '';
+    document.getElementById('rp-pwd2').value = '';
+    checkResetPassword();
+    toast('Reset code sent');
+    nav('reset-password');
+  }
+  function checkResetPassword() {
+    var group = document.querySelector('[data-otp-group="reset"]');
+    var filled = Array.prototype.every.call(group.querySelectorAll('input'), function (i) { return i.value.length === 1; });
+    var pwd1 = document.getElementById('rp-pwd1').value;
+    var pwd2 = document.getElementById('rp-pwd2').value;
+    var ok = filled && pwd1.length >= 8 && pwd1 === pwd2;
+    document.getElementById('rp-submit').style.opacity = ok ? '1' : '0.45';
+  }
+  function resetPasswordSubmit() {
+    var group = document.querySelector('[data-otp-group="reset"]');
+    var filled = Array.prototype.every.call(group.querySelectorAll('input'), function (i) { return i.value.length === 1; });
+    var pwd1 = document.getElementById('rp-pwd1').value;
+    var pwd2 = document.getElementById('rp-pwd2').value;
+    if (!filled) { toast('Enter all 6 digits'); return; }
+    if (pwd1.length < 8) { toast('Password must be at least 8 characters'); return; }
+    if (pwd1 !== pwd2) { toast('Passwords do not match'); return; }
+    toast('Password updated successfully');
+    navReplace(fpOrigin);
   }
   function checkRegister() {
     var ok = document.getElementById('rg-name').value && document.getElementById('rg-phone').value && document.getElementById('rg-email').value && document.getElementById('rg-pwd').value;
