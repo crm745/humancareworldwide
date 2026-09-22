@@ -1,7 +1,7 @@
 <title>HumanCare Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #EEF2F8;
@@ -36,7 +36,7 @@
   body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; }
   .page { display: flex; flex-direction: column; align-items: center; gap: 22px; padding-block: 36px 56px; }
   .chrome-head { text-align: center; max-width: 480px; padding: 0 20px; }
-  .chrome-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+  .chrome-eyebrow { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
   .chrome-title { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
   .chrome-sub { font-size: 13.5px; color: var(--muted); margin: 10px 0 0; line-height: 1.55; }
   .restart-btn { margin-top: 16px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
@@ -477,7 +477,7 @@
         <p style="font-size:12.5px;color:#5B6B84;margin:10px 0 20px;max-width:260px;">Your request has been submitted successfully.</p>
         <div class="card" style="width:100%;max-width:240px;">
           <div style="font-size:10px;font-weight:700;color:#97A4B8;text-transform:uppercase;">Your Request ID</div>
-          <div id="submitted-req-id" style="font-size:20px;font-weight:800;color:#1A73E8;font-family:'JetBrains Mono',monospace;margin-top:4px;">REQ-1006</div>
+          <div id="submitted-req-id" style="font-size:20px;font-weight:800;color:#1A73E8;font-family:'Inter',sans-serif;margin-top:4px;">REQ-1006</div>
         </div>
         <p style="font-size:11.5px;color:#97A4B8;margin:16px 0 24px;">We will get back to you shortly with the best possible options.</p>
         <button class="btn-primary" onclick="navReplace('my-requests')">Go to My Requests</button>
@@ -669,11 +669,11 @@
 
           <div style="font-size:11px;font-weight:800;color:#5B6B84;text-transform:uppercase;margin-bottom:10px;">Regional Numbers</div>
           <div class="card" style="margin-bottom:18px;padding:4px 14px;">
-            <a href="tel:+919699999065" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">India</span><span class="info-value" style="color:#1A73E8;font-family:'JetBrains Mono',monospace;">+91 9699999065</span></a>
-            <a href="tel:+971585787878" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">UAE (Global Alarm)</span><span class="info-value" style="color:#1A73E8;font-family:'JetBrains Mono',monospace;">+971 585787878</span></a>
-            <a href="tel:+96892402959" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">Oman</span><span class="info-value" style="color:#1A73E8;font-family:'JetBrains Mono',monospace;">+968 92402959</span></a>
-            <a href="tel:+8801314968067" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">Bangladesh</span><span class="info-value" style="color:#1A73E8;font-family:'JetBrains Mono',monospace;">+880 1314968067</span></a>
-            <a href="tel:+447557070702" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">UK</span><span class="info-value" style="color:#1A73E8;font-family:'JetBrains Mono',monospace;">+44 7557070702</span></a>
+            <a href="tel:+919699999065" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">India</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+91 9699999065</span></a>
+            <a href="tel:+971585787878" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">UAE (Global Alarm)</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+971 585787878</span></a>
+            <a href="tel:+96892402959" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">Oman</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+968 92402959</span></a>
+            <a href="tel:+8801314968067" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">Bangladesh</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+880 1314968067</span></a>
+            <a href="tel:+447557070702" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">UK</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+44 7557070702</span></a>
           </div>
 
           <div style="font-size:11px;font-weight:800;color:#5B6B84;text-transform:uppercase;margin-bottom:10px;">Frequently Asked Questions</div>
@@ -760,7 +760,7 @@
         <div class="topbar">
           <div>
             <div style="font-size:13px;font-weight:800;">Bupa Global Assistance</div>
-            <div style="font-size:10px;color:#1A73E8;font-family:'JetBrains Mono',monospace;">Partner #HC-CORP-482</div>
+            <div style="font-size:10px;color:#1A73E8;font-family:'Inter',sans-serif;">Partner #HC-CORP-482</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
             <div class="icon-btn" onclick="nav('notifications')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:999px;background:#E5484D;"></span></div>
@@ -780,19 +780,19 @@
             <span class="tab-chip" data-stage="scheduled" onclick="filterCases(this)">Scheduled (1)</span>
           </div>
           <div class="card case-card" data-stage="progress" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#1A73E8;">#HC-2026-089</span><span class="pill pill-progress">In Progress</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-089</span><span class="pill pill-progress">In Progress</span></div>
             <div style="font-size:13px;font-weight:700;">Robert Evans</div><div style="font-size:11px;color:#97A4B8;">Bangkok → Frankfurt</div>
           </div>
           <div class="card case-card" data-stage="scheduled" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#1A73E8;">#HC-2026-094</span><span class="pill" style="background:#EEF1FE;color:#5B4FE0;">Scheduled</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-094</span><span class="pill" style="background:#EEF1FE;color:#5B4FE0;">Scheduled</span></div>
             <div style="font-size:13px;font-weight:700;">Sarah Jenkins</div><div style="font-size:11px;color:#97A4B8;">Dubai → Mumbai</div>
           </div>
           <div class="card case-card" data-stage="progress" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#1A73E8;">#HC-2026-102</span><span class="pill pill-progress">In Progress</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-102</span><span class="pill pill-progress">In Progress</span></div>
             <div style="font-size:13px;font-weight:700;">Elena Rostova</div><div style="font-size:11px;color:#97A4B8;">Doha → London</div>
           </div>
           <div class="card case-card" data-stage="submitted" onclick="nav('tracking')" style="cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#1A73E8;">#HC-2026-107</span><span class="pill pill-submitted">Submitted</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-107</span><span class="pill pill-submitted">Submitted</span></div>
             <div style="font-size:13px;font-weight:700;">Klaus Weber</div><div style="font-size:11px;color:#97A4B8;">Munich → Berlin</div>
           </div>
           <div id="vd-empty" style="display:none;text-align:center;padding:30px 0;color:#97A4B8;font-size:12px;">No cases in this stage.</div>
@@ -817,7 +817,7 @@
             <div><span class="field-label">Patient Contact Number</span><input id="nc-phone" class="field-input" placeholder="+91 98765 43210" oninput="checkNewCase()"/></div>
             <div><span class="field-label">Service Type</span><select class="field-input"><option>Air Ambulance</option><option>Ground Ambulance</option><option>Hospitalization</option><option>Medical Escort</option><option>Home Healthcare</option></select></div>
             <div style="display:flex;gap:10px;"><div style="flex:1;"><span class="field-label">Origin</span><input class="field-input" placeholder="City / Airport"/></div><div style="flex:1;"><span class="field-label">Destination</span><input class="field-input" placeholder="City / Hospital"/></div></div>
-            <div><span class="field-label">Policy / GOP Reference</span><input class="field-input" placeholder="e.g. BUPA-GOP-58213" style="font-family:'JetBrains Mono',monospace;"/></div>
+            <div><span class="field-label">Policy / GOP Reference</span><input class="field-input" placeholder="e.g. BUPA-GOP-58213" style="font-family:'Inter',sans-serif;"/></div>
             <div><span class="field-label" style="margin-bottom:8px;">Urgency</span><div style="display:flex;gap:8px;"><div class="tab-chip on" style="flex:1;text-align:center;" onclick="selectUrgency(this)">Routine</div><div class="tab-chip" style="flex:1;text-align:center;" onclick="selectUrgency(this)">Urgent</div><div class="tab-chip" style="flex:1;text-align:center;" onclick="selectUrgency(this)">Critical</div></div></div>
             <div><span class="field-label">Case Notes</span><textarea class="field-input" rows="3" style="resize:none;" placeholder="Clinical summary, special requirements..."></textarea></div>
           </div>
