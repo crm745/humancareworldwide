@@ -151,21 +151,9 @@
       <section id="screen-login" class="screen hidden" style="padding:26px;background:#FFFFFF;">
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;">
           <h2 class="display" style="font-size:29.5px;margin:0;color:#0D2340;text-align:center;">Welcome Back!</h2>
-          <p style="font-size:16.5px;color:#5B6B84;margin:10px 0 32px;text-align:center;">Login to your account</p>
-          <div style="display:flex;flex-direction:column;gap:20px;">
-            <div><span class="field-label" style="font-size:14px;">Mobile Number / Email</span><input id="lg-id" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="+91 98765 43210 or email" oninput="checkLogin()"/></div>
-            <div>
-              <span class="field-label" style="font-size:14px;">Password</span>
-              <div style="position:relative;">
-                <input id="lg-pwd" type="password" class="field-input" style="font-size:16.5px;padding:14px 13px;padding-right:44px;" placeholder="Enter password" oninput="checkLogin()"/>
-                <div onclick="togglePwd('lg-pwd','lg-eye')" style="cursor:pointer;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#97A4B8;">
-                  <svg id="lg-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                </div>
-              </div>
-            </div>
-            <div style="text-align:right;"><span onclick="startForgotPassword('login')" style="cursor:pointer;font-size:14.5px;color:#1A73E8;font-weight:700;">Forgot Password?</span></div>
-          </div>
-          <button id="lg-submit" class="btn-primary" style="margin-top:30px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="loginSubmit()">Login</button>
+          <p style="font-size:16.5px;color:#5B6B84;margin:10px 0 32px;text-align:center;">Login with your mobile number or email — no password needed</p>
+          <div><span class="field-label" style="font-size:14px;">Mobile Number / Email</span><input id="lg-id" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="+91 98765 43210 or email" oninput="checkLogin()"/></div>
+          <button id="lg-submit" class="btn-primary" style="margin-top:30px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="loginSubmit()">Send OTP</button>
           <p style="text-align:center;font-size:14px;color:#97A4B8;margin:22px 0;">or continue with</p>
           <div style="display:flex;gap:12px;justify-content:center;">
             <div class="icon-btn" style="width:76px;height:48px;border-radius:12px;" onclick="toast('Demo only — social login not wired up.')"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.9c-.3 1.4-1 2.5-2.2 3.3v2.7h3.6c2.1-1.9 3.2-4.8 3.2-8Z"/><path fill="#34A853" d="M12 23c2.9 0 5.4-1 7.2-2.6l-3.6-2.7c-1 .7-2.2 1.1-3.6 1.1-2.8 0-5.1-1.9-6-4.4H2.3v2.8C4.1 20.6 7.8 23 12 23Z"/><path fill="#FBBC05" d="M6 14.4c-.2-.7-.4-1.4-.4-2.2s.1-1.5.4-2.2V7.2H2.3C1.5 8.7 1 10.3 1 12s.5 3.3 1.3 4.8Z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.4 2.1 14.9 1 12 1 7.8 1 4.1 3.4 2.3 7.2l3.7 2.8c.9-2.5 3.2-4.6 6-4.6Z"/></svg></div>
@@ -173,6 +161,20 @@
           </div>
           <p style="text-align:center;font-size:15px;color:#5B6B84;margin-top:24px;">Don't have an account? <span onclick="nav('register')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Sign Up</span></p>
           <p style="text-align:center;font-size:14px;color:#97A4B8;margin-top:12px;">Signing in as a <span onclick="nav('vendor-login')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Vendor / Corporate Partner?</span></p>
+        </div>
+      </section>
+
+      <!-- LOGIN OTP -->
+      <section id="screen-login-otp" class="screen hidden" style="padding:26px;background:#FFFFFF;">
+        <div class="back-btn" onclick="back()" style="margin-bottom:40px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+        <div>
+          <h2 class="display" style="font-size:27.5px;margin:0;color:#0D2340;text-align:center;">Enter OTP</h2>
+          <p style="font-size:15.5px;color:#5B6B84;margin:14px 0 32px;text-align:center;">6-digit code sent to <span id="lgo-identifier" style="color:#0D2340;font-weight:700;"></span></p>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;" data-otp-group="login">
+            <input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/>
+          </div>
+          <div style="text-align:center;margin:20px 0 34px;"><span style="font-size:14.5px;color:#97A4B8;">Resend code in 00:28</span></div>
+          <button class="btn-primary" style="padding:16px;font-size:16.5px;" onclick="verifyOtp('login')">Verify &amp; Continue</button>
         </div>
       </section>
 
@@ -1018,12 +1020,15 @@
       : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
   }
   function checkLogin() {
-    var ok = document.getElementById('lg-id').value && document.getElementById('lg-pwd').value;
+    var ok = document.getElementById('lg-id').value;
     document.getElementById('lg-submit').style.opacity = ok ? '1' : '0.45';
   }
   function loginSubmit() {
     if (document.getElementById('lg-submit').style.opacity !== '1') return;
-    navReplace('home');
+    document.getElementById('lgo-identifier').textContent = document.getElementById('lg-id').value;
+    document.querySelectorAll('[data-otp-group="login"] input').forEach(function (i) { i.value = ''; });
+    toast('OTP sent');
+    nav('login-otp');
   }
 
   // ---- forgot / reset password ----
@@ -1094,7 +1099,7 @@
     var inputs = group.querySelectorAll('input');
     var filled = Array.prototype.every.call(inputs, function (i) { return i.value.length === 1; });
     if (!filled) { toast('Enter all 6 digits'); return; }
-    navReplace('vendor-dashboard');
+    navReplace(who === 'login' ? 'home' : 'vendor-dashboard');
   }
   function filterCases(chip) {
     document.querySelectorAll('#screen-vendor-dashboard .tab-chip').forEach(function (c) { c.classList.remove('on'); });
