@@ -153,7 +153,7 @@
           <h2 class="display" style="font-size:28px;margin:0;color:#0D2340;text-align:center;">Welcome Back!</h2>
           <p style="font-size:15px;color:#5B6B84;margin:10px 0 32px;text-align:center;">Login to your account</p>
           <div style="display:flex;flex-direction:column;gap:20px;">
-            <div><span class="field-label" style="font-size:12.5px;">Mobile Number / Email</span><input id="lg-id" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="Enter mobile or email" oninput="checkLogin()"/></div>
+            <div><span class="field-label" style="font-size:12.5px;">Mobile Number / Email</span><input id="lg-id" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="+91 98765 43210 or email" oninput="checkLogin()"/></div>
             <div>
               <span class="field-label" style="font-size:12.5px;">Password</span>
               <div style="position:relative;">
@@ -222,7 +222,13 @@
           <p style="font-size:13px;color:#5B6B84;margin:6px 0 20px;">Join us to get started</p>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div><span class="field-label">Full Name</span><input id="rg-name" class="field-input" placeholder="Your full name" oninput="checkRegister()"/></div>
-            <div><span class="field-label">Mobile Number</span><input id="rg-phone" class="field-input" placeholder="Mobile number" oninput="checkRegister()"/></div>
+            <div>
+              <span class="field-label">Mobile Number</span>
+              <div style="display:flex;gap:8px;">
+                <select id="rg-cc" class="field-input" style="width:80px;flex-shrink:0;"><option>+91</option><option>+971</option><option>+44</option><option>+1</option></select>
+                <input id="rg-phone" class="field-input" placeholder="Mobile number" oninput="checkRegister()"/>
+              </div>
+            </div>
             <div><span class="field-label">Email Address</span><input id="rg-email" class="field-input" placeholder="you@example.com" oninput="checkRegister()"/></div>
             <div><span class="field-label">Password</span><input id="rg-pwd" type="password" class="field-input" placeholder="Create a password" oninput="checkRegister()"/></div>
           </div>
