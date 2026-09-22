@@ -36,10 +36,10 @@
   body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; }
   .page { display: flex; flex-direction: column; align-items: center; gap: 22px; padding-block: 36px 56px; }
   .chrome-head { text-align: center; max-width: 480px; padding: 0 20px; }
-  .chrome-eyebrow { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
-  .chrome-title { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
-  .chrome-sub { font-size: 13.5px; color: var(--muted); margin: 10px 0 0; line-height: 1.55; }
-  .restart-btn { margin-top: 16px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .chrome-eyebrow { font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+  .chrome-title { font-size: 27.5px; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+  .chrome-sub { font-size: 15px; color: var(--muted); margin: 10px 0 0; line-height: 1.55; }
+  .restart-btn { margin-top: 16px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 700; cursor: pointer; }
   .restart-btn:hover { border-color: var(--accent); }
   .device-shell { position: relative; width: 390px; max-width: calc(100vw - 32px); }
   .device-shell::before { content: ""; position: absolute; inset: -14px; border-radius: 54px; background: linear-gradient(160deg, rgba(26,115,232,0.16), rgba(47,168,79,0.08)); z-index: 0; }
@@ -49,33 +49,33 @@
   .noscroll::-webkit-scrollbar { width: 0; height: 0; }
   .noscroll { scrollbar-width: none; }
   .display { font-family: 'Inter', sans-serif; font-weight: 800; }
-  .chrome-foot { font-size: 11px; color: var(--muted); text-align: center; max-width: 380px; padding: 0 20px; line-height: 1.6; }
+  .chrome-foot { font-size: 12.5px; color: var(--muted); text-align: center; max-width: 380px; padding: 0 20px; line-height: 1.6; }
 
   /* ---- shared component classes for the app itself ---- */
   .topbar { flex-shrink: 0; background: #FFFFFF; border-bottom: 1px solid #E4E9F2; padding: 22px 18px 16px; display: flex; align-items: center; justify-content: space-between; }
-  .topbar-title { font-size: 14px; font-weight: 700; color: #17233D; }
+  .topbar-title { font-size: 15.5px; font-weight: 700; color: #17233D; }
   .back-btn { cursor: pointer; width: 36px; height: 36px; border-radius: 10px; background: #EEF3FB; display: flex; align-items: center; justify-content: center; color: #17233D; flex-shrink: 0; }
   .icon-btn { cursor: pointer; width: 34px; height: 34px; border-radius: 999px; background: #EEF3FB; display: flex; align-items: center; justify-content: center; color: #45526B; position: relative; flex-shrink: 0; }
   .card { background: #FFFFFF; border: 1px solid #E4E9F2; border-radius: 16px; padding: 14px; }
-  .field-label { font-size: 11px; font-weight: 700; color: #45526B; margin-bottom: 6px; display: block; }
-  .field-input { background: #F7F9FC; border: 1.5px solid #E1E7F0; border-radius: 10px; color: #17233D; font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 12px 13px; width: 100%; outline: none; }
+  .field-label { font-size: 12.5px; font-weight: 700; color: #45526B; margin-bottom: 6px; display: block; }
+  .field-input { background: #F7F9FC; border: 1.5px solid #E1E7F0; border-radius: 10px; color: #17233D; font-family: 'Inter', sans-serif; font-size: 15px; padding: 12px 13px; width: 100%; outline: none; }
   /* hide the browser's own built-in password-reveal icon (Edge/Chrome add one automatically) so only our custom eye icon shows */
   input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display: none; }
   input[type="password"]::-webkit-credentials-auto-fill-button, input[type="password"]::-webkit-strong-password-auto-fill-button { display: none !important; visibility: hidden; }
   .field-input::placeholder { color: #97A4B8; }
-  .btn-primary { width: 100%; padding: 14px; border-radius: 12px; background: #1A73E8; color: #fff; font-weight: 700; font-size: 13.5px; border: none; font-family: 'Inter', sans-serif; cursor: pointer; box-shadow: 0 8px 20px rgba(26,115,232,0.28); }
+  .btn-primary { width: 100%; padding: 14px; border-radius: 12px; background: #1A73E8; color: #fff; font-weight: 700; font-size: 15px; border: none; font-family: 'Inter', sans-serif; cursor: pointer; box-shadow: 0 8px 20px rgba(26,115,232,0.28); }
   .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
-  .btn-outline { width: 100%; padding: 13px; border-radius: 12px; background: #fff; color: #1A73E8; font-weight: 700; font-size: 13px; border: 1.5px solid #1A73E8; font-family: 'Inter', sans-serif; cursor: pointer; }
-  .btn-ghost { width: 100%; padding: 12px; border-radius: 12px; background: transparent; color: #45526B; font-weight: 700; font-size: 12.5px; border: 1.5px solid #E1E7F0; font-family: 'Inter', sans-serif; cursor: pointer; }
-  .btn-danger-outline { width: 100%; padding: 13px; border-radius: 12px; background: #fff; color: #D64545; font-weight: 700; font-size: 13px; border: 1.5px solid #F3C6C6; font-family: 'Inter', sans-serif; cursor: pointer; }
-  .pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; }
+  .btn-outline { width: 100%; padding: 13px; border-radius: 12px; background: #fff; color: #1A73E8; font-weight: 700; font-size: 14.5px; border: 1.5px solid #1A73E8; font-family: 'Inter', sans-serif; cursor: pointer; }
+  .btn-ghost { width: 100%; padding: 12px; border-radius: 12px; background: transparent; color: #45526B; font-weight: 700; font-size: 14px; border: 1.5px solid #E1E7F0; font-family: 'Inter', sans-serif; cursor: pointer; }
+  .btn-danger-outline { width: 100%; padding: 13px; border-radius: 12px; background: #fff; color: #D64545; font-weight: 700; font-size: 14.5px; border: 1.5px solid #F3C6C6; font-family: 'Inter', sans-serif; cursor: pointer; }
+  .pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; }
   .pill-progress { background: #E7F0FE; color: #1A5FC4; }
   .pill-submitted { background: #FDF0DA; color: #B4740D; }
   .pill-completed { background: #E4F7EA; color: #1E8E4A; }
   .pill-cancelled { background: #FBE9E9; color: #C23B3B; }
   .pill-action { background: #FDECD8; color: #B4560D; }
   .step-wizard { display: flex; align-items: center; gap: 6px; }
-  .step-dot { width: 26px; height: 26px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; background: #E4E9F2; color: #97A4B8; flex-shrink: 0; }
+  .step-dot { width: 26px; height: 26px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 800; background: #E4E9F2; color: #97A4B8; flex-shrink: 0; }
   .step-dot.done { background: #1A73E8; color: #fff; }
   .step-dot.active { background: #17233D; color: #fff; }
   .step-line { flex: 1; height: 2px; background: #E4E9F2; }
@@ -83,28 +83,28 @@
   .bottom-nav-v2 { position: absolute; bottom: 0; left: 0; right: 0; height: 64px; background: #FFFFFF; border-top: 1px solid #E4E9F2; display: flex; align-items: center; justify-content: space-around; z-index: 30; }
   .nav-item-v2 { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: #97A4B8; background: none; border: none; font-family: 'Inter', sans-serif; }
   .nav-item-v2.on { color: #1A73E8; }
-  .nav-item-v2 span { font-size: 9.5px; font-weight: 700; }
+  .nav-item-v2 span { font-size: 11px; font-weight: 700; }
   .svc-tile { cursor: pointer; padding: 14px 10px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E4E9F2; text-align: center; }
   .svc-tile-icon { width: 42px; height: 42px; border-radius: 13px; background: #E7F0FE; color: #1A73E8; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
   .req-row { cursor: pointer; padding: 12px 0; border-bottom: 1px solid #EEF1F6; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .req-row:last-child { border-bottom: none; }
   .tab-row { display: flex; gap: 6px; overflow-x: auto; }
-  .tab-chip { cursor: pointer; padding: 7px 13px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; border: 1px solid #E1E7F0; background: #fff; color: #5B6B84; }
+  .tab-chip { cursor: pointer; padding: 7px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap; border: 1px solid #E1E7F0; background: #fff; color: #5B6B84; }
   .tab-chip.on { background: #17233D; color: #fff; border-color: #17233D; }
   .consent-box { cursor: pointer; flex-shrink: 0; width: 19px; height: 19px; border-radius: 5px; border: 2px solid #2FA84F; display: flex; align-items: center; justify-content: center; margin-top: 1px; background: transparent; }
   .consent-box svg { display: none; }
   .consent-box.on { background: #2FA84F; }
   .consent-box.on svg { display: block; }
-  .otp-box { text-align: center; font-size: 18px; font-weight: 700; border-radius: 10px; padding: 12px 0; width: 100%; outline: none; font-family: 'Inter', sans-serif; background: #F7F9FC; border: 2px solid #E1E7F0; color: #17233D; }
+  .otp-box { text-align: center; font-size: 19.5px; font-weight: 700; border-radius: 10px; padding: 12px 0; width: 100%; outline: none; font-family: 'Inter', sans-serif; background: #F7F9FC; border: 2px solid #E1E7F0; color: #17233D; }
   .map-fake { position: relative; height: 150px; border-radius: 14px; overflow: hidden; background: linear-gradient(160deg,#DCEBFB,#EAF3FE 60%,#E4F5EA); }
   .map-fake svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .info-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #EEF1F6; }
   .info-row:last-child { border-bottom: none; }
-  .info-label { font-size: 11px; color: #97A4B8; }
-  .info-value { font-size: 12px; font-weight: 700; color: #17233D; text-align: right; }
+  .info-label { font-size: 12.5px; color: #97A4B8; }
+  .info-value { font-size: 13.5px; font-weight: 700; color: #17233D; text-align: right; }
   .doc-row { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; background: #FFFFFF; border: 1px solid #E4E9F2; margin-bottom: 10px; }
   .step-tabs { display: flex; border-bottom: 1px solid #E4E9F2; background: #FFFFFF; }
-  .step-tab-btn { flex: 1; padding: 12px 0; text-align: center; font-size: 11.5px; font-weight: 700; cursor: pointer; color: #97A4B8; border-bottom: 2px solid transparent; }
+  .step-tab-btn { flex: 1; padding: 12px 0; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; color: #97A4B8; border-bottom: 2px solid transparent; }
   .step-tab-btn.on { color: #1A73E8; border-bottom-color: #1A73E8; }
   @media (max-width: 460px) {
     .device-shell { transform: scale(0.92); transform-origin: top center; margin-bottom: -70px; }
@@ -143,36 +143,36 @@
           <img src="assets/welcome-bg.png" alt="We are here for you" style="width:100%;height:auto;display:block;"/>
         </div>
         <div style="width:100%;position:relative;flex-shrink:0;margin-bottom:18px;">
-          <button class="btn-primary" style="padding:17px;font-size:15px;" onclick="nav('login')">Get Started</button>
+          <button class="btn-primary" style="padding:17px;font-size:16.5px;" onclick="nav('login')">Get Started</button>
         </div>
       </section>
 
       <!-- LOGIN -->
       <section id="screen-login" class="screen hidden" style="padding:26px;background:#FFFFFF;">
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;">
-          <h2 class="display" style="font-size:28px;margin:0;color:#0D2340;text-align:center;">Welcome Back!</h2>
-          <p style="font-size:15px;color:#5B6B84;margin:10px 0 32px;text-align:center;">Login to your account</p>
+          <h2 class="display" style="font-size:29.5px;margin:0;color:#0D2340;text-align:center;">Welcome Back!</h2>
+          <p style="font-size:16.5px;color:#5B6B84;margin:10px 0 32px;text-align:center;">Login to your account</p>
           <div style="display:flex;flex-direction:column;gap:20px;">
-            <div><span class="field-label" style="font-size:12.5px;">Mobile Number / Email</span><input id="lg-id" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="+91 98765 43210 or email" oninput="checkLogin()"/></div>
+            <div><span class="field-label" style="font-size:14px;">Mobile Number / Email</span><input id="lg-id" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="+91 98765 43210 or email" oninput="checkLogin()"/></div>
             <div>
-              <span class="field-label" style="font-size:12.5px;">Password</span>
+              <span class="field-label" style="font-size:14px;">Password</span>
               <div style="position:relative;">
-                <input id="lg-pwd" type="password" class="field-input" style="font-size:15px;padding:14px 13px;padding-right:44px;" placeholder="Enter password" oninput="checkLogin()"/>
+                <input id="lg-pwd" type="password" class="field-input" style="font-size:16.5px;padding:14px 13px;padding-right:44px;" placeholder="Enter password" oninput="checkLogin()"/>
                 <div onclick="togglePwd('lg-pwd','lg-eye')" style="cursor:pointer;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#97A4B8;">
                   <svg id="lg-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                 </div>
               </div>
             </div>
-            <div style="text-align:right;"><span onclick="startForgotPassword('login')" style="cursor:pointer;font-size:13px;color:#1A73E8;font-weight:700;">Forgot Password?</span></div>
+            <div style="text-align:right;"><span onclick="startForgotPassword('login')" style="cursor:pointer;font-size:14.5px;color:#1A73E8;font-weight:700;">Forgot Password?</span></div>
           </div>
-          <button id="lg-submit" class="btn-primary" style="margin-top:30px;padding:16px;font-size:15px;opacity:0.45;" onclick="loginSubmit()">Login</button>
-          <p style="text-align:center;font-size:12.5px;color:#97A4B8;margin:22px 0;">or continue with</p>
+          <button id="lg-submit" class="btn-primary" style="margin-top:30px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="loginSubmit()">Login</button>
+          <p style="text-align:center;font-size:14px;color:#97A4B8;margin:22px 0;">or continue with</p>
           <div style="display:flex;gap:12px;justify-content:center;">
             <div class="icon-btn" style="width:76px;height:48px;border-radius:12px;" onclick="toast('Demo only — social login not wired up.')"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.9c-.3 1.4-1 2.5-2.2 3.3v2.7h3.6c2.1-1.9 3.2-4.8 3.2-8Z"/><path fill="#34A853" d="M12 23c2.9 0 5.4-1 7.2-2.6l-3.6-2.7c-1 .7-2.2 1.1-3.6 1.1-2.8 0-5.1-1.9-6-4.4H2.3v2.8C4.1 20.6 7.8 23 12 23Z"/><path fill="#FBBC05" d="M6 14.4c-.2-.7-.4-1.4-.4-2.2s.1-1.5.4-2.2V7.2H2.3C1.5 8.7 1 10.3 1 12s.5 3.3 1.3 4.8Z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.4 2.1 14.9 1 12 1 7.8 1 4.1 3.4 2.3 7.2l3.7 2.8c.9-2.5 3.2-4.6 6-4.6Z"/></svg></div>
             <div class="icon-btn" style="width:76px;height:48px;border-radius:12px;" onclick="toast('Demo only — social login not wired up.')"><svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M16.7 1c.1 1.2-.4 2.4-1.1 3.3-.8.9-2 1.6-3.1 1.5-.1-1.2.4-2.4 1.1-3.3C14.4 1.6 15.6 1 16.7 1Zm3.9 16.9c-.5 1.1-.7 1.6-1.4 2.6-.9 1.4-2.2 3.2-3.8 3.2-1.4 0-1.8-.9-3.7-.9s-2.4.9-3.7.9c-1.6 0-2.8-1.6-3.7-3-2.4-3.7-2.7-8.1-1.2-10.4 1.1-1.7 2.8-2.7 4.4-2.7 1.6 0 2.6 1 3.9 1s2.1-1 3.9-1c1.5 0 3 .8 4.1 2.2-3.6 2-3 7.2 1.2 8.1Z"/></svg></div>
           </div>
-          <p style="text-align:center;font-size:13.5px;color:#5B6B84;margin-top:24px;">Don't have an account? <span onclick="nav('register')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Sign Up</span></p>
-          <p style="text-align:center;font-size:12.5px;color:#97A4B8;margin-top:12px;">Signing in as a <span onclick="nav('vendor-login')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Vendor / Corporate Partner?</span></p>
+          <p style="text-align:center;font-size:15px;color:#5B6B84;margin-top:24px;">Don't have an account? <span onclick="nav('register')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Sign Up</span></p>
+          <p style="text-align:center;font-size:14px;color:#97A4B8;margin-top:12px;">Signing in as a <span onclick="nav('vendor-login')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Vendor / Corporate Partner?</span></p>
         </div>
       </section>
 
@@ -180,11 +180,11 @@
       <section id="screen-forgot-password" class="screen hidden" style="padding:26px;background:#FFFFFF;">
         <div class="back-btn" onclick="back()" style="margin-bottom:40px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
         <div>
-          <h2 class="display" style="font-size:26px;margin:0;color:#0D2340;text-align:center;">Forgot Password?</h2>
-          <p style="font-size:15px;color:#5B6B84;margin:14px 0 36px;line-height:1.55;text-align:center;">Enter the mobile number or email on your account and we'll send you a code to reset your password.</p>
-          <div><span class="field-label" style="font-size:12.5px;">Mobile Number / Email</span><input id="fp-id" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="Enter mobile or email" oninput="checkForgotPassword()"/></div>
-          <button id="fp-submit" class="btn-primary" style="margin-top:32px;padding:16px;font-size:15px;opacity:0.45;" onclick="forgotPasswordSubmit()">Send Reset Code</button>
-          <p style="text-align:center;font-size:13.5px;color:#5B6B84;margin-top:28px;">Remembered it? <span onclick="back()" style="cursor:pointer;color:#1A73E8;font-weight:700;">Back to Login</span></p>
+          <h2 class="display" style="font-size:27.5px;margin:0;color:#0D2340;text-align:center;">Forgot Password?</h2>
+          <p style="font-size:16.5px;color:#5B6B84;margin:14px 0 36px;line-height:1.55;text-align:center;">Enter the mobile number or email on your account and we'll send you a code to reset your password.</p>
+          <div><span class="field-label" style="font-size:14px;">Mobile Number / Email</span><input id="fp-id" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="Enter mobile or email" oninput="checkForgotPassword()"/></div>
+          <button id="fp-submit" class="btn-primary" style="margin-top:32px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="forgotPasswordSubmit()">Send Reset Code</button>
+          <p style="text-align:center;font-size:15px;color:#5B6B84;margin-top:28px;">Remembered it? <span onclick="back()" style="cursor:pointer;color:#1A73E8;font-weight:700;">Back to Login</span></p>
         </div>
       </section>
 
@@ -192,29 +192,29 @@
       <section id="screen-reset-password" class="screen hidden" style="padding:26px;background:#FFFFFF;">
         <div class="back-btn" onclick="back()" style="margin-bottom:40px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
         <div>
-          <h2 class="display" style="font-size:26px;margin:0;color:#0D2340;text-align:center;">Enter Reset Code</h2>
-          <p style="font-size:14px;color:#5B6B84;margin:14px 0 32px;text-align:center;">6-digit code sent to <span id="rp-identifier" style="color:#0D2340;font-weight:700;"></span></p>
+          <h2 class="display" style="font-size:27.5px;margin:0;color:#0D2340;text-align:center;">Enter Reset Code</h2>
+          <p style="font-size:15.5px;color:#5B6B84;margin:14px 0 32px;text-align:center;">6-digit code sent to <span id="rp-identifier" style="color:#0D2340;font-weight:700;"></span></p>
           <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;" data-otp-group="reset">
-            <input class="otp-box" style="font-size:20px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:20px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:20px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:20px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:20px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:20px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/>
+            <input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/>
           </div>
-          <div style="text-align:center;margin:20px 0 34px;"><span style="font-size:13px;color:#97A4B8;">Resend code in 00:28</span></div>
+          <div style="text-align:center;margin:20px 0 34px;"><span style="font-size:14.5px;color:#97A4B8;">Resend code in 00:28</span></div>
           <div style="display:flex;flex-direction:column;gap:20px;">
             <div>
-              <span class="field-label" style="font-size:12.5px;">New Password</span>
+              <span class="field-label" style="font-size:14px;">New Password</span>
               <div style="position:relative;">
-                <input id="rp-pwd1" type="password" class="field-input" style="font-size:15px;padding:14px 13px;padding-right:44px;" placeholder="Minimum 8 characters" oninput="checkResetPassword()"/>
+                <input id="rp-pwd1" type="password" class="field-input" style="font-size:16.5px;padding:14px 13px;padding-right:44px;" placeholder="Minimum 8 characters" oninput="checkResetPassword()"/>
                 <div onclick="togglePwd('rp-pwd1','rp-eye1')" style="cursor:pointer;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#97A4B8;"><svg id="rp-eye1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
               </div>
             </div>
             <div>
-              <span class="field-label" style="font-size:12.5px;">Confirm New Password</span>
+              <span class="field-label" style="font-size:14px;">Confirm New Password</span>
               <div style="position:relative;">
-                <input id="rp-pwd2" type="password" class="field-input" style="font-size:15px;padding:14px 13px;padding-right:44px;" placeholder="Re-enter new password" oninput="checkResetPassword()"/>
+                <input id="rp-pwd2" type="password" class="field-input" style="font-size:16.5px;padding:14px 13px;padding-right:44px;" placeholder="Re-enter new password" oninput="checkResetPassword()"/>
                 <div onclick="togglePwd('rp-pwd2','rp-eye2')" style="cursor:pointer;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#97A4B8;"><svg id="rp-eye2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
               </div>
             </div>
           </div>
-          <button id="rp-submit" class="btn-primary" style="margin-top:32px;padding:16px;font-size:15px;opacity:0.45;" onclick="resetPasswordSubmit()">Reset Password</button>
+          <button id="rp-submit" class="btn-primary" style="margin-top:32px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="resetPasswordSubmit()">Reset Password</button>
         </div>
       </section>
 
@@ -222,36 +222,36 @@
       <section id="screen-register" class="screen hidden" style="background:#FFFFFF;">
         <div style="flex-shrink:0;padding:26px 26px 0;"><div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div></div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:20px 26px 26px;">
-          <h2 class="display" style="font-size:26px;margin:0;color:#0D2340;text-align:center;">Create Account</h2>
-          <p style="font-size:15px;color:#5B6B84;margin:10px 0 28px;text-align:center;">Join us to get started</p>
+          <h2 class="display" style="font-size:27.5px;margin:0;color:#0D2340;text-align:center;">Create Account</h2>
+          <p style="font-size:16.5px;color:#5B6B84;margin:10px 0 28px;text-align:center;">Join us to get started</p>
           <div style="display:flex;flex-direction:column;gap:18px;">
-            <div><span class="field-label" style="font-size:12.5px;">Full Name</span><input id="rg-name" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="Your full name" oninput="checkRegister()"/></div>
+            <div><span class="field-label" style="font-size:14px;">Full Name</span><input id="rg-name" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="Your full name" oninput="checkRegister()"/></div>
             <div>
-              <span class="field-label" style="font-size:12.5px;">Mobile Number</span>
+              <span class="field-label" style="font-size:14px;">Mobile Number</span>
               <div style="display:flex;gap:8px;">
-                <select id="rg-cc" class="field-input" style="width:84px;flex-shrink:0;font-size:15px;padding:14px 13px;"><option>+91</option><option>+971</option><option>+44</option><option>+1</option></select>
-                <input id="rg-phone" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="Mobile number" oninput="checkRegister()"/>
+                <select id="rg-cc" class="field-input" style="width:84px;flex-shrink:0;font-size:16.5px;padding:14px 13px;"><option>+91</option><option>+971</option><option>+44</option><option>+1</option></select>
+                <input id="rg-phone" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="Mobile number" oninput="checkRegister()"/>
               </div>
             </div>
-            <div><span class="field-label" style="font-size:12.5px;">Email Address</span><input id="rg-email" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="you@example.com" oninput="checkRegister()"/></div>
-            <div><span class="field-label" style="font-size:12.5px;">Password</span><input id="rg-pwd" type="password" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="Create a password" oninput="checkRegister()"/></div>
+            <div><span class="field-label" style="font-size:14px;">Email Address</span><input id="rg-email" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="you@example.com" oninput="checkRegister()"/></div>
+            <div><span class="field-label" style="font-size:14px;">Password</span><input id="rg-pwd" type="password" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="Create a password" oninput="checkRegister()"/></div>
           </div>
           <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px;">
             <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;">
               <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-              <span style="font-size:12px;color:#5B6B84;line-height:1.5;">By submitting the above information, you agree to our <span style="color:#0D2340;font-weight:700;">Terms and Conditions</span> and <span style="color:#0D2340;font-weight:700;">Privacy Policy</span></span>
+              <span style="font-size:13.5px;color:#5B6B84;line-height:1.5;">By submitting the above information, you agree to our <span style="color:#0D2340;font-weight:700;">Terms and Conditions</span> and <span style="color:#0D2340;font-weight:700;">Privacy Policy</span></span>
             </label>
             <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;">
               <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-              <span style="font-size:12px;color:#5B6B84;line-height:1.5;">You are agreeing to receive communication reminding you about your account and updates about HumanCare WorldWide's services and programs.</span>
+              <span style="font-size:13.5px;color:#5B6B84;line-height:1.5;">You are agreeing to receive communication reminding you about your account and updates about HumanCare WorldWide's services and programs.</span>
             </label>
             <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;">
               <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-              <span style="font-size:12px;color:#5B6B84;line-height:1.5;">Certain features on the platform are for informational and educational purposes only. It is not a medical device and does not provide professional medical advice, diagnosis, or treatment. Never disregard or delay seeking professional medical consultation because of information found here. Always consult a qualified healthcare provider regarding any medical condition.</span>
+              <span style="font-size:13.5px;color:#5B6B84;line-height:1.5;">Certain features on the platform are for informational and educational purposes only. It is not a medical device and does not provide professional medical advice, diagnosis, or treatment. Never disregard or delay seeking professional medical consultation because of information found here. Always consult a qualified healthcare provider regarding any medical condition.</span>
             </label>
           </div>
-          <button id="rg-submit" class="btn-primary" style="margin-top:26px;padding:16px;font-size:15px;opacity:0.45;" onclick="registerSubmit()">Sign Up</button>
-          <p style="text-align:center;font-size:13.5px;color:#5B6B84;margin-top:20px;">Already have an account? <span onclick="nav('login')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Login</span></p>
+          <button id="rg-submit" class="btn-primary" style="margin-top:26px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="registerSubmit()">Sign Up</button>
+          <p style="text-align:center;font-size:15px;color:#5B6B84;margin-top:20px;">Already have an account? <span onclick="nav('login')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Login</span></p>
         </div>
       </section>
 
@@ -266,45 +266,45 @@
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:20px 18px 84px;">
           <div style="margin-bottom:20px;">
-            <div style="font-size:19px;font-weight:800;color:#0D2340;">Hello, Rakesh 👋</div>
-            <div style="font-size:12.5px;color:#5B6B84;margin-top:3px;">How can we assist you today?</div>
+            <div style="font-size:20.5px;font-weight:800;color:#0D2340;">Hello, Rakesh 👋</div>
+            <div style="font-size:14px;color:#5B6B84;margin-top:3px;">How can we assist you today?</div>
           </div>
           <div style="background:linear-gradient(135deg,#1A73E8,#3E8EF7);border-radius:18px;padding:22px;color:#fff;cursor:pointer;margin-bottom:20px;" onclick="nav('select-service')">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;">
               <div>
-                <div style="font-size:15px;font-weight:800;">Create New Request</div>
-                <div style="font-size:12px;opacity:0.9;margin-top:7px;line-height:1.4;">Request any medical assistance</div>
+                <div style="font-size:16.5px;font-weight:800;">Create New Request</div>
+                <div style="font-size:13.5px;opacity:0.9;margin-top:7px;line-height:1.4;">Request any medical assistance</div>
               </div>
               <div class="cta-pulse-dot" style="width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
             </div>
           </div>
 
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <span style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;">Our Services</span>
-            <span onclick="nav('select-service')" style="cursor:pointer;font-size:11.5px;color:#1A73E8;font-weight:700;">View All</span>
+            <span style="font-size:13.5px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;">Our Services</span>
+            <span onclick="nav('select-service')" style="cursor:pointer;font-size:13px;color:#1A73E8;font-weight:700;">View All</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-            <div class="svc-tile" onclick="openService('air')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div style="font-size:12px;font-weight:700;">Air Ambulance</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Domestic / International</div></div>
-            <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div style="font-size:12px;font-weight:700;">Ground Ambulance</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Basic &amp; Advanced Life Support</div></div>
-            <div class="svc-tile" onclick="openService('hospital')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg></div><div style="font-size:12px;font-weight:700;">Hospital Assistance</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Domestic &amp; International</div></div>
-            <div class="svc-tile" onclick="openService('commercialair')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></div><div style="font-size:12px;font-weight:700;">Medical Escort</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Commercial Airlines</div></div>
-            <div class="svc-tile" onclick="openService('mortal')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 1.5 1 2.5 0 4-1-1.5-1-2.5 0-4Z"/><rect x="10" y="6" width="4" height="14" rx="1"/><line x1="7" y1="20" x2="17" y2="20"/></svg></div><div style="font-size:12px;font-weight:700;">Mortal Remains</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Transportation &amp; Rituals</div></div>
-            <div class="svc-tile" onclick="openService('homecare')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></div><div style="font-size:12px;font-weight:700;">Home Health Care</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Nursing &amp; Post-Surgery Care</div></div>
-            <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div><div style="font-size:12px;font-weight:700;">Tele Consultation</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">&amp; House-Call</div></div>
-            <div class="svc-tile" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:12px;font-weight:700;">Corporate Medical</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Workplace Health Programs</div></div>
+            <div class="svc-tile" onclick="openService('air')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div style="font-size:13.5px;font-weight:700;">Air Ambulance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Domestic / International</div></div>
+            <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Ground Ambulance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Basic &amp; Advanced Care</div></div>
+            <div class="svc-tile" onclick="openService('hospital')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg></div><div style="font-size:13.5px;font-weight:700;">Hospital Assistance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Domestic &amp; International</div></div>
+            <div class="svc-tile" onclick="openService('commercialair')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></div><div style="font-size:13.5px;font-weight:700;">Medical Escort</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Commercial Airlines</div></div>
+            <div class="svc-tile" onclick="openService('mortal')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 1.5 1 2.5 0 4-1-1.5-1-2.5 0-4Z"/><rect x="10" y="6" width="4" height="14" rx="1"/><line x1="7" y1="20" x2="17" y2="20"/></svg></div><div style="font-size:13.5px;font-weight:700;">Mortal Remains</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Transportation &amp; Rituals</div></div>
+            <div class="svc-tile" onclick="openService('homecare')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></div><div style="font-size:13.5px;font-weight:700;">Home Health Care</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Nursing &amp; Post-Surgery Care</div></div>
+            <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Tele Consultation</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">&amp; House-Call</div></div>
+            <div class="svc-tile" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Corporate Medical</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Workplace Health Programs</div></div>
           </div>
 
           <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
             <div>
-              <div style="font-size:12px;font-weight:800;">Need Immediate Help?</div>
-              <div style="font-size:11px;color:#97A4B8;margin-top:2px;">Our assistance team is available 24/7</div>
+              <div style="font-size:13.5px;font-weight:800;">Need Immediate Help?</div>
+              <div style="font-size:12.5px;color:#97A4B8;margin-top:2px;">Our assistance team is available 24/7</div>
             </div>
-            <a href="tel:+971585787878" style="flex-shrink:0;padding:9px 14px;border-radius:10px;background:#17233D;color:#fff;font-size:11.5px;font-weight:700;text-decoration:none;">Contact Now</a>
+            <a href="tel:+971585787878" style="flex-shrink:0;padding:9px 14px;border-radius:10px;background:#17233D;color:#fff;font-size:13px;font-weight:700;text-decoration:none;">Contact Now</a>
           </div>
 
           <div onclick="nav('help-support')" style="cursor:pointer;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2FA84F,#57C77A);padding:16px;color:#fff;">
-            <div style="font-size:11px;opacity:0.85;">Your care,</div>
-            <div style="font-size:15px;font-weight:800;">Our responsibility</div>
+            <div style="font-size:12.5px;opacity:0.85;">Your care,</div>
+            <div style="font-size:16.5px;font-weight:800;">Our responsibility</div>
           </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="home"></div>
@@ -314,21 +314,21 @@
       <section id="screen-select-service" class="screen hidden">
         <div style="flex-shrink:0;padding:22px 18px 0;">
           <div class="back-btn" onclick="back()" style="margin-bottom:16px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-          <h2 class="display" style="font-size:18px;margin:0 0 16px;color:#0D2340;">Select a Service</h2>
+          <h2 class="display" style="font-size:19.5px;margin:0 0 16px;color:#0D2340;">Select a Service</h2>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:0 18px 18px;">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div class="svc-tile" onclick="openService('air')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div style="font-size:12px;font-weight:700;">Air Ambulance</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Domestic / International</div></div>
-            <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div style="font-size:12px;font-weight:700;">Ground Ambulance</div></div>
-            <div class="svc-tile" onclick="openService('hospital')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg></div><div style="font-size:12px;font-weight:700;">Hospitalization Assistance</div></div>
-            <div class="svc-tile" onclick="openService('commercialair')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></div><div style="font-size:12px;font-weight:700;">Medical Escort</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">Commercial Airlines</div></div>
-            <div class="svc-tile" onclick="openService('mortal')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 1.5 1 2.5 0 4-1-1.5-1-2.5 0-4Z"/><rect x="10" y="6" width="4" height="14" rx="1"/><line x1="7" y1="20" x2="17" y2="20"/></svg></div><div style="font-size:12px;font-weight:700;">Mortal Remains Transportation</div></div>
-            <div class="svc-tile" onclick="openService('homecare')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></div><div style="font-size:12px;font-weight:700;">Home Healthcare Services</div></div>
-            <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div><div style="font-size:12px;font-weight:700;">Teleconsultation</div></div>
-            <div class="svc-tile" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:12px;font-weight:700;">Other Services</div></div>
+            <div class="svc-tile" onclick="openService('air')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div style="font-size:13.5px;font-weight:700;">Air Ambulance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Domestic / International</div></div>
+            <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Ground Ambulance</div></div>
+            <div class="svc-tile" onclick="openService('hospital')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg></div><div style="font-size:13.5px;font-weight:700;">Hospitalization Assistance</div></div>
+            <div class="svc-tile" onclick="openService('commercialair')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></div><div style="font-size:13.5px;font-weight:700;">Medical Escort</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Commercial Airlines</div></div>
+            <div class="svc-tile" onclick="openService('mortal')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 1.5 1 2.5 0 4-1-1.5-1-2.5 0-4Z"/><rect x="10" y="6" width="4" height="14" rx="1"/><line x1="7" y1="20" x2="17" y2="20"/></svg></div><div style="font-size:13.5px;font-weight:700;">Mortal Remains Transportation</div></div>
+            <div class="svc-tile" onclick="openService('homecare')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></div><div style="font-size:13.5px;font-weight:700;">Home Healthcare Services</div></div>
+            <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Teleconsultation</div></div>
+            <div class="svc-tile" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Other Services</div></div>
           </div>
           <div class="card" style="margin-top:16px;">
-            <div style="font-size:11.5px;color:#5B6B84;">Need help choosing a service? <span onclick="toast('Connecting to an expert…')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Chat with our expert</span></div>
+            <div style="font-size:13px;color:#5B6B84;">Need help choosing a service? <span onclick="toast('Connecting to an expert…')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Chat with our expert</span></div>
           </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="none"></div>
@@ -346,10 +346,10 @@
             <img id="sd-photo" style="display:none;width:100%;height:100%;object-fit:cover;" alt=""/>
             <div id="sd-icon" style="width:70px;height:70px;border-radius:18px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;"></div>
           </div>
-          <h2 id="sd-title" class="display" style="font-size:19px;margin:0;color:#0D2340;"></h2>
-          <p id="sd-desc" style="font-size:12.5px;color:#5B6B84;margin-top:8px;line-height:1.6;"></p>
+          <h2 id="sd-title" class="display" style="font-size:20.5px;margin:0;color:#0D2340;"></h2>
+          <p id="sd-desc" style="font-size:14px;color:#5B6B84;margin-top:8px;line-height:1.6;"></p>
           <div class="card" style="margin-top:16px;">
-            <div style="font-size:11px;font-weight:800;color:#1A73E8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">We Provide</div>
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">We Provide</div>
             <div id="sd-feature-list" style="display:flex;flex-direction:column;gap:9px;"></div>
           </div>
         </div>
@@ -369,7 +369,7 @@
           <div class="step-wizard" id="wizard-dots"></div>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;padding-bottom:100px;">
-          <div style="font-size:15px;font-weight:800;color:#0D2340;margin-bottom:14px;">Patient Details</div>
+          <div style="font-size:16.5px;font-weight:800;color:#0D2340;margin-bottom:14px;">Patient Details</div>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div><span class="field-label">Patient Full Name</span><input id="req-name" class="field-input" value="Rakesh Sharma"/></div>
             <div style="display:flex;gap:10px;"><div style="flex:1;"><span class="field-label">Age</span><input id="req-age" class="field-input" value="45"/></div><div style="flex:1;"><span class="field-label">Gender</span><select id="req-gender" class="field-input"><option>Male</option><option>Female</option><option>Other</option></select></div></div>
@@ -399,7 +399,7 @@
           <div class="step-wizard" id="wizard-dots-2"></div>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;padding-bottom:100px;">
-          <div style="font-size:15px;font-weight:800;color:#0D2340;margin-bottom:14px;">Request Details</div>
+          <div style="font-size:16.5px;font-weight:800;color:#0D2340;margin-bottom:14px;">Request Details</div>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div><span class="field-label">Briefly describe your requirement</span><textarea id="req-desc" class="field-input" rows="3" style="resize:none;">Patient requires stable air ambulance transfer to a specialist cardiac facility.</textarea></div>
             <div><span class="field-label">Destination</span><input id="req-dest" class="field-input" placeholder="City, Country" value="Dubai, UAE"/></div>
@@ -408,8 +408,8 @@
               <span class="field-label">Upload Documents</span>
               <div id="req-upload" onclick="toggleUpload()" style="cursor:pointer;padding:16px;border-radius:12px;border:1.5px dashed #C7D3E5;background:#F7F9FC;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg>
-                <span style="font-size:12px;font-weight:700;color:#1A73E8;">Upload File</span>
-                <span style="font-size:10px;color:#97A4B8;">PDF, JPG, PNG (Max 5MB)</span>
+                <span style="font-size:13.5px;font-weight:700;color:#1A73E8;">Upload File</span>
+                <span style="font-size:11.5px;color:#97A4B8;">PDF, JPG, PNG (Max 5MB)</span>
               </div>
             </div>
           </div>
@@ -431,7 +431,7 @@
           <div class="step-wizard" id="wizard-dots-3"></div>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;padding-bottom:100px;">
-          <div style="font-size:15px;font-weight:800;color:#0D2340;margin-bottom:14px;">Additional Information</div>
+          <div style="font-size:16.5px;font-weight:800;color:#0D2340;margin-bottom:14px;">Additional Information</div>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div><span class="field-label">Any additional information</span><input id="req-extra" class="field-input" placeholder="Optional"/></div>
             <div><span class="field-label">Special Requirements (If any)</span><textarea id="req-special" class="field-input" rows="3" style="resize:none;" placeholder="e.g. oxygen support, wheelchair access"></textarea></div>
@@ -452,7 +452,7 @@
           <span style="width:32px;"></span>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;padding-bottom:100px;">
-          <p style="font-size:12px;color:#5B6B84;margin:0 0 14px;">Please check the details before submitting</p>
+          <p style="font-size:13.5px;color:#5B6B84;margin:0 0 14px;">Please check the details before submitting</p>
           <div class="card">
             <div class="info-row"><span class="info-label">Name</span><span id="rv-name" class="info-value"></span></div>
             <div class="info-row"><span class="info-label">Age / Gender</span><span id="rv-agegender" class="info-value"></span></div>
@@ -461,7 +461,7 @@
             <div class="info-row"><span class="info-label">Destination</span><span id="rv-dest" class="info-value"></span></div>
             <div class="info-row"><span class="info-label">Preferred Date</span><span id="rv-date" class="info-value"></span></div>
           </div>
-          <div style="text-align:right;margin-top:8px;"><span onclick="toast('Showing all entered details…')" style="cursor:pointer;font-size:11.5px;font-weight:700;color:#1A73E8;">View All Details &gt;</span></div>
+          <div style="text-align:right;margin-top:8px;"><span onclick="toast('Showing all entered details…')" style="cursor:pointer;font-size:13px;font-weight:700;color:#1A73E8;">View All Details &gt;</span></div>
         </div>
         <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E4E9F2;padding:14px 18px;display:flex;gap:10px;">
           <button class="btn-ghost" style="width:auto;padding:13px 20px;" onclick="formBack()">Back</button>
@@ -474,13 +474,13 @@
         <div style="width:88px;height:88px;border-radius:22px;background:#E4F7EA;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1E8E4A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
         </div>
-        <h2 class="display" style="font-size:19px;margin:0;color:#0D2340;">Request Submitted Successfully!</h2>
-        <p style="font-size:12.5px;color:#5B6B84;margin:10px 0 20px;max-width:260px;">Your request has been submitted successfully.</p>
+        <h2 class="display" style="font-size:20.5px;margin:0;color:#0D2340;">Request Submitted Successfully!</h2>
+        <p style="font-size:14px;color:#5B6B84;margin:10px 0 20px;max-width:260px;">Your request has been submitted successfully.</p>
         <div class="card" style="width:100%;max-width:240px;">
-          <div style="font-size:10px;font-weight:700;color:#97A4B8;text-transform:uppercase;">Your Request ID</div>
-          <div id="submitted-req-id" style="font-size:20px;font-weight:800;color:#1A73E8;font-family:'Inter',sans-serif;margin-top:4px;">REQ-1006</div>
+          <div style="font-size:11.5px;font-weight:700;color:#97A4B8;text-transform:uppercase;">Your Request ID</div>
+          <div id="submitted-req-id" style="font-size:21.5px;font-weight:800;color:#1A73E8;font-family:'Inter',sans-serif;margin-top:4px;">REQ-1006</div>
         </div>
-        <p style="font-size:11.5px;color:#97A4B8;margin:16px 0 24px;">We will get back to you shortly with the best possible options.</p>
+        <p style="font-size:13px;color:#97A4B8;margin:16px 0 24px;">We will get back to you shortly with the best possible options.</p>
         <button class="btn-primary" onclick="navReplace('my-requests')">Go to My Requests</button>
       </section>
 
@@ -509,24 +509,24 @@
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:16px 18px 84px;">
           <div class="card req-item" data-status="progress" onclick="openRequestDetails()" style="margin-bottom:10px;cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:13px;font-weight:800;">REQ-1005</div><div style="font-size:11.5px;color:#5B6B84;margin-top:2px;">Air Ambulance</div></div><span class="pill pill-progress">In Progress</span></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:10.5px;color:#97A4B8;">10 May 2024</span><span style="font-size:11px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:14.5px;font-weight:800;">REQ-1005</div><div style="font-size:13px;color:#5B6B84;margin-top:2px;">Air Ambulance</div></div><span class="pill pill-progress">In Progress</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:12px;color:#97A4B8;">10 May 2024</span><span style="font-size:12.5px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
           </div>
           <div class="card req-item" data-status="submitted" onclick="openRequestDetails()" style="margin-bottom:10px;cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:13px;font-weight:800;">REQ-1004</div><div style="font-size:11.5px;color:#5B6B84;margin-top:2px;">Hospitalization</div></div><span class="pill pill-submitted">Submitted</span></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:10.5px;color:#97A4B8;">09 May 2024</span><span style="font-size:11px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:14.5px;font-weight:800;">REQ-1004</div><div style="font-size:13px;color:#5B6B84;margin-top:2px;">Hospitalization</div></div><span class="pill pill-submitted">Submitted</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:12px;color:#97A4B8;">09 May 2024</span><span style="font-size:12.5px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
           </div>
           <div class="card req-item" data-status="completed" onclick="openRequestDetails()" style="margin-bottom:10px;cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:13px;font-weight:800;">REQ-1003</div><div style="font-size:11.5px;color:#5B6B84;margin-top:2px;">Ground Ambulance</div></div><span class="pill pill-completed">Completed</span></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:10.5px;color:#97A4B8;">05 May 2024</span><span style="font-size:11px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:14.5px;font-weight:800;">REQ-1003</div><div style="font-size:13px;color:#5B6B84;margin-top:2px;">Ground Ambulance</div></div><span class="pill pill-completed">Completed</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:12px;color:#97A4B8;">05 May 2024</span><span style="font-size:12.5px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
           </div>
           <div class="card req-item" data-status="completed" onclick="openRequestDetails()" style="margin-bottom:10px;cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:13px;font-weight:800;">REQ-1002</div><div style="font-size:11.5px;color:#5B6B84;margin-top:2px;">Medical Escort</div></div><span class="pill pill-completed">Completed</span></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:10.5px;color:#97A4B8;">01 May 2024</span><span style="font-size:11px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:14.5px;font-weight:800;">REQ-1002</div><div style="font-size:13px;color:#5B6B84;margin-top:2px;">Medical Escort</div></div><span class="pill pill-completed">Completed</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:12px;color:#97A4B8;">01 May 2024</span><span style="font-size:12.5px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
           </div>
           <div class="card req-item" data-status="completed" onclick="openRequestDetails()" style="cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:13px;font-weight:800;">REQ-1001</div><div style="font-size:11.5px;color:#5B6B84;margin-top:2px;">Teleconsultation</div></div><span class="pill pill-completed">Completed</span></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:10.5px;color:#97A4B8;">25 Apr 2024</span><span style="font-size:11px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-size:14.5px;font-weight:800;">REQ-1001</div><div style="font-size:13px;color:#5B6B84;margin-top:2px;">Teleconsultation</div></div><span class="pill pill-completed">Completed</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #EEF1F6;"><span style="font-size:12px;color:#97A4B8;">25 Apr 2024</span><span style="font-size:12.5px;font-weight:700;color:#1A73E8;">View Details &gt;</span></div>
           </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="my-requests"></div>
@@ -541,9 +541,9 @@
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;">
           <div style="display:flex;gap:8px;margin-bottom:16px;">
-            <div onclick="toast('Downloading request summary…')" style="cursor:pointer;flex:1;text-align:center;padding:10px;border-radius:12px;background:#fff;border:1px solid #E4E9F2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 4px;display:block;"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg><span style="font-size:10px;font-weight:700;">Download</span></div>
-            <div onclick="toast('Share link copied.')" style="cursor:pointer;flex:1;text-align:center;padding:10px;border-radius:12px;background:#fff;border:1px solid #E4E9F2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 4px;display:block;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg><span style="font-size:10px;font-weight:700;">Share</span></div>
-            <a href="tel:+919699999065" style="text-decoration:none;color:inherit;flex:1;text-align:center;padding:10px;border-radius:12px;background:#fff;border:1px solid #E4E9F2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 4px;display:block;"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg><span style="font-size:10px;font-weight:700;">Contact</span></a>
+            <div onclick="toast('Downloading request summary…')" style="cursor:pointer;flex:1;text-align:center;padding:10px;border-radius:12px;background:#fff;border:1px solid #E4E9F2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 4px;display:block;"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg><span style="font-size:11.5px;font-weight:700;">Download</span></div>
+            <div onclick="toast('Share link copied.')" style="cursor:pointer;flex:1;text-align:center;padding:10px;border-radius:12px;background:#fff;border:1px solid #E4E9F2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 4px;display:block;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg><span style="font-size:11.5px;font-weight:700;">Share</span></div>
+            <a href="tel:+919699999065" style="text-decoration:none;color:inherit;flex:1;text-align:center;padding:10px;border-radius:12px;background:#fff;border:1px solid #E4E9F2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 4px;display:block;"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg><span style="font-size:11.5px;font-weight:700;">Contact</span></a>
           </div>
           <div class="card">
             <div class="info-row"><span class="info-label">Request Date</span><span class="info-value">10 May 2024, 10:30 AM</span></div>
@@ -554,7 +554,7 @@
             <div class="info-row"><span class="info-label">Expected Date</span><span class="info-value">11 May 2024</span></div>
           </div>
           <div onclick="nav('tracking')" style="cursor:pointer;margin-top:14px;padding:13px 14px;border-radius:12px;background:#E7F0FE;display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-size:12.5px;font-weight:700;color:#1A5FC4;">View Live Tracking</span>
+            <span style="font-size:14px;font-weight:700;color:#1A5FC4;">View Live Tracking</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A5FC4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
         </div>
@@ -573,8 +573,8 @@
         <div style="flex-shrink:0;padding:14px 18px;background:#fff;">
           <div class="map-fake">
             <svg viewBox="0 0 390 150" preserveAspectRatio="none"><path d="M20 100 Q120 20 200 60 T370 40" stroke="#1A73E8" stroke-width="2.5" stroke-dasharray="6 5" fill="none"/></svg>
-            <div style="position:absolute;left:14px;bottom:10px;font-size:10px;font-weight:800;background:#fff;padding:3px 8px;border-radius:6px;">Dubai, UAE</div>
-            <div style="position:absolute;right:14px;top:10px;font-size:10px;font-weight:800;background:#fff;padding:3px 8px;border-radius:6px;">Mumbai, India</div>
+            <div style="position:absolute;left:14px;bottom:10px;font-size:11.5px;font-weight:800;background:#fff;padding:3px 8px;border-radius:6px;">Dubai, UAE</div>
+            <div style="position:absolute;right:14px;top:10px;font-size:11.5px;font-weight:800;background:#fff;padding:3px 8px;border-radius:6px;">Mumbai, India</div>
             <div style="position:absolute;left:56%;top:36%;width:26px;height:26px;border-radius:999px;background:#1A73E8;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(26,115,232,0.4);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
           </div>
         </div>
@@ -600,21 +600,21 @@
 
         <div id="track-pane-timeline" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;">
           <div style="display:flex;flex-direction:column;gap:16px;">
-            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:12.5px;font-weight:700;">Request Submitted</div><div style="font-size:10.5px;color:#97A4B8;">10 May 2024, 08:30 AM</div></div></div>
-            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:12.5px;font-weight:700;">Request Confirmed</div><div style="font-size:10.5px;color:#97A4B8;">10 May 2024, 11:15 AM</div></div></div>
-            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1A73E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:10px;font-weight:800;">●</div><div><div style="font-size:12.5px;font-weight:700;color:#1A73E8;">In Progress</div><div style="font-size:10.5px;color:#97A4B8;">10 May 2024, 01:45 PM — Aircraft assigned, departed from Dubai</div></div></div>
-            <div style="display:flex;gap:12px;opacity:0.5;"><div style="width:22px;height:22px;border-radius:999px;background:#E4E9F2;flex-shrink:0;"></div><div><div style="font-size:12.5px;font-weight:700;">Service Completed</div><div style="font-size:10.5px;color:#97A4B8;">Pending</div></div></div>
+            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:14px;font-weight:700;">Request Submitted</div><div style="font-size:12px;color:#97A4B8;">10 May 2024, 08:30 AM</div></div></div>
+            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:14px;font-weight:700;">Request Confirmed</div><div style="font-size:12px;color:#97A4B8;">10 May 2024, 11:15 AM</div></div></div>
+            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1A73E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:11.5px;font-weight:800;">●</div><div><div style="font-size:14px;font-weight:700;color:#1A73E8;">In Progress</div><div style="font-size:12px;color:#97A4B8;">10 May 2024, 01:45 PM — Aircraft assigned, departed from Dubai</div></div></div>
+            <div style="display:flex;gap:12px;opacity:0.5;"><div style="width:22px;height:22px;border-radius:999px;background:#E4E9F2;flex-shrink:0;"></div><div><div style="font-size:14px;font-weight:700;">Service Completed</div><div style="font-size:12px;color:#97A4B8;">Pending</div></div></div>
           </div>
         </div>
 
         <div id="track-pane-info" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;">
           <div class="card">
-            <div style="font-size:11px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:10px;">Care Team</div>
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:10px;">Care Team</div>
             <div class="info-row"><span class="info-label">Attending Physician</span><span class="info-value">Dr. Priya Mehta</span></div>
             <div class="info-row"><span class="info-label">Case Coordinator</span><span class="info-value">Rohit Verma</span></div>
           </div>
           <div class="card" style="margin-top:12px;">
-            <div style="font-size:11px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:10px;">Hospital</div>
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:10px;">Hospital</div>
             <div class="info-row"><span class="info-label">Facility</span><span class="info-value">Apollo Hospital, Mumbai</span></div>
             <div class="info-row"><span class="info-label">Contact</span><span class="info-value">+91 98765 43210</span></div>
           </div>
@@ -622,10 +622,10 @@
         </div>
 
         <div id="track-pane-docs" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;">
-          <div class="doc-row" onclick="toast('Downloading Service Summary…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:12px;font-weight:700;">Service Summary</div><div style="font-size:10px;color:#97A4B8;">PDF · 250 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
-          <div class="doc-row" onclick="toast('Downloading Discharge Summary…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:12px;font-weight:700;">Discharge Summary</div><div style="font-size:10px;color:#97A4B8;">PDF · 250 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
-          <div class="doc-row" onclick="toast('Downloading Invoice…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:12px;font-weight:700;">Invoice</div><div style="font-size:10px;color:#97A4B8;">PDF · 180 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
-          <div class="doc-row" onclick="toast('Downloading Payment Receipt…')" style="cursor:pointer;margin-bottom:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:12px;font-weight:700;">Payment Receipt</div><div style="font-size:10px;color:#97A4B8;">PDF · 120 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div class="doc-row" onclick="toast('Downloading Service Summary…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Service Summary</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 250 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div class="doc-row" onclick="toast('Downloading Discharge Summary…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Discharge Summary</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 250 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div class="doc-row" onclick="toast('Downloading Invoice…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Invoice</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 180 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div class="doc-row" onclick="toast('Downloading Payment Receipt…')" style="cursor:pointer;margin-bottom:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Payment Receipt</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 120 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
           <button class="btn-primary" style="margin-top:6px;" onclick="toast('Downloading all documents…')">Download All</button>
         </div>
       </section>
@@ -635,20 +635,20 @@
         <div class="topbar">
           <div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
           <span class="topbar-title">Notifications</span>
-          <span onclick="markAllRead()" style="cursor:pointer;font-size:11.5px;font-weight:700;color:#1A73E8;">Mark read</span>
+          <span onclick="markAllRead()" style="cursor:pointer;font-size:13px;font-weight:700;color:#1A73E8;">Mark read</span>
         </div>
         <div class="noscroll" id="notif-list" style="flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:10px;">
           <div class="notif-card card" style="display:flex;gap:10px;align-items:flex-start;">
             <div style="width:32px;height:32px;border-radius:10px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
-            <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;font-weight:700;">Aircraft Departed</span><span style="font-size:10px;color:#97A4B8;">10m ago</span></div><p style="font-size:11.5px;color:#5B6B84;margin:4px 0 0;">Your air ambulance has departed from Dubai. ETA 08:30 AM tomorrow.</p></div>
+            <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:14px;font-weight:700;">Aircraft Departed</span><span style="font-size:11.5px;color:#97A4B8;">10m ago</span></div><p style="font-size:13px;color:#5B6B84;margin:4px 0 0;">Your air ambulance has departed from Dubai. ETA 08:30 AM tomorrow.</p></div>
           </div>
           <div class="notif-card card" style="display:flex;gap:10px;align-items:flex-start;">
             <div style="width:32px;height:32px;border-radius:10px;background:#E4F7EA;color:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-            <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;font-weight:700;">Request Confirmed</span><span style="font-size:10px;color:#97A4B8;">1h ago</span></div><p style="font-size:11.5px;color:#5B6B84;margin:4px 0 0;">Your request REQ-1005 has been confirmed and is now in progress.</p></div>
+            <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:14px;font-weight:700;">Request Confirmed</span><span style="font-size:11.5px;color:#97A4B8;">1h ago</span></div><p style="font-size:13px;color:#5B6B84;margin:4px 0 0;">Your request REQ-1005 has been confirmed and is now in progress.</p></div>
           </div>
           <div class="notif-card card" style="display:flex;gap:10px;align-items:flex-start;">
             <div style="width:32px;height:32px;border-radius:10px;background:#FDECD8;color:#B4560D;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg></div>
-            <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;font-weight:700;">Case Scheduled</span><span style="font-size:10px;color:#97A4B8;">2h ago</span></div><p style="font-size:11.5px;color:#5B6B84;margin:4px 0 0;">Your request REQ-1004 has been scheduled by our team.</p></div>
+            <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:14px;font-weight:700;">Case Scheduled</span><span style="font-size:11.5px;color:#97A4B8;">2h ago</span></div><p style="font-size:13px;color:#5B6B84;margin:4px 0 0;">Your request REQ-1004 has been scheduled by our team.</p></div>
           </div>
         </div>
         <div style="flex-shrink:0;padding:14px 18px;background:#fff;border-top:1px solid #E4E9F2;"><button class="btn-primary" onclick="back()">Return to Home</button></div>
@@ -663,36 +663,36 @@
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:16px 18px;">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px;">
-            <a href="tel:+971585787878" style="text-decoration:none;color:inherit;padding:12px 6px;border-radius:14px;background:#fff;border:1px solid #E4E9F2;text-align:center;"><div style="width:32px;height:32px;border-radius:999px;background:#FBE9E9;color:#D64545;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></div><span style="font-size:10px;font-weight:700;">Call Alarm Desk</span></a>
-            <a href="mailto:ops@humancareworldwide.com" style="text-decoration:none;color:inherit;padding:12px 6px;border-radius:14px;background:#fff;border:1px solid #E4E9F2;text-align:center;"><div style="width:32px;height:32px;border-radius:999px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><span style="font-size:10px;font-weight:700;">Email Ops</span></a>
-            <div onclick="toast('Connecting to a support coordinator…')" style="cursor:pointer;padding:12px 6px;border-radius:14px;background:#fff;border:1px solid #E4E9F2;text-align:center;"><div style="width:32px;height:32px;border-radius:999px;background:#E4F7EA;color:#1E8E4A;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div><span style="font-size:10px;font-weight:700;">Live Chat</span></div>
+            <a href="tel:+971585787878" style="text-decoration:none;color:inherit;padding:12px 6px;border-radius:14px;background:#fff;border:1px solid #E4E9F2;text-align:center;"><div style="width:32px;height:32px;border-radius:999px;background:#FBE9E9;color:#D64545;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></div><span style="font-size:11.5px;font-weight:700;">Call Alarm Desk</span></a>
+            <a href="mailto:ops@humancareworldwide.com" style="text-decoration:none;color:inherit;padding:12px 6px;border-radius:14px;background:#fff;border:1px solid #E4E9F2;text-align:center;"><div style="width:32px;height:32px;border-radius:999px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><span style="font-size:11.5px;font-weight:700;">Email Ops</span></a>
+            <div onclick="toast('Connecting to a support coordinator…')" style="cursor:pointer;padding:12px 6px;border-radius:14px;background:#fff;border:1px solid #E4E9F2;text-align:center;"><div style="width:32px;height:32px;border-radius:999px;background:#E4F7EA;color:#1E8E4A;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div><span style="font-size:11.5px;font-weight:700;">Live Chat</span></div>
           </div>
 
-          <div style="font-size:11px;font-weight:800;color:#5B6B84;text-transform:uppercase;margin-bottom:10px;">Regional Numbers</div>
+          <div style="font-size:12.5px;font-weight:800;color:#5B6B84;text-transform:uppercase;margin-bottom:10px;">Regional Numbers</div>
           <div class="card" style="margin-bottom:18px;padding:4px 14px;">
-            <a href="tel:+919699999065" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">India</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+91 9699999065</span></a>
-            <a href="tel:+971585787878" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">UAE (Global Alarm)</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+971 585787878</span></a>
-            <a href="tel:+96892402959" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">Oman</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+968 92402959</span></a>
-            <a href="tel:+8801314968067" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">Bangladesh</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+880 1314968067</span></a>
-            <a href="tel:+447557070702" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:12px;">UK</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+44 7557070702</span></a>
+            <a href="tel:+919699999065" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:13.5px;">India</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+91 9699999065</span></a>
+            <a href="tel:+971585787878" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:13.5px;">UAE (Global Alarm)</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+971 585787878</span></a>
+            <a href="tel:+96892402959" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:13.5px;">Oman</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+968 92402959</span></a>
+            <a href="tel:+8801314968067" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:13.5px;">Bangladesh</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+880 1314968067</span></a>
+            <a href="tel:+447557070702" style="text-decoration:none;color:inherit;" class="info-row"><span class="info-label" style="color:#17233D;font-weight:700;font-size:13.5px;">UK</span><span class="info-value" style="color:#1A73E8;font-family:'Inter',sans-serif;">+44 7557070702</span></a>
           </div>
 
-          <div style="font-size:11px;font-weight:800;color:#5B6B84;text-transform:uppercase;margin-bottom:10px;">Frequently Asked Questions</div>
+          <div style="font-size:12.5px;font-weight:800;color:#5B6B84;text-transform:uppercase;margin-bottom:10px;">Frequently Asked Questions</div>
           <div class="card faq-item" style="margin-bottom:10px;padding:0;overflow:hidden;">
-            <div class="faq-q" onclick="toggleFaq(this)" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:700;">How fast can an air ambulance be dispatched?</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-chevron" style="flex-shrink:0;transition:transform .2s;"><path d="m6 9 6 6 6-6"/></svg></div>
-            <p class="faq-a" style="display:none;margin:0;padding:0 14px 13px;font-size:11.5px;color:#5B6B84;line-height:1.6;">For critical cases, our team can have an aircraft airborne within 2–4 hours of confirmed clearance.</p>
+            <div class="faq-q" onclick="toggleFaq(this)" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13.5px;font-weight:700;">How fast can an air ambulance be dispatched?</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-chevron" style="flex-shrink:0;transition:transform .2s;"><path d="m6 9 6 6 6-6"/></svg></div>
+            <p class="faq-a" style="display:none;margin:0;padding:0 14px 13px;font-size:13px;color:#5B6B84;line-height:1.6;">For critical cases, our team can have an aircraft airborne within 2–4 hours of confirmed clearance.</p>
           </div>
           <div class="card faq-item" style="margin-bottom:10px;padding:0;overflow:hidden;">
-            <div class="faq-q" onclick="toggleFaq(this)" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:700;">Will my insurance / TPA cover the cost?</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-chevron" style="flex-shrink:0;transition:transform .2s;"><path d="m6 9 6 6 6-6"/></svg></div>
-            <p class="faq-a" style="display:none;margin:0;padding:0 14px 13px;font-size:11.5px;color:#5B6B84;line-height:1.6;">We work directly with most major TPAs and insurers on a Guarantee of Payment basis.</p>
+            <div class="faq-q" onclick="toggleFaq(this)" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13.5px;font-weight:700;">Will my insurance / TPA cover the cost?</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-chevron" style="flex-shrink:0;transition:transform .2s;"><path d="m6 9 6 6 6-6"/></svg></div>
+            <p class="faq-a" style="display:none;margin:0;padding:0 14px 13px;font-size:13px;color:#5B6B84;line-height:1.6;">We work directly with most major TPAs and insurers on a Guarantee of Payment basis.</p>
           </div>
           <div class="card faq-item" style="margin-bottom:10px;padding:0;overflow:hidden;">
-            <div class="faq-q" onclick="toggleFaq(this)" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:700;">How do I track my request status?</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-chevron" style="flex-shrink:0;transition:transform .2s;"><path d="m6 9 6 6 6-6"/></svg></div>
-            <p class="faq-a" style="display:none;margin:0;padding:0 14px 13px;font-size:11.5px;color:#5B6B84;line-height:1.6;">Open My Requests, tap a request, then View Live Tracking — no separate app needed.</p>
+            <div class="faq-q" onclick="toggleFaq(this)" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13.5px;font-weight:700;">How do I track my request status?</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-chevron" style="flex-shrink:0;transition:transform .2s;"><path d="m6 9 6 6 6-6"/></svg></div>
+            <p class="faq-a" style="display:none;margin:0;padding:0 14px 13px;font-size:13px;color:#5B6B84;line-height:1.6;">Open My Requests, tap a request, then View Live Tracking — no separate app needed.</p>
           </div>
           <div class="card faq-item" style="padding:0;overflow:hidden;">
-            <div class="faq-q" onclick="toggleFaq(this)" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:700;">Do you operate in my country?</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-chevron" style="flex-shrink:0;transition:transform .2s;"><path d="m6 9 6 6 6-6"/></svg></div>
-            <p class="faq-a" style="display:none;margin:0;padding:0 14px 13px;font-size:11.5px;color:#5B6B84;line-height:1.6;">We have offices across 8 regions — India, UAE, Oman, Turkey, Canada, Kenya, Bangladesh and Singapore — plus a global network of 3,500+ partner hospitals.</p>
+            <div class="faq-q" onclick="toggleFaq(this)" style="cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13.5px;font-weight:700;">Do you operate in my country?</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="faq-chevron" style="flex-shrink:0;transition:transform .2s;"><path d="m6 9 6 6 6-6"/></svg></div>
+            <p class="faq-a" style="display:none;margin:0;padding:0 14px 13px;font-size:13px;color:#5B6B84;line-height:1.6;">We have offices across 8 regions — India, UAE, Oman, Turkey, Canada, Kenya, Bangladesh and Singapore — plus a global network of 3,500+ partner hospitals.</p>
           </div>
         </div>
       </section>
@@ -703,76 +703,76 @@
         <div style="margin:auto 0;">
           <div style="text-align:center;margin-bottom:24px;">
             <div style="width:60px;height:60px;border-radius:16px;background:#E7F0FE;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></div>
-            <h2 class="display" style="font-size:19px;margin:0;color:#0D2340;">Sign In to HumanCare</h2>
-            <p style="font-size:12px;color:#5B6B84;margin-top:8px;max-width:260px;margin-left:auto;margin-right:auto;">Select your portal to continue.</p>
+            <h2 class="display" style="font-size:20.5px;margin:0;color:#0D2340;">Sign In to HumanCare</h2>
+            <p style="font-size:13.5px;color:#5B6B84;margin-top:8px;max-width:260px;margin-left:auto;margin-right:auto;">Select your portal to continue.</p>
           </div>
           <div class="card" style="cursor:pointer;display:flex;align-items:center;gap:12px;margin-bottom:12px;" onclick="nav('login')">
             <div style="width:42px;height:42px;border-radius:12px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-            <div><div style="font-size:13px;font-weight:700;">Patient or Family Member</div><div style="font-size:10.5px;color:#97A4B8;margin-top:2px;">Track requests &amp; manage care</div></div>
+            <div><div style="font-size:14.5px;font-weight:700;">Patient or Family Member</div><div style="font-size:12px;color:#97A4B8;margin-top:2px;">Track requests &amp; manage care</div></div>
           </div>
           <div class="card" style="cursor:pointer;display:flex;align-items:center;gap:12px;" onclick="nav('vendor-login')">
             <div style="width:42px;height:42px;border-radius:12px;background:#E4F7EA;color:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M12 6h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M8 6h.01"/><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/><rect x="4" y="2" width="16" height="20" rx="2"/></svg></div>
-            <div><div style="font-size:13px;font-weight:700;">Vendor / Corporate Partner</div><div style="font-size:10.5px;color:#97A4B8;margin-top:2px;">Insurance, TPA &amp; corporate accounts</div></div>
+            <div><div style="font-size:14.5px;font-weight:700;">Vendor / Corporate Partner</div><div style="font-size:12px;color:#97A4B8;margin-top:2px;">Insurance, TPA &amp; corporate accounts</div></div>
           </div>
         </div>
-        <p style="text-align:center;font-size:11px;color:#97A4B8;">Need credentials? <span style="color:#1A73E8;font-weight:700;">ops@humancareworldwide.com</span></p>
+        <p style="text-align:center;font-size:12.5px;color:#97A4B8;">Need credentials? <span style="color:#1A73E8;font-weight:700;">ops@humancareworldwide.com</span></p>
       </section>
 
       <!-- VENDOR LOGIN -->
       <section id="screen-vendor-login" class="screen hidden" style="background:#FFFFFF;">
         <div style="flex-shrink:0;padding:26px 26px 0;"><div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div></div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:40px 26px 26px;display:flex;flex-direction:column;">
-          <h2 class="display" style="font-size:22px;margin:0;color:#0D2340;">Vendor / Corporate Sign In</h2>
-          <p style="font-size:14px;color:#5B6B84;margin:10px 0 28px;">Insurance · Government · TPA · Corporate clients</p>
+          <h2 class="display" style="font-size:23.5px;margin:0;color:#0D2340;">Vendor / Corporate Sign In</h2>
+          <p style="font-size:15.5px;color:#5B6B84;margin:10px 0 28px;">Insurance · Government · TPA · Corporate clients</p>
           <div style="display:flex;flex-direction:column;gap:18px;">
-            <div><span class="field-label" style="font-size:12.5px;">Email Address</span><input id="vl-email" class="field-input" style="font-size:15px;padding:14px 13px;" placeholder="corporate@company.com" oninput="checkVendorLogin()"/></div>
+            <div><span class="field-label" style="font-size:14px;">Email Address</span><input id="vl-email" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="corporate@company.com" oninput="checkVendorLogin()"/></div>
             <div>
-              <span class="field-label" style="font-size:12.5px;">Password</span>
+              <span class="field-label" style="font-size:14px;">Password</span>
               <div style="position:relative;">
-                <input id="vl-password" type="password" class="field-input" style="font-size:15px;padding:14px 13px;padding-right:44px;" placeholder="Password issued by HumanCare" oninput="checkVendorLogin()"/>
+                <input id="vl-password" type="password" class="field-input" style="font-size:16.5px;padding:14px 13px;padding-right:44px;" placeholder="Password issued by HumanCare" oninput="checkVendorLogin()"/>
                 <div onclick="togglePwd('vl-password','vl-eye')" style="cursor:pointer;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#97A4B8;"><svg id="vl-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
               </div>
             </div>
           </div>
-          <div style="text-align:right;margin-top:10px;"><span onclick="startForgotPassword('vendor-login')" style="cursor:pointer;font-size:13px;color:#1A73E8;font-weight:700;">Forgot password?</span></div>
+          <div style="text-align:right;margin-top:10px;"><span onclick="startForgotPassword('vendor-login')" style="cursor:pointer;font-size:14.5px;color:#1A73E8;font-weight:700;">Forgot password?</span></div>
           <div style="margin-top:20px;display:flex;flex-direction:column;gap:14px;">
-            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:12.5px;color:#5B6B84;line-height:1.5;">I agree to the Terms &amp; Conditions and Privacy Policy.</span></label>
-            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:12.5px;color:#5B6B84;line-height:1.5;">I confirm I am authorized to submit and manage cases for this organization.</span></label>
+            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:14px;color:#5B6B84;line-height:1.5;">I agree to the Terms &amp; Conditions and Privacy Policy.</span></label>
+            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:14px;color:#5B6B84;line-height:1.5;">I confirm I am authorized to submit and manage cases for this organization.</span></label>
           </div>
-          <button id="vl-submit" class="btn-primary" style="margin-top:26px;padding:16px;font-size:15px;opacity:0.45;" onclick="vendorLoginSubmit()">Sign In</button>
-          <div class="card" style="margin-top:20px;"><p style="font-size:12.5px;color:#5B6B84;margin:0;line-height:1.6;"><span style="color:#0D2340;font-weight:700;">New vendor?</span> Contact HumanCare Global Operations: <span style="color:#1A73E8;">ops@humancareworldwide.com</span></p></div>
+          <button id="vl-submit" class="btn-primary" style="margin-top:26px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="vendorLoginSubmit()">Sign In</button>
+          <div class="card" style="margin-top:20px;"><p style="font-size:14px;color:#5B6B84;margin:0;line-height:1.6;"><span style="color:#0D2340;font-weight:700;">New vendor?</span> Contact HumanCare Global Operations: <span style="color:#1A73E8;">ops@humancareworldwide.com</span></p></div>
         </div>
       </section>
 
       <!-- VENDOR OTP -->
       <section id="screen-vendor-otp" class="screen hidden" style="padding:26px;">
         <div class="back-btn" onclick="back()" style="margin-bottom:22px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-        <h2 class="display" style="font-size:20px;margin:0;color:#0D2340;">Verify Your Identity</h2>
-        <p style="font-size:12.5px;color:#5B6B84;margin:6px 0 24px;">6-digit code sent to <span style="color:#0D2340;font-weight:700;">corporate@company.com</span></p>
+        <h2 class="display" style="font-size:21.5px;margin:0;color:#0D2340;">Verify Your Identity</h2>
+        <p style="font-size:14px;color:#5B6B84;margin:6px 0 24px;">6-digit code sent to <span style="color:#0D2340;font-weight:700;">corporate@company.com</span></p>
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;" data-otp-group="vendor">
           <input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/>
         </div>
         <button class="btn-primary" style="margin-top:20px;" onclick="verifyOtp('vendor')">Verify &amp; Continue</button>
-        <div style="text-align:center;margin-top:16px;"><span style="font-size:12px;color:#97A4B8;">Resend code in 00:28</span></div>
+        <div style="text-align:center;margin-top:16px;"><span style="font-size:13.5px;color:#97A4B8;">Resend code in 00:28</span></div>
       </section>
 
       <!-- VENDOR DASHBOARD -->
       <section id="screen-vendor-dashboard" class="screen hidden">
         <div class="topbar">
           <div>
-            <div style="font-size:13px;font-weight:800;">Bupa Global Assistance</div>
-            <div style="font-size:10px;color:#1A73E8;font-family:'Inter',sans-serif;">Partner #HC-CORP-482</div>
+            <div style="font-size:14.5px;font-weight:800;">Bupa Global Assistance</div>
+            <div style="font-size:11.5px;color:#1A73E8;font-family:'Inter',sans-serif;">Partner #HC-CORP-482</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
             <div class="icon-btn" onclick="nav('notifications')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:999px;background:#E5484D;"></span></div>
-            <span onclick="navReplace('welcome')" style="cursor:pointer;font-size:10.5px;color:#97A4B8;">Sign Out</span>
+            <span onclick="navReplace('welcome')" style="cursor:pointer;font-size:12px;color:#97A4B8;">Sign Out</span>
           </div>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:16px 18px 90px;">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
-            <div class="card" style="text-align:center;"><div style="font-size:16px;font-weight:800;">24</div><div style="font-size:9px;color:#97A4B8;margin-top:2px;">Total</div></div>
-            <div class="card" style="text-align:center;background:#E7F0FE;border-color:#CFE0FB;"><div style="font-size:16px;font-weight:800;color:#1A5FC4;">4</div><div style="font-size:9px;color:#1A5FC4;margin-top:2px;">Active</div></div>
-            <div class="card" style="text-align:center;"><div style="font-size:16px;font-weight:800;color:#1E8E4A;">20</div><div style="font-size:9px;color:#97A4B8;margin-top:2px;">Done</div></div>
+            <div class="card" style="text-align:center;"><div style="font-size:17.5px;font-weight:800;">24</div><div style="font-size:10.5px;color:#97A4B8;margin-top:2px;">Total</div></div>
+            <div class="card" style="text-align:center;background:#E7F0FE;border-color:#CFE0FB;"><div style="font-size:17.5px;font-weight:800;color:#1A5FC4;">4</div><div style="font-size:10.5px;color:#1A5FC4;margin-top:2px;">Active</div></div>
+            <div class="card" style="text-align:center;"><div style="font-size:17.5px;font-weight:800;color:#1E8E4A;">20</div><div style="font-size:10.5px;color:#97A4B8;margin-top:2px;">Done</div></div>
           </div>
           <div class="tab-row noscroll" style="margin-bottom:12px;">
             <span class="tab-chip on" data-stage="all" onclick="filterCases(this)">All (4)</span>
@@ -781,22 +781,22 @@
             <span class="tab-chip" data-stage="scheduled" onclick="filterCases(this)">Scheduled (1)</span>
           </div>
           <div class="card case-card" data-stage="progress" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-089</span><span class="pill pill-progress">In Progress</span></div>
-            <div style="font-size:13px;font-weight:700;">Robert Evans</div><div style="font-size:11px;color:#97A4B8;">Bangkok → Frankfurt</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-089</span><span class="pill pill-progress">In Progress</span></div>
+            <div style="font-size:14.5px;font-weight:700;">Robert Evans</div><div style="font-size:12.5px;color:#97A4B8;">Bangkok → Frankfurt</div>
           </div>
           <div class="card case-card" data-stage="scheduled" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-094</span><span class="pill" style="background:#EEF1FE;color:#5B4FE0;">Scheduled</span></div>
-            <div style="font-size:13px;font-weight:700;">Sarah Jenkins</div><div style="font-size:11px;color:#97A4B8;">Dubai → Mumbai</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-094</span><span class="pill" style="background:#EEF1FE;color:#5B4FE0;">Scheduled</span></div>
+            <div style="font-size:14.5px;font-weight:700;">Sarah Jenkins</div><div style="font-size:12.5px;color:#97A4B8;">Dubai → Mumbai</div>
           </div>
           <div class="card case-card" data-stage="progress" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-102</span><span class="pill pill-progress">In Progress</span></div>
-            <div style="font-size:13px;font-weight:700;">Elena Rostova</div><div style="font-size:11px;color:#97A4B8;">Doha → London</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-102</span><span class="pill pill-progress">In Progress</span></div>
+            <div style="font-size:14.5px;font-weight:700;">Elena Rostova</div><div style="font-size:12.5px;color:#97A4B8;">Doha → London</div>
           </div>
           <div class="card case-card" data-stage="submitted" onclick="nav('tracking')" style="cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:11px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-107</span><span class="pill pill-submitted">Submitted</span></div>
-            <div style="font-size:13px;font-weight:700;">Klaus Weber</div><div style="font-size:11px;color:#97A4B8;">Munich → Berlin</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-107</span><span class="pill pill-submitted">Submitted</span></div>
+            <div style="font-size:14.5px;font-weight:700;">Klaus Weber</div><div style="font-size:12.5px;color:#97A4B8;">Munich → Berlin</div>
           </div>
-          <div id="vd-empty" style="display:none;text-align:center;padding:30px 0;color:#97A4B8;font-size:12px;">No cases in this stage.</div>
+          <div id="vd-empty" style="display:none;text-align:center;padding:30px 0;color:#97A4B8;font-size:13.5px;">No cases in this stage.</div>
         </div>
         <div style="position:absolute;bottom:64px;left:0;right:0;background:#fff;border-top:1px solid #E4E9F2;padding:12px 18px;">
           <button class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:6px;" onclick="nav('vendor-new-case')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Initiate New Corporate Case</button>
@@ -812,7 +812,7 @@
           <span style="width:32px;"></span>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;padding-bottom:100px;">
-          <p style="font-size:11.5px;color:#97A4B8;margin:0 0 16px;">Submitting under <span style="color:#1A73E8;font-weight:700;">Bupa Global Assistance</span></p>
+          <p style="font-size:13px;color:#97A4B8;margin:0 0 16px;">Submitting under <span style="color:#1A73E8;font-weight:700;">Bupa Global Assistance</span></p>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div><span class="field-label">Patient Full Name</span><input id="nc-name" class="field-input" placeholder="Full legal name" oninput="checkNewCase()"/></div>
             <div><span class="field-label">Patient Contact Number</span><input id="nc-phone" class="field-input" placeholder="+91 98765 43210" oninput="checkNewCase()"/></div>
@@ -837,8 +837,8 @@
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px 18px 90px;">
           <div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div style="width:52px;height:52px;border-radius:14px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;">RS</div>
-            <div><div style="font-size:14px;font-weight:800;">Rakesh Sharma</div><div style="font-size:11px;color:#97A4B8;margin-top:2px;">+91 98765 43210</div><div style="font-size:10.5px;color:#97A4B8;">rakesh.sharma@example.com</div></div>
+            <div style="width:52px;height:52px;border-radius:14px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17.5px;flex-shrink:0;">RS</div>
+            <div><div style="font-size:15.5px;font-weight:800;">Rakesh Sharma</div><div style="font-size:12.5px;color:#97A4B8;margin-top:2px;">+91 98765 43210</div><div style="font-size:12px;color:#97A4B8;">rakesh.sharma@example.com</div></div>
           </div>
           <div class="card" style="margin-bottom:12px;">
             <div class="info-row"><span class="info-label">My Documents</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
@@ -854,7 +854,7 @@
     </div>
   </div>
 
-  <div id="toast" style="position:fixed;left:50%;bottom:24px;transform:translate(-50%,120%);background:#17233D;color:#fff;border:1px solid #223047;padding:10px 18px;border-radius:999px;font-size:12px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,0.3);transition:transform .25s ease;z-index:999;white-space:nowrap;"></div>
+  <div id="toast" style="position:fixed;left:50%;bottom:24px;transform:translate(-50%,120%);background:#17233D;color:#fff;border:1px solid #223047;padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,0.3);transition:transform .25s ease;z-index:999;white-space:nowrap;"></div>
 
   <p class="chrome-foot">Prototype for internal review — mock data throughout. Individual customer journey plus vendor/corporate side, all screens navigable.</p>
 
@@ -939,7 +939,7 @@
     }
     document.getElementById('sd-icon').innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + s.icon + '</svg>';
     document.getElementById('sd-feature-list').innerHTML = s.features.map(function (f) {
-      return '<div style="display:flex;gap:8px;align-items:flex-start;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M20 6 9 17l-5-5"/></svg><span style="font-size:12px;">' + f + '</span></div>';
+      return '<div style="display:flex;gap:8px;align-items:flex-start;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M20 6 9 17l-5-5"/></svg><span style="font-size:13.5px;">' + f + '</span></div>';
     }).join('');
     nav('service-detail');
   }
@@ -975,11 +975,11 @@
       box.style.cssText = 'cursor:pointer;padding:12px;border-radius:14px;border:1px solid #E4E9F2;background:#fff;display:flex;align-items:center;gap:10px;text-align:left;';
       box.innerHTML =
         '<div style="width:34px;height:34px;border-radius:9px;background:#FDECEC;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D64545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>' +
-        '<div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:700;color:#17233D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">medical_report.pdf</div><div style="font-size:10px;color:#97A4B8;">Tap to remove</div></div>' +
+        '<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:700;color:#17233D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">medical_report.pdf</div><div style="font-size:11.5px;color:#97A4B8;">Tap to remove</div></div>' +
         '<div style="width:22px;height:22px;border-radius:999px;background:#1A73E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>';
     } else {
       box.style.cssText = 'cursor:pointer;padding:16px;border-radius:12px;border:1.5px dashed #C7D3E5;background:#F7F9FC;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;';
-      box.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg><span style="font-size:12px;font-weight:700;color:#1A73E8;">Upload File</span><span style="font-size:10px;color:#97A4B8;">PDF, JPG, PNG (Max 5MB)</span>';
+      box.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg><span style="font-size:13.5px;font-weight:700;color:#1A73E8;">Upload File</span><span style="font-size:11.5px;color:#97A4B8;">PDF, JPG, PNG (Max 5MB)</span>';
     }
   }
   function populateReview() {
