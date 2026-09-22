@@ -232,10 +232,20 @@
             <div><span class="field-label">Email Address</span><input id="rg-email" class="field-input" placeholder="you@example.com" oninput="checkRegister()"/></div>
             <div><span class="field-label">Password</span><input id="rg-pwd" type="password" class="field-input" placeholder="Create a password" oninput="checkRegister()"/></div>
           </div>
-          <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;margin-top:16px;">
-            <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-            <span style="font-size:11.5px;color:#5B6B84;line-height:1.5;">I agree to the Terms &amp; Conditions and Privacy Policy</span>
-          </label>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px;">
+            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;">
+              <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <span style="font-size:12px;color:#5B6B84;line-height:1.5;">By submitting the above information, you agree to our <span style="color:#0D2340;font-weight:700;">Terms and Conditions</span> and <span style="color:#0D2340;font-weight:700;">Privacy Policy</span></span>
+            </label>
+            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;">
+              <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <span style="font-size:12px;color:#5B6B84;line-height:1.5;">You are agreeing to receive communication reminding you about your account and updates about HumanCare WorldWide's services and programs.</span>
+            </label>
+            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;">
+              <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <span style="font-size:12px;color:#5B6B84;line-height:1.5;">Certain features on the platform are for informational and educational purposes only. It is not a medical device and does not provide professional medical advice, diagnosis, or treatment. Never disregard or delay seeking professional medical consultation because of information found here. Always consult a qualified healthcare provider regarding any medical condition.</span>
+            </label>
+          </div>
           <button id="rg-submit" class="btn-primary" style="margin-top:20px;opacity:0.45;" onclick="registerSubmit()">Sign Up</button>
           <p style="text-align:center;font-size:12px;color:#5B6B84;margin-top:18px;">Already have an account? <span onclick="nav('login')" style="cursor:pointer;color:#1A73E8;font-weight:700;">Login</span></p>
         </div>
