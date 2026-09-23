@@ -339,20 +339,23 @@
           <p style="font-size:13px;color:#5B6B84;margin:0 0 16px;">Choose how you'd like to travel</p>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:0 18px 18px;display:flex;flex-direction:column;gap:12px;">
-          <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openService('privatecharter')">
-            <div class="svc-tile-icon" style="margin:0;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
-            <div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Private Charter Service</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Airborne with a full ICU team in under 4 hours</div></div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+          <div class="air-opt-card" data-bg="IMG_COMMERCIALAIR" style="flex:1;min-height:150px;border-radius:16px;overflow:hidden;background-size:cover;background-position:center;padding:16px;color:#fff;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;" onclick="openService('privatecharter')">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;">
+              <div><div style="font-size:15px;font-weight:800;text-shadow:0 1px 5px rgba(0,0,0,0.5);">Private Charter Service</div><div style="font-size:12px;opacity:0.95;margin-top:3px;text-shadow:0 1px 5px rgba(0,0,0,0.5);">Airborne with a full ICU team in under 4 hours</div></div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
           </div>
-          <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openService('rotarywing')">
-            <div class="svc-tile-icon" style="margin:0;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3"/><path d="M4 8h16"/><path d="M12 8c-4.5 0-8 2.2-8 5v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2c0-2.8-3.5-5-8-5Z"/><path d="M9 16v3"/><path d="M15 16v3"/><circle cx="12" cy="12" r="1.5"/></svg></div>
-            <div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Rotary Wing Medical Repatriation</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Helicopter dispatch in under 2 hours</div></div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+          <div class="air-opt-card" data-bg="IMG_ROTARY" style="flex:1;min-height:150px;border-radius:16px;overflow:hidden;background-size:cover;background-position:center;padding:16px;color:#fff;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;" onclick="openService('rotarywing')">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;">
+              <div><div style="font-size:15px;font-weight:800;text-shadow:0 1px 5px rgba(0,0,0,0.5);">Rotary Wing Medical Repatriation</div><div style="font-size:12px;opacity:0.95;margin-top:3px;text-shadow:0 1px 5px rgba(0,0,0,0.5);">Helicopter dispatch in under 2 hours</div></div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
           </div>
-          <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openService('commercialair')">
-            <div class="svc-tile-icon" style="margin:0;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></div>
-            <div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Commercial Airlines</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Stretcher &amp; wheelchair on scheduled flights</div></div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+          <div class="air-opt-card" data-bg="IMG_AIR" style="flex:1;min-height:150px;border-radius:16px;overflow:hidden;background-size:cover;background-position:center;padding:16px;color:#fff;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;" onclick="openService('commercialair')">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;">
+              <div><div style="font-size:15px;font-weight:800;text-shadow:0 1px 5px rgba(0,0,0,0.5);">Commercial Airlines</div><div style="font-size:12px;opacity:0.95;margin-top:3px;text-shadow:0 1px 5px rgba(0,0,0,0.5);">Stretcher &amp; wheelchair on scheduled flights</div></div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
           </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="none"></div>
@@ -1172,6 +1175,12 @@
   if (ssCareBanner) {
     ssCareBanner.style.backgroundImage = 'linear-gradient(180deg, rgba(13,35,64,0.1) 0%, rgba(13,35,64,0.35) 55%, rgba(13,35,64,0.88) 100%), url(' + SERVICE_IMAGES.IMG_HOMECARE + ')';
   }
+  document.querySelectorAll('.air-opt-card').forEach(function (card) {
+    var imgKey = card.getAttribute('data-bg');
+    if (imgKey && SERVICE_IMAGES[imgKey]) {
+      card.style.backgroundImage = 'linear-gradient(180deg, rgba(13,35,64,0.1) 0%, rgba(13,35,64,0.3) 50%, rgba(13,35,64,0.85) 100%), url(' + SERVICE_IMAGES[imgKey] + ')';
+    }
+  });
   setTimeout(function () {
     if (historyStack[historyStack.length - 1] === 'splash') navReplace('welcome');
   }, 2000);
