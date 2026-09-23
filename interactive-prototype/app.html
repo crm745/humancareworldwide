@@ -652,10 +652,12 @@
           <div>
             <div class="info-row"><span class="info-label">Request Date</span><span class="info-value">10 May 2024, 10:30 AM</span></div>
             <div class="info-row"><span class="info-label">Patient Name</span><span class="info-value">Rakesh Sharma</span></div>
+            <div class="info-row"><span class="info-label">Care Level</span><span class="info-value">Stable / Monitored</span></div>
             <div class="info-row"><span class="info-label">Service</span><span class="info-value">Air Ambulance</span></div>
             <div class="info-row"><span class="info-label">From</span><span class="info-value">Dubai, UAE</span></div>
             <div class="info-row"><span class="info-label">To</span><span class="info-value">Mumbai, India</span></div>
             <div class="info-row"><span class="info-label">Expected Date</span><span class="info-value">11 May 2024</span></div>
+            <div class="info-row" onclick="openDocuments()" style="cursor:pointer;"><span class="info-label">Documents</span><span class="info-value" style="color:#1A73E8;">medical_report.pdf &gt;</span></div>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin:26px 0 20px;">
             <span style="font-size:14.5px;font-weight:800;color:#0D2340;">Tracking Status</span>
@@ -1137,6 +1139,7 @@
     navReplace('request-submitted');
   }
   function openRequestDetails() { nav('request-details'); }
+  function openDocuments() { nav('tracking'); switchTrackTab('docs'); }
 
   function filterMyRequests(chip) {
     document.querySelectorAll('#screen-my-requests .tab-row .tab-chip').forEach(function (c) { c.classList.remove('on'); });
