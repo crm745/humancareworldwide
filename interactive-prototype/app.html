@@ -166,34 +166,38 @@
 
       <!-- LOGIN OTP -->
       <section id="screen-login-otp" class="screen hidden" style="padding:26px;background:#FFFFFF;">
-        <div class="back-btn" onclick="back()" style="margin-bottom:40px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-        <div>
+        <div class="back-btn" onclick="back()" style="margin-bottom:40px;flex-shrink:0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+        <div style="flex-shrink:0;">
           <h2 class="display" style="font-size:27.5px;margin:0;color:#0D2340;text-align:center;">Enter OTP</h2>
           <p style="font-size:15.5px;color:#5B6B84;margin:14px 0 32px;text-align:center;">6-digit code sent to <span id="lgo-identifier" style="color:#0D2340;font-weight:700;"></span></p>
           <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;" data-otp-group="login">
             <input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" style="font-size:21.5px;padding:14px 0;" maxlength="1" oninput="otpAdvance(this)"/>
           </div>
-          <div style="text-align:center;margin:20px 0 34px;"><span style="font-size:14.5px;color:#97A4B8;">Resend code in 00:28</span></div>
-          <button class="btn-primary" style="padding:16px;font-size:16.5px;" onclick="verifyOtp('login')">Verify &amp; Continue</button>
+          <div style="text-align:center;margin:20px 0 0;"><span style="font-size:14.5px;color:#97A4B8;">Resend code in 00:28</span></div>
         </div>
+        <div style="flex:1;min-height:24px;"></div>
+        <button class="btn-primary" style="padding:16px;font-size:16.5px;flex-shrink:0;" onclick="verifyOtp('login')">Verify &amp; Continue</button>
       </section>
 
       <!-- FORGOT PASSWORD -->
       <section id="screen-forgot-password" class="screen hidden" style="padding:26px;background:#FFFFFF;">
-        <div class="back-btn" onclick="back()" style="margin-bottom:40px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-        <div>
+        <div class="back-btn" onclick="back()" style="margin-bottom:40px;flex-shrink:0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+        <div style="flex-shrink:0;">
           <h2 class="display" style="font-size:27.5px;margin:0;color:#0D2340;text-align:center;">Forgot Password?</h2>
           <p style="font-size:16.5px;color:#5B6B84;margin:14px 0 36px;line-height:1.55;text-align:center;">Enter the mobile number or email on your account and we'll send you a code to reset your password.</p>
           <div><span class="field-label" style="font-size:14px;">Mobile Number / Email</span><input id="fp-id" class="field-input" style="font-size:16.5px;padding:14px 13px;" placeholder="Enter mobile or email" oninput="checkForgotPassword()"/></div>
-          <button id="fp-submit" class="btn-primary" style="margin-top:32px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="forgotPasswordSubmit()">Send Reset Code</button>
+        </div>
+        <div style="flex:1;min-height:24px;"></div>
+        <div style="flex-shrink:0;">
+          <button id="fp-submit" class="btn-primary" style="padding:16px;font-size:16.5px;opacity:0.45;" onclick="forgotPasswordSubmit()">Send Reset Code</button>
           <p style="text-align:center;font-size:15px;color:#5B6B84;margin-top:28px;">Remembered it? <span onclick="back()" style="cursor:pointer;color:#1A73E8;font-weight:700;">Back to Login</span></p>
         </div>
       </section>
 
       <!-- RESET PASSWORD -->
       <section id="screen-reset-password" class="screen hidden" style="padding:26px;background:#FFFFFF;">
-        <div class="back-btn" onclick="back()" style="margin-bottom:40px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-        <div>
+        <div class="back-btn" onclick="back()" style="margin-bottom:40px;flex-shrink:0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+        <div style="flex-shrink:0;">
           <h2 class="display" style="font-size:27.5px;margin:0;color:#0D2340;text-align:center;">Enter Reset Code</h2>
           <p style="font-size:15.5px;color:#5B6B84;margin:14px 0 32px;text-align:center;">6-digit code sent to <span id="rp-identifier" style="color:#0D2340;font-weight:700;"></span></p>
           <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;" data-otp-group="reset">
@@ -216,8 +220,9 @@
               </div>
             </div>
           </div>
-          <button id="rp-submit" class="btn-primary" style="margin-top:32px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="resetPasswordSubmit()">Reset Password</button>
         </div>
+        <div style="flex:1;min-height:24px;"></div>
+        <button id="rp-submit" class="btn-primary" style="padding:16px;font-size:16.5px;opacity:0.45;flex-shrink:0;" onclick="resetPasswordSubmit()">Reset Password</button>
       </section>
 
       <!-- REGISTER -->
@@ -560,7 +565,7 @@
           <span class="topbar-title">REQ-1005 · Air Ambulance</span>
           <span class="pill pill-progress">In Progress</span>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;">
           <div style="display:flex;gap:8px;margin-bottom:16px;">
             <div onclick="toast('Downloading request summary…')" style="cursor:pointer;flex:1;text-align:center;padding:10px;border-radius:12px;background:#fff;border:1px solid #E4E9F2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 4px;display:block;"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg><span style="font-size:11.5px;font-weight:700;">Download</span></div>
             <div onclick="toast('Share link copied.')" style="cursor:pointer;flex:1;text-align:center;padding:10px;border-radius:12px;background:#fff;border:1px solid #E4E9F2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 4px;display:block;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg><span style="font-size:11.5px;font-weight:700;">Share</span></div>
@@ -578,8 +583,7 @@
             <span style="font-size:14px;font-weight:700;color:#1A5FC4;">View Live Tracking</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A5FC4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
-        </div>
-        <div style="flex-shrink:0;padding:14px 18px;background:#fff;border-top:1px solid #E4E9F2;">
+          <div style="flex:1;min-height:16px;"></div>
           <a href="tel:+971585787878" style="display:block;text-align:center;text-decoration:none;" class="btn-primary">Need Help? Contact Us</a>
         </div>
       </section>
@@ -606,7 +610,7 @@
           <div class="step-tab-btn" id="tt-docs" onclick="switchTrackTab('docs')">Documents</div>
         </div>
 
-        <div id="track-pane-overview" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;">
+        <div id="track-pane-overview" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;">
           <div class="card">
             <div class="info-row"><span class="info-label">Status</span><span class="pill pill-progress">In Progress</span></div>
             <div class="info-row"><span class="info-label">Service</span><span class="info-value">Air Ambulance</span></div>
@@ -616,10 +620,11 @@
             <div class="info-row"><span class="info-label">Aircraft</span><span class="info-value">Falcon 2000LXS</span></div>
             <div class="info-row"><span class="info-label">Reference Number</span><span class="info-value">HC-AMB-77821</span></div>
           </div>
-          <a href="tel:+971585787878" style="display:block;text-align:center;text-decoration:none;margin-top:14px;" class="btn-primary">Contact Assistance Team</a>
+          <div style="flex:1;min-height:16px;"></div>
+          <a href="tel:+971585787878" style="display:block;text-align:center;text-decoration:none;" class="btn-primary">Contact Assistance Team</a>
         </div>
 
-        <div id="track-pane-timeline" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;">
+        <div id="track-pane-timeline" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
           <div style="display:flex;flex-direction:column;gap:16px;">
             <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:14px;font-weight:700;">Request Submitted</div><div style="font-size:12px;color:#97A4B8;">10 May 2024, 08:30 AM</div></div></div>
             <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:14px;font-weight:700;">Request Confirmed</div><div style="font-size:12px;color:#97A4B8;">10 May 2024, 11:15 AM</div></div></div>
@@ -628,7 +633,7 @@
           </div>
         </div>
 
-        <div id="track-pane-info" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;">
+        <div id="track-pane-info" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
           <div class="card">
             <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:10px;">Care Team</div>
             <div class="info-row"><span class="info-label">Attending Physician</span><span class="info-value">Dr. Priya Mehta</span></div>
@@ -639,14 +644,16 @@
             <div class="info-row"><span class="info-label">Facility</span><span class="info-value">Apollo Hospital, Mumbai</span></div>
             <div class="info-row"><span class="info-label">Contact</span><span class="info-value">+91 98765 43210</span></div>
           </div>
-          <button class="btn-outline" style="margin-top:14px;" onclick="toast('Opening chat with care team…')">Message Care Team</button>
+          <div style="flex:1;min-height:14px;"></div>
+          <button class="btn-outline" onclick="toast('Opening chat with care team…')">Message Care Team</button>
         </div>
 
-        <div id="track-pane-docs" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;">
+        <div id="track-pane-docs" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
           <div class="doc-row" onclick="toast('Downloading Service Summary…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Service Summary</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 250 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
           <div class="doc-row" onclick="toast('Downloading Discharge Summary…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Discharge Summary</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 250 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
           <div class="doc-row" onclick="toast('Downloading Invoice…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Invoice</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 180 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
           <div class="doc-row" onclick="toast('Downloading Payment Receipt…')" style="cursor:pointer;margin-bottom:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">Payment Receipt</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 120 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div style="flex:1;min-height:14px;"></div>
           <button class="btn-primary" style="margin-top:6px;" onclick="toast('Downloading all documents…')">Download All</button>
         </div>
       </section>
@@ -671,8 +678,9 @@
             <div style="width:32px;height:32px;border-radius:10px;background:#FDECD8;color:#B4560D;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg></div>
             <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-size:14px;font-weight:700;">Case Scheduled</span><span style="font-size:11.5px;color:#97A4B8;">2h ago</span></div><p style="font-size:13px;color:#5B6B84;margin:4px 0 0;">Your request REQ-1004 has been scheduled by our team.</p></div>
           </div>
+          <div style="flex:1;min-height:16px;"></div>
+          <button class="btn-primary" onclick="back()">Return to Home</button>
         </div>
-        <div style="flex-shrink:0;padding:14px 18px;background:#fff;border-top:1px solid #E4E9F2;"><button class="btn-primary" onclick="back()">Return to Home</button></div>
       </section>
 
       <!-- HELP & SUPPORT -->
@@ -773,8 +781,9 @@
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;" data-otp-group="vendor">
           <input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/><input class="otp-box" maxlength="1" oninput="otpAdvance(this)"/>
         </div>
-        <button class="btn-primary" style="margin-top:20px;" onclick="verifyOtp('vendor')">Verify &amp; Continue</button>
         <div style="text-align:center;margin-top:16px;"><span style="font-size:13.5px;color:#97A4B8;">Resend code in 00:28</span></div>
+        <div style="flex:1;min-height:24px;"></div>
+        <button class="btn-primary" onclick="verifyOtp('vendor')">Verify &amp; Continue</button>
       </section>
 
       <!-- VENDOR DASHBOARD -->
@@ -789,7 +798,7 @@
             <span onclick="navReplace('welcome')" style="cursor:pointer;font-size:12px;color:#97A4B8;">Sign Out</span>
           </div>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:16px 18px 90px;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:16px 18px 90px;display:flex;flex-direction:column;">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
             <div class="card" style="text-align:center;"><div style="font-size:17.5px;font-weight:800;">24</div><div style="font-size:10.5px;color:#97A4B8;margin-top:2px;">Total</div></div>
             <div class="card" style="text-align:center;background:#E7F0FE;border-color:#CFE0FB;"><div style="font-size:17.5px;font-weight:800;color:#1A5FC4;">4</div><div style="font-size:10.5px;color:#1A5FC4;margin-top:2px;">Active</div></div>
@@ -818,9 +827,8 @@
             <div style="font-size:14.5px;font-weight:700;">Klaus Weber</div><div style="font-size:12.5px;color:#97A4B8;">Munich → Berlin</div>
           </div>
           <div id="vd-empty" style="display:none;text-align:center;padding:30px 0;color:#97A4B8;font-size:13.5px;">No cases in this stage.</div>
-        </div>
-        <div style="position:absolute;bottom:64px;left:0;right:0;background:#fff;border-top:1px solid #E4E9F2;padding:12px 18px;">
-          <button class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:6px;" onclick="nav('vendor-new-case')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Initiate New Corporate Case</button>
+          <div style="flex:1;min-height:16px;"></div>
+          <button class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;" onclick="nav('vendor-new-case')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Initiate New Corporate Case</button>
         </div>
         <div class="bottom-nav-v2" data-tabbar="vendor"></div>
       </section>
@@ -855,7 +863,7 @@
           <span class="topbar-title">My Profile</span>
           <span style="width:32px;"></span>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px 18px 90px;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px 18px 90px;display:flex;flex-direction:column;">
           <div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
             <div style="width:52px;height:52px;border-radius:14px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17.5px;flex-shrink:0;">RS</div>
             <div><div style="font-size:15.5px;font-weight:800;">Rakesh Sharma</div><div style="font-size:12.5px;color:#97A4B8;margin-top:2px;">+91 98765 43210</div><div style="font-size:12px;color:#97A4B8;">rakesh.sharma@example.com</div></div>
@@ -866,6 +874,7 @@
             <div class="info-row" onclick="nav('help-support')" style="cursor:pointer;"><span class="info-label">Help &amp; Support</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div class="info-row"><span class="info-label">Language</span><span class="info-value">English (EN)</span></div>
           </div>
+          <div style="flex:1;min-height:16px;"></div>
           <button class="btn-danger-outline" onclick="navReplace('welcome')">Sign Out</button>
         </div>
         <div class="bottom-nav-v2" data-tabbar="profile"></div>
@@ -1032,7 +1041,7 @@
 
   function switchTrackTab(tab) {
     ['overview', 'timeline', 'info', 'docs'].forEach(function (t) {
-      document.getElementById('track-pane-' + t).style.display = t === tab ? 'block' : 'none';
+      document.getElementById('track-pane-' + t).style.display = t === tab ? 'flex' : 'none';
       document.getElementById('tt-' + t).classList.toggle('on', t === tab);
     });
   }
