@@ -399,9 +399,9 @@
         <div style="flex-shrink:0;padding:16px 18px;background:#fff;border-bottom:1px solid #E4E9F2;">
           <div class="step-wizard" id="wizard-dots"></div>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:24px 20px;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;">
           <div style="font-size:17px;font-weight:800;color:#0D2340;margin-bottom:22px;">Patient Details</div>
-          <div style="display:flex;flex-direction:column;gap:24px;">
+          <div style="display:flex;flex-direction:column;gap:20px;">
             <div><span class="field-label">Patient Full Name</span><input id="req-name" class="field-input" value="Rakesh Sharma"/></div>
             <div style="display:flex;gap:10px;"><div style="flex:1;"><span class="field-label">Age</span><input id="req-age" class="field-input" value="45"/></div><div style="flex:1;"><span class="field-label">Gender</span><select id="req-gender" class="field-input"><option>Male</option><option>Female</option><option>Other</option></select></div></div>
             <div><span class="field-label">Current Location</span><input id="req-location" class="field-input" value="Mumbai, India"/></div>
@@ -414,7 +414,8 @@
             </div>
             <div><span class="field-label" style="margin-bottom:10px;">Care Level</span><div id="req-care-level" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div class="tab-chip" style="text-align:center;padding:14px 8px;" onclick="selectUrgency(this)">ICU / Critical</div><div class="tab-chip on" style="text-align:center;padding:14px 8px;" onclick="selectUrgency(this)">Stable / Monitored</div><div class="tab-chip" style="text-align:center;padding:14px 8px;" onclick="selectUrgency(this)">Ambulatory</div><div class="tab-chip" style="text-align:center;padding:14px 8px;" onclick="selectUrgency(this)">Not Applicable</div></div></div>
           </div>
-          <button class="btn-primary" style="margin-top:32px;" onclick="formNext()">Next</button>
+          <div style="flex:1;min-height:24px;"></div>
+          <button class="btn-primary" style="margin-top:24px;" onclick="formNext()">Next</button>
         </div>
       </section>
 
@@ -428,9 +429,9 @@
         <div style="flex-shrink:0;padding:16px 18px;background:#fff;border-bottom:1px solid #E4E9F2;">
           <div class="step-wizard" id="wizard-dots-2"></div>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:24px 20px;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;">
           <div style="font-size:17px;font-weight:800;color:#0D2340;margin-bottom:22px;">Request Details</div>
-          <div style="display:flex;flex-direction:column;gap:24px;">
+          <div style="display:flex;flex-direction:column;gap:20px;">
             <div><span class="field-label">Briefly describe your requirement</span><textarea id="req-desc" class="field-input" rows="3" style="resize:none;">Patient requires stable air ambulance transfer to a specialist cardiac facility.</textarea></div>
             <div><span class="field-label">Destination</span><input id="req-dest" class="field-input" placeholder="City, Country" value="Dubai, UAE"/></div>
             <div><span class="field-label">Preferred Date</span><input id="req-date" type="date" class="field-input" value="2026-09-25"/></div>
@@ -443,7 +444,8 @@
               </div>
             </div>
           </div>
-          <button class="btn-primary" style="margin-top:32px;" onclick="formNext()">Next</button>
+          <div style="flex:1;min-height:24px;"></div>
+          <button class="btn-primary" style="margin-top:24px;" onclick="formNext()">Next</button>
         </div>
       </section>
 
@@ -457,14 +459,15 @@
         <div style="flex-shrink:0;padding:16px 18px;background:#fff;border-bottom:1px solid #E4E9F2;">
           <div class="step-wizard" id="wizard-dots-3"></div>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:24px 20px;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;">
           <div style="font-size:17px;font-weight:800;color:#0D2340;margin-bottom:22px;">Additional Information</div>
-          <div style="display:flex;flex-direction:column;gap:24px;">
+          <div style="display:flex;flex-direction:column;gap:20px;">
             <div><span class="field-label">Any additional information</span><input id="req-extra" class="field-input" placeholder="Optional"/></div>
             <div><span class="field-label">Special Requirements (If any)</span><textarea id="req-special" class="field-input" rows="3" style="resize:none;" placeholder="e.g. oxygen support, wheelchair access"></textarea></div>
             <div><span class="field-label">How did you hear about us?</span><select id="req-source" class="field-input"><option>Select an option</option><option>Google Search</option><option>Referral</option><option>Insurance Provider</option><option>Social Media</option></select></div>
           </div>
-          <button class="btn-primary" style="margin-top:32px;" onclick="formNext()">Next</button>
+          <div style="flex:1;min-height:24px;"></div>
+          <button class="btn-primary" style="margin-top:24px;" onclick="formNext()">Next</button>
         </div>
       </section>
 
