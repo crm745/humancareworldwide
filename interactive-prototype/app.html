@@ -399,7 +399,7 @@
         <div style="flex-shrink:0;padding:16px 18px;background:#fff;border-bottom:1px solid #E4E9F2;">
           <div class="step-wizard" id="wizard-dots"></div>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:16.5px;font-weight:800;color:#0D2340;margin-bottom:14px;">Patient Details</div>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div><span class="field-label">Patient Full Name</span><input id="req-name" class="field-input" value="Rakesh Sharma"/></div>
@@ -414,7 +414,6 @@
             </div>
             <div><span class="field-label" style="margin-bottom:8px;">Care Level</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">ICU / Critical</div><div class="tab-chip on" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Stable / Monitored</div><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Ambulatory</div><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Not Applicable</div></div></div>
           </div>
-          <div style="flex:1;min-height:24px;"></div>
           <button class="btn-primary" style="margin-top:24px;" onclick="formNext()">Next</button>
         </div>
       </section>
@@ -429,7 +428,7 @@
         <div style="flex-shrink:0;padding:16px 18px;background:#fff;border-bottom:1px solid #E4E9F2;">
           <div class="step-wizard" id="wizard-dots-2"></div>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:16.5px;font-weight:800;color:#0D2340;margin-bottom:14px;">Request Details</div>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div><span class="field-label">Briefly describe your requirement</span><textarea id="req-desc" class="field-input" rows="3" style="resize:none;">Patient requires stable air ambulance transfer to a specialist cardiac facility.</textarea></div>
@@ -445,7 +444,6 @@
               <div style="font-size:11.5px;color:#97A4B8;margin-top:6px;">Upload relevant medical report</div>
             </div>
           </div>
-          <div style="flex:1;min-height:24px;"></div>
           <button class="btn-primary" style="margin-top:24px;" onclick="formNext()">Next</button>
         </div>
       </section>
@@ -460,14 +458,13 @@
         <div style="flex-shrink:0;padding:16px 18px;background:#fff;border-bottom:1px solid #E4E9F2;">
           <div class="step-wizard" id="wizard-dots-3"></div>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:16.5px;font-weight:800;color:#0D2340;margin-bottom:14px;">Additional Information</div>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div><span class="field-label">Any additional information</span><input id="req-extra" class="field-input" placeholder="Optional"/></div>
             <div><span class="field-label">Special Requirements (If any)</span><textarea id="req-special" class="field-input" rows="3" style="resize:none;" placeholder="e.g. oxygen support, wheelchair access"></textarea></div>
             <div><span class="field-label">How did you hear about us?</span><select id="req-source" class="field-input"><option>Select an option</option><option>Google Search</option><option>Referral</option><option>Insurance Provider</option><option>Social Media</option></select></div>
           </div>
-          <div style="flex:1;min-height:24px;"></div>
           <button class="btn-primary" style="margin-top:24px;" onclick="formNext()">Next</button>
         </div>
       </section>
@@ -479,7 +476,7 @@
           <span class="topbar-title">Review Your Request</span>
           <span style="width:32px;"></span>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;justify-content:center;">
           <p style="font-size:13.5px;color:#5B6B84;margin:0 0 14px;">Please check the details before submitting</p>
           <div class="card">
             <div class="info-row"><span class="info-label">Name</span><span id="rv-name" class="info-value"></span></div>
@@ -490,7 +487,6 @@
             <div class="info-row"><span class="info-label">Preferred Date</span><span id="rv-date" class="info-value"></span></div>
           </div>
           <div style="text-align:right;margin-top:8px;"><span onclick="toast('Showing all entered details…')" style="cursor:pointer;font-size:13px;font-weight:700;color:#1A73E8;">View All Details &gt;</span></div>
-          <div style="flex:1;min-height:24px;"></div>
           <button class="btn-primary" style="margin-top:24px;" onclick="submitRequest()">Submit Request</button>
         </div>
       </section>
