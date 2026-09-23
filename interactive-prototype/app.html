@@ -554,7 +554,7 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
               <input class="field-input" style="padding-left:32px;" placeholder="Search by Request ID or Service"/>
             </div>
-            <div class="icon-btn" style="border-radius:10px;" onclick="toast('Filter options')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></div>
+            <div class="icon-btn" style="border-radius:10px;" onclick="openFilterSheet()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></div>
           </div>
           <div class="tab-row noscroll">
             <span class="tab-chip on" data-mf="all" onclick="filterMyRequests(this)">All</span>
@@ -587,6 +587,39 @@
           </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="my-requests"></div>
+
+        <div id="filter-backdrop" onclick="closeFilterSheet()" style="position:absolute;inset:0;background:rgba(13,35,64,0.45);opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:40;"></div>
+        <div id="filter-sheet" style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;padding:20px 20px 24px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(.32,.72,0,1);z-index:41;box-shadow:0 -10px 30px rgba(13,35,64,0.15);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+            <span style="font-size:16px;font-weight:800;color:#0D2340;">Filter Requests</span>
+            <div class="icon-btn" style="width:30px;height:30px;" onclick="closeFilterSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+          </div>
+          <div style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:10px;">Service Type</div>
+          <div id="filter-service-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+            <span class="tab-chip on" data-val="all" onclick="selectFilterChip(this)">All Services</span>
+            <span class="tab-chip" data-val="air" onclick="selectFilterChip(this)">Air Ambulance</span>
+            <span class="tab-chip" data-val="ground" onclick="selectFilterChip(this)">Ground Ambulance</span>
+            <span class="tab-chip" data-val="hospital" onclick="selectFilterChip(this)">Hospitalization</span>
+            <span class="tab-chip" data-val="escort" onclick="selectFilterChip(this)">Medical Escort</span>
+            <span class="tab-chip" data-val="tele" onclick="selectFilterChip(this)">Teleconsultation</span>
+          </div>
+          <div style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:10px;">Date Range</div>
+          <div id="filter-date-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+            <span class="tab-chip on" data-val="all" onclick="selectFilterChip(this)">All Time</span>
+            <span class="tab-chip" data-val="7" onclick="selectFilterChip(this)">Last 7 Days</span>
+            <span class="tab-chip" data-val="30" onclick="selectFilterChip(this)">Last 30 Days</span>
+            <span class="tab-chip" data-val="90" onclick="selectFilterChip(this)">Last 3 Months</span>
+          </div>
+          <div style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:10px;">Sort By</div>
+          <div id="filter-sort-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
+            <span class="tab-chip on" data-val="newest" onclick="selectFilterChip(this)">Newest First</span>
+            <span class="tab-chip" data-val="oldest" onclick="selectFilterChip(this)">Oldest First</span>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-outline" style="width:auto;flex:1;" onclick="resetFilterSheet()">Reset</button>
+            <button class="btn-primary" style="flex:2;" onclick="applyFilterSheet()">Apply Filters</button>
+          </div>
+        </div>
       </section>
 
       <!-- REQUEST DETAILS -->
@@ -1071,12 +1104,42 @@
   function openRequestDetails() { nav('request-details'); }
 
   function filterMyRequests(chip) {
-    document.querySelectorAll('#screen-my-requests .tab-chip').forEach(function (c) { c.classList.remove('on'); });
+    document.querySelectorAll('#screen-my-requests .tab-row .tab-chip').forEach(function (c) { c.classList.remove('on'); });
     chip.classList.add('on');
     var f = chip.getAttribute('data-mf');
     document.querySelectorAll('#screen-my-requests .req-item').forEach(function (item) {
       item.style.display = (f === 'all' || item.getAttribute('data-status') === f) ? 'block' : 'none';
     });
+  }
+
+  // ---- filter sheet ----
+  function openFilterSheet() {
+    document.getElementById('filter-backdrop').style.opacity = '1';
+    document.getElementById('filter-backdrop').style.pointerEvents = 'auto';
+    document.getElementById('filter-sheet').style.transform = 'translateY(0)';
+  }
+  function closeFilterSheet() {
+    document.getElementById('filter-backdrop').style.opacity = '0';
+    document.getElementById('filter-backdrop').style.pointerEvents = 'none';
+    document.getElementById('filter-sheet').style.transform = 'translateY(100%)';
+  }
+  function selectFilterChip(chip) {
+    chip.parentElement.querySelectorAll('.tab-chip').forEach(function (c) { c.classList.remove('on'); });
+    chip.classList.add('on');
+  }
+  function resetFilterSheet() {
+    ['filter-service-row', 'filter-date-row'].forEach(function (id) {
+      var row = document.getElementById(id);
+      row.querySelectorAll('.tab-chip').forEach(function (c) { c.classList.remove('on'); });
+      row.querySelector('.tab-chip').classList.add('on');
+    });
+    var sortRow = document.getElementById('filter-sort-row');
+    sortRow.querySelectorAll('.tab-chip').forEach(function (c) { c.classList.remove('on'); });
+    sortRow.querySelector('.tab-chip').classList.add('on');
+  }
+  function applyFilterSheet() {
+    toast('Filters applied');
+    closeFilterSheet();
   }
 
   function switchTrackTab(tab) {
