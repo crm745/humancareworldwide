@@ -327,9 +327,9 @@
             <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Teleconsultation</div></div>
             <div class="svc-tile" style="grid-column:1 / -1;" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Corporate Medical Solutions</div></div>
           </div>
-          <div onclick="nav('help-support')" style="cursor:pointer;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2FA84F,#57C77A);padding:16px;color:#fff;margin-top:16px;">
-            <div style="font-size:12.5px;opacity:0.85;">Your care,</div>
-            <div style="font-size:16.5px;font-weight:800;">Our responsibility</div>
+          <div id="ss-care-banner" onclick="nav('help-support')" style="cursor:pointer;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2FA84F,#57C77A);background-size:cover;background-position:center;padding:18px;color:#fff;margin-top:16px;min-height:88px;display:flex;flex-direction:column;justify-content:center;">
+            <div style="font-size:12.5px;opacity:0.95;text-shadow:0 1px 4px rgba(0,0,0,0.35);">Your care,</div>
+            <div style="font-size:17px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,0.35);">Our responsibility</div>
           </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="none"></div>
@@ -1172,6 +1172,10 @@
   // ---- boot ----
   renderWizard();
   renderNavBars('splash');
+  var ssCareBanner = document.getElementById('ss-care-banner');
+  if (ssCareBanner) {
+    ssCareBanner.style.backgroundImage = 'linear-gradient(135deg, rgba(31,120,58,0.75), rgba(47,168,79,0.55)), url(' + SERVICE_IMAGES.IMG_HOMECARE + ')';
+  }
   setTimeout(function () {
     if (historyStack[historyStack.length - 1] === 'splash') navReplace('welcome');
   }, 2000);
