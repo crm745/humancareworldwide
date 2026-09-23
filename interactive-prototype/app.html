@@ -303,10 +303,6 @@
             <a href="tel:+971585787878" style="flex-shrink:0;padding:9px 14px;border-radius:10px;background:#17233D;color:#fff;font-size:13px;font-weight:700;text-decoration:none;">Contact Now</a>
           </div>
 
-          <div onclick="nav('help-support')" style="cursor:pointer;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2FA84F,#57C77A);padding:16px;color:#fff;">
-            <div style="font-size:12.5px;opacity:0.85;">Your care,</div>
-            <div style="font-size:16.5px;font-weight:800;">Our responsibility</div>
-          </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="home"></div>
       </section>
@@ -317,7 +313,7 @@
           <div class="back-btn" onclick="back()" style="margin-bottom:16px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
           <h2 class="display" style="font-size:19.5px;margin:0 0 16px;color:#0D2340;">Select a Service</h2>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:0 18px 18px;">
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:0 18px 18px;display:flex;flex-direction:column;">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div class="svc-tile" onclick="nav('air-ambulance-options')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div style="font-size:13.5px;font-weight:700;">Air Ambulance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Domestic / International</div></div>
             <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Ground Ambulance</div></div>
@@ -327,9 +323,9 @@
             <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Teleconsultation</div></div>
             <div class="svc-tile" style="grid-column:1 / -1;" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Corporate Medical Solutions</div></div>
           </div>
-          <div id="ss-care-banner" onclick="nav('help-support')" style="cursor:pointer;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2FA84F,#57C77A);background-size:cover;background-position:center;padding:18px;color:#fff;margin-top:16px;min-height:88px;display:flex;flex-direction:column;justify-content:center;">
-            <div style="font-size:12.5px;opacity:0.95;text-shadow:0 1px 4px rgba(0,0,0,0.35);">Your care,</div>
-            <div style="font-size:17px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,0.35);">Our responsibility</div>
+          <div id="ss-care-banner" onclick="nav('help-support')" style="cursor:pointer;border-radius:16px;overflow:hidden;background-size:cover;background-position:center;padding:20px;color:#fff;margin-top:16px;flex:1;min-height:140px;display:flex;flex-direction:column;justify-content:flex-end;">
+            <div style="font-size:13px;opacity:0.95;text-shadow:0 1px 5px rgba(0,0,0,0.5);">Your care,</div>
+            <div style="font-size:19px;font-weight:800;text-shadow:0 1px 5px rgba(0,0,0,0.5);">Our responsibility</div>
           </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="none"></div>
@@ -1174,7 +1170,7 @@
   renderNavBars('splash');
   var ssCareBanner = document.getElementById('ss-care-banner');
   if (ssCareBanner) {
-    ssCareBanner.style.backgroundImage = 'linear-gradient(135deg, rgba(31,120,58,0.75), rgba(47,168,79,0.55)), url(' + SERVICE_IMAGES.IMG_HOMECARE + ')';
+    ssCareBanner.style.backgroundImage = 'linear-gradient(180deg, rgba(13,35,64,0.1) 0%, rgba(13,35,64,0.35) 55%, rgba(13,35,64,0.88) 100%), url(' + SERVICE_IMAGES.IMG_HOMECARE + ')';
   }
   setTimeout(function () {
     if (historyStack[historyStack.length - 1] === 'splash') navReplace('welcome');
