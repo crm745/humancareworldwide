@@ -408,11 +408,11 @@
             <div>
               <span class="field-label">Contact Number</span>
               <div style="display:flex;gap:8px;">
-                <select class="field-input" style="width:80px;flex-shrink:0;"><option>+91</option><option>+971</option><option>+44</option><option>+1</option></select>
+                <select id="req-cc" class="field-input" style="width:80px;flex-shrink:0;"><option>+91</option><option>+971</option><option>+44</option><option>+1</option></select>
                 <input id="req-phone" class="field-input" placeholder="Enter number"/>
               </div>
             </div>
-            <div><span class="field-label" style="margin-bottom:8px;">Care Level</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">ICU / Critical</div><div class="tab-chip on" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Stable / Monitored</div><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Ambulatory</div><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Not Applicable</div></div></div>
+            <div><span class="field-label" style="margin-bottom:8px;">Care Level</span><div id="req-care-level" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">ICU / Critical</div><div class="tab-chip on" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Stable / Monitored</div><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Ambulatory</div><div class="tab-chip" style="text-align:center;padding:12px 8px;" onclick="selectUrgency(this)">Not Applicable</div></div></div>
           </div>
           <button class="btn-primary" style="margin-top:24px;" onclick="formNext()">Next</button>
         </div>
@@ -475,18 +475,31 @@
           <span class="topbar-title">Review Your Request</span>
           <span style="width:32px;"></span>
         </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;justify-content:center;">
-          <p style="font-size:13.5px;color:#5B6B84;margin:0 0 14px;">Please check the details before submitting</p>
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;">
+          <p style="font-size:13.5px;color:#5B6B84;margin:0 0 14px;text-align:center;">Please check the details before submitting</p>
           <div class="card">
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Patient Details</div>
             <div class="info-row"><span class="info-label">Name</span><span id="rv-name" class="info-value"></span></div>
             <div class="info-row"><span class="info-label">Age / Gender</span><span id="rv-agegender" class="info-value"></span></div>
             <div class="info-row"><span class="info-label">Location</span><span id="rv-location" class="info-value"></span></div>
+            <div class="info-row"><span class="info-label">Contact Number</span><span id="rv-phone" class="info-value"></span></div>
+            <div class="info-row"><span class="info-label">Care Level</span><span id="rv-care" class="info-value"></span></div>
+          </div>
+          <div class="card" style="margin-top:12px;">
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Request Details</div>
             <div class="info-row"><span class="info-label">Service</span><span id="rv-service" class="info-value"></span></div>
+            <div class="info-row"><span class="info-label">Requirement</span><span id="rv-desc" class="info-value"></span></div>
             <div class="info-row"><span class="info-label">Destination</span><span id="rv-dest" class="info-value"></span></div>
             <div class="info-row"><span class="info-label">Preferred Date</span><span id="rv-date" class="info-value"></span></div>
+            <div class="info-row"><span class="info-label">Medical Report</span><span id="rv-upload" class="info-value"></span></div>
           </div>
-          <div style="text-align:right;margin-top:8px;"><span onclick="toast('Showing all entered details…')" style="cursor:pointer;font-size:13px;font-weight:700;color:#1A73E8;">View All Details &gt;</span></div>
-          <button class="btn-primary" style="margin-top:24px;" onclick="submitRequest()">Submit Request</button>
+          <div class="card" style="margin-top:12px;">
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Additional Information</div>
+            <div class="info-row"><span class="info-label">Extra Info</span><span id="rv-extra" class="info-value"></span></div>
+            <div class="info-row"><span class="info-label">Special Requirements</span><span id="rv-special" class="info-value"></span></div>
+            <div class="info-row"><span class="info-label">Heard About Us</span><span id="rv-source" class="info-value"></span></div>
+          </div>
+          <button class="btn-primary" style="margin-top:20px;" onclick="submitRequest()">Submit Request</button>
         </div>
       </section>
 
@@ -1015,9 +1028,19 @@
     document.getElementById('rv-name').textContent = document.getElementById('req-name').value || '—';
     document.getElementById('rv-agegender').textContent = (document.getElementById('req-age').value || '—') + ' Y / ' + document.getElementById('req-gender').value;
     document.getElementById('rv-location').textContent = document.getElementById('req-location').value || '—';
+    var cc = document.getElementById('req-cc').value;
+    var phone = document.getElementById('req-phone').value;
+    document.getElementById('rv-phone').textContent = phone ? (cc + ' ' + phone) : '—';
+    var careChip = document.querySelector('#req-care-level .tab-chip.on');
+    document.getElementById('rv-care').textContent = careChip ? careChip.textContent : '—';
     document.getElementById('rv-service').textContent = SERVICES[currentServiceKey].title.replace(/&amp;/g, '&');
+    document.getElementById('rv-desc').textContent = document.getElementById('req-desc').value || '—';
     document.getElementById('rv-dest').textContent = document.getElementById('req-dest').value || '—';
     document.getElementById('rv-date').textContent = document.getElementById('req-date').value || '—';
+    document.getElementById('rv-upload').textContent = uploaded ? 'medical_report.pdf' : 'Not attached';
+    document.getElementById('rv-extra').textContent = document.getElementById('req-extra').value || '—';
+    document.getElementById('rv-special').textContent = document.getElementById('req-special').value || '—';
+    document.getElementById('rv-source').textContent = document.getElementById('req-source').value || '—';
   }
   function submitRequest() {
     document.getElementById('submitted-req-id').textContent = 'REQ-' + (1000 + Math.floor(Math.random() * 900));
