@@ -115,6 +115,16 @@
     100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
   }
   .cta-pulse-dot { animation: cta-pulse 2s ease-out infinite; }
+  @keyframes hs-slide-left { from { transform: translateX(-55px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes hs-slide-right { from { transform: translateX(55px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes hs-shake { 0%, 100% { transform: rotate(0deg); } 20% { transform: rotate(-6deg); } 40% { transform: rotate(5deg); } 60% { transform: rotate(-4deg); } 80% { transform: rotate(3deg); } }
+  @keyframes hs-pulse-ring { 0% { transform: scale(0.6); opacity: 0.55; } 100% { transform: scale(1.7); opacity: 0; } }
+  @keyframes hs-pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  .hs-left { animation: hs-slide-left 0.55s cubic-bezier(.34,1.56,.64,1) both; }
+  .hs-right { animation: hs-slide-right 0.55s cubic-bezier(.34,1.56,.64,1) both; }
+  .hs-shake { animation: hs-shake 0.7s ease-in-out 0.55s both; transform-origin: 60px 30px; }
+  .hs-pulse { position: absolute; inset: 0; border-radius: 999px; background: #1A73E8; animation: hs-pulse-ring 1s ease-out 0.55s both; }
+  .hs-check { position: absolute; right: 2px; bottom: 4px; width: 30px; height: 30px; border-radius: 999px; background: #1E8E4A; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; z-index: 3; animation: hs-pop 0.5s cubic-bezier(.34,1.56,.64,1) 1.1s both; }
 </style>
 
 <div class="page">
@@ -507,18 +517,46 @@
       </section>
 
       <!-- REQUEST SUBMITTED -->
-      <section id="screen-request-submitted" class="screen hidden" style="align-items:center;justify-content:center;padding:26px;text-align:center;">
-        <div style="width:88px;height:88px;border-radius:22px;background:#E4F7EA;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1E8E4A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      <section id="screen-request-submitted" class="screen hidden">
+        <div class="topbar">
+          <div class="back-btn" onclick="navReplace('home')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+          <span class="topbar-title">Confirm Your Request</span>
+          <span style="width:32px;"></span>
         </div>
-        <h2 class="display" style="font-size:20.5px;margin:0;color:#0D2340;">Request Submitted Successfully!</h2>
-        <p style="font-size:14px;color:#5B6B84;margin:10px 0 20px;max-width:260px;">Your request has been submitted successfully.</p>
-        <div class="card" style="width:100%;max-width:240px;">
-          <div style="font-size:11.5px;font-weight:700;color:#97A4B8;text-transform:uppercase;">Your Request ID</div>
-          <div id="submitted-req-id" style="font-size:21.5px;font-weight:800;color:#1A73E8;font-family:'Inter',sans-serif;margin-top:4px;">REQ-1006</div>
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:28px 26px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+          <div style="width:112px;height:112px;border-radius:999px;background:#E7F0FE;display:flex;align-items:center;justify-content:center;margin-bottom:22px;position:relative;flex-shrink:0;">
+            <div class="hs-pulse"></div>
+            <svg width="74" height="52" viewBox="0 0 120 60" style="position:relative;z-index:2;overflow:visible;">
+              <g class="hs-shake">
+                <g class="hs-left">
+                  <rect x="4" y="20" width="50" height="20" rx="10" fill="#1A73E8"/>
+                  <circle cx="58" cy="30" r="15" fill="#F4C89B"/>
+                </g>
+                <g class="hs-right">
+                  <rect x="66" y="20" width="50" height="20" rx="10" fill="#17233D"/>
+                  <circle cx="62" cy="30" r="15" fill="#F0B786"/>
+                </g>
+              </g>
+            </svg>
+            <div class="hs-check"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          </div>
+          <h2 class="display" style="font-size:22px;margin:0;color:#0D2340;">Thank You!</h2>
+          <p style="font-size:14px;color:#5B6B84;margin:8px 0 22px;">Your request has been confirmed.</p>
+          <div class="card" style="width:100%;text-align:left;margin-bottom:16px;">
+            <div style="font-size:11.5px;font-weight:700;color:#97A4B8;text-transform:uppercase;">Your Request ID</div>
+            <div id="submitted-req-id" style="font-size:21.5px;font-weight:800;color:#1A73E8;font-family:'Inter',sans-serif;margin-top:4px;">REQ-1006</div>
+          </div>
+          <div class="card" style="width:100%;text-align:left;">
+            <div style="font-size:12.5px;font-weight:800;color:#0D2340;margin-bottom:12px;">Next Steps</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:9px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E8E4A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20 6 9 17l-5-5"/></svg><span style="font-size:13px;color:#17233D;">Our team will connect with you</span></div>
+              <div style="display:flex;align-items:center;gap:9px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E8E4A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20 6 9 17l-5-5"/></svg><span style="font-size:13px;color:#17233D;">We will arrange everything</span></div>
+              <div style="display:flex;align-items:center;gap:9px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E8E4A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20 6 9 17l-5-5"/></svg><span style="font-size:13px;color:#17233D;">You will receive regular updates</span></div>
+            </div>
+          </div>
+          <div style="flex:1;min-height:20px;"></div>
+          <button class="btn-primary" style="width:100%;" onclick="navReplace('my-requests')">View My Request</button>
         </div>
-        <p style="font-size:13px;color:#97A4B8;margin:16px 0 24px;">We will get back to you shortly with the best possible options.</p>
-        <button class="btn-primary" onclick="navReplace('my-requests')">Go to My Requests</button>
       </section>
 
       <!-- MY REQUESTS -->
