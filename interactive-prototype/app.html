@@ -601,14 +601,25 @@
             <span class="tab-chip" data-val="ground" onclick="selectFilterChip(this)">Ground Ambulance</span>
             <span class="tab-chip" data-val="hospital" onclick="selectFilterChip(this)">Hospitalization</span>
             <span class="tab-chip" data-val="escort" onclick="selectFilterChip(this)">Medical Escort</span>
+            <span class="tab-chip" data-val="mortal" onclick="selectFilterChip(this)">Mortal Remains</span>
+            <span class="tab-chip" data-val="homecare" onclick="selectFilterChip(this)">Home Healthcare</span>
             <span class="tab-chip" data-val="tele" onclick="selectFilterChip(this)">Teleconsultation</span>
+            <span class="tab-chip" data-val="corporate" onclick="selectFilterChip(this)">Corporate Medical</span>
           </div>
           <div style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:10px;">Date Range</div>
-          <div id="filter-date-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+          <div id="filter-date-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
             <span class="tab-chip on" data-val="all" onclick="selectFilterChip(this)">All Time</span>
+            <span class="tab-chip" data-val="today" onclick="selectFilterChip(this)">Today</span>
             <span class="tab-chip" data-val="7" onclick="selectFilterChip(this)">Last 7 Days</span>
             <span class="tab-chip" data-val="30" onclick="selectFilterChip(this)">Last 30 Days</span>
+            <span class="tab-chip" data-val="month" onclick="selectFilterChip(this)">This Month</span>
             <span class="tab-chip" data-val="90" onclick="selectFilterChip(this)">Last 3 Months</span>
+            <span class="tab-chip" data-val="year" onclick="selectFilterChip(this)">This Year</span>
+            <span class="tab-chip" data-val="custom" onclick="selectFilterChip(this)">Custom Range</span>
+          </div>
+          <div id="filter-custom-range" style="display:none;gap:10px;margin-bottom:20px;">
+            <div style="flex:1;"><span class="field-label" style="font-size:11px;">From</span><input id="filter-date-from" type="date" class="field-input" style="font-size:13px;padding:11px 10px;"/></div>
+            <div style="flex:1;"><span class="field-label" style="font-size:11px;">To</span><input id="filter-date-to" type="date" class="field-input" style="font-size:13px;padding:11px 10px;"/></div>
           </div>
           <div style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:10px;">Sort By</div>
           <div id="filter-sort-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
@@ -1126,6 +1137,9 @@
   function selectFilterChip(chip) {
     chip.parentElement.querySelectorAll('.tab-chip').forEach(function (c) { c.classList.remove('on'); });
     chip.classList.add('on');
+    if (chip.parentElement.id === 'filter-date-row') {
+      document.getElementById('filter-custom-range').style.display = chip.getAttribute('data-val') === 'custom' ? 'flex' : 'none';
+    }
   }
   function resetFilterSheet() {
     ['filter-service-row', 'filter-date-row'].forEach(function (id) {
@@ -1136,6 +1150,9 @@
     var sortRow = document.getElementById('filter-sort-row');
     sortRow.querySelectorAll('.tab-chip').forEach(function (c) { c.classList.remove('on'); });
     sortRow.querySelector('.tab-chip').classList.add('on');
+    document.getElementById('filter-custom-range').style.display = 'none';
+    document.getElementById('filter-date-from').value = '';
+    document.getElementById('filter-date-to').value = '';
   }
   function applyFilterSheet() {
     toast('Filters applied');
