@@ -961,7 +961,7 @@
     }
     document.getElementById('sd-icon').innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + s.icon + '</svg>';
     document.getElementById('sd-stats').innerHTML = s.stats.map(function (st) {
-      return '<div class="card" style="padding:12px 6px;text-align:center;"><div style="font-size:15px;font-weight:800;color:#1A73E8;">' + st.value + '</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">' + st.label + '</div></div>';
+      return '<div class="card" style="padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:15px;font-weight:800;color:#1A73E8;">' + st.value + '</div><div style="font-size:10px;color:#97A4B8;margin-top:2px;">' + st.label + '</div></div>';
     }).join('');
     document.getElementById('sd-feature-list').innerHTML = s.features.map(function (f) {
       return '<div style="display:flex;gap:8px;align-items:flex-start;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M20 6 9 17l-5-5"/></svg><span style="font-size:13.5px;">' + f + '</span></div>';
