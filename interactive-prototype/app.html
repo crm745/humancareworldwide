@@ -1121,15 +1121,15 @@
           <div class="card" style="margin-bottom:16px;">
             <div style="font-size:12px;font-weight:800;color:#97A4B8;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:14px;" data-i18n="lbl_overview">Overview</div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center;">
-              <div>
+              <div onclick="openProfileStat('all')" style="cursor:pointer;">
                 <div style="font-size:21px;font-weight:800;color:#0D2340;">5</div>
                 <div style="font-size:11px;color:#97A4B8;margin-top:3px;" data-i18n="lbl_total_requests">Total Requests</div>
               </div>
-              <div style="border-left:1px solid #E4E9F2;border-right:1px solid #E4E9F2;">
+              <div onclick="openProfileStat('active')" style="cursor:pointer;border-left:1px solid #E4E9F2;border-right:1px solid #E4E9F2;">
                 <div style="font-size:21px;font-weight:800;color:#1A73E8;">2</div>
                 <div style="font-size:11px;color:#97A4B8;margin-top:3px;" data-i18n="lbl_active">Active</div>
               </div>
-              <div>
+              <div onclick="openProfileStat('completed')" style="cursor:pointer;">
                 <div style="font-size:21px;font-weight:800;color:#1E8E4A;">3</div>
                 <div style="font-size:11px;color:#97A4B8;margin-top:3px;" data-i18n="status_completed">Completed</div>
               </div>
@@ -1670,6 +1670,21 @@
     document.querySelectorAll('#screen-my-requests .req-item').forEach(function (item) {
       item.style.display = (f === 'all' || item.getAttribute('data-status') === f) ? 'block' : 'none';
     });
+  }
+
+  function openProfileStat(stat) {
+    navReplace('my-requests');
+    document.querySelectorAll('#screen-my-requests .tab-row .tab-chip').forEach(function (c) { c.classList.remove('on'); });
+    document.querySelectorAll('#screen-my-requests .req-item').forEach(function (item) {
+      var st = item.getAttribute('data-status');
+      var show = stat === 'all' ? true : stat === 'active' ? (st === 'submitted' || st === 'progress') : st === stat;
+      item.style.display = show ? 'block' : 'none';
+    });
+    var chipVal = stat === 'active' ? null : stat;
+    if (chipVal) {
+      var chip = document.querySelector('#screen-my-requests .tab-row [data-mf="' + chipVal + '"]');
+      if (chip) chip.classList.add('on');
+    }
   }
 
   // ---- filter sheet ----
