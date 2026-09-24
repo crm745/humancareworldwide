@@ -106,6 +106,10 @@
   .step-tabs { display: flex; border-bottom: 1px solid #E4E9F2; background: #FFFFFF; }
   .step-tab-btn { flex: 1; padding: 12px 0; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; color: #97A4B8; border-bottom: 2px solid transparent; }
   .step-tab-btn.on { color: #1A73E8; border-bottom-color: #1A73E8; }
+  .tl-row { display: flex; gap: 14px; position: relative; padding-bottom: 32px; }
+  .tl-row:last-child { padding-bottom: 0; }
+  .tl-row:not(:last-child)::after { content: ''; position: absolute; left: 13px; top: 26px; bottom: 4px; width: 2px; background: #E4E9F2; }
+  .phone.dark-mode .tl-row:not(:last-child)::after { background: #3C4C64; }
   @media (max-width: 460px) {
     .device-shell { transform: scale(0.92); transform-origin: top center; margin-bottom: -70px; }
   }
@@ -859,39 +863,53 @@
         </div>
 
         <div id="track-pane-overview" class="noscroll" style="flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;">
-          <div class="card">
-            <div class="info-row"><span class="info-label" data-i18n="lbl_status">Status</span><span class="pill pill-progress" data-i18n="status_progress">In Progress</span></div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_service">Service</span><span class="info-value">Air Ambulance</span></div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_from">From</span><span class="info-value">Dubai, UAE</span></div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_to">To</span><span class="info-value">Mumbai, India</span></div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_patient">Patient</span><span class="info-value">Rakesh Sharma, 45 / Male</span></div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_aircraft">Aircraft</span><span class="info-value">Falcon 2000LXS</span></div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_reference_number">Reference Number</span><span class="info-value">HC-AMB-77821</span></div>
+          <div class="card" style="padding:20px 18px;margin-bottom:14px;">
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:10px;" data-i18n="lbl_estimated_arrival">Estimated Arrival</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px;">
+              <span style="font-size:24px;font-weight:800;color:#0D2340;">6h 20m</span>
+              <span style="font-size:12.5px;color:#97A4B8;" data-i18n="lbl_remaining">remaining</span>
+            </div>
+            <div style="height:6px;border-radius:999px;background:#E4E9F2;overflow:hidden;">
+              <div style="height:100%;width:42%;border-radius:999px;background:linear-gradient(90deg,#1A73E8,#3E8EF7);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11.5px;color:#97A4B8;"><span>Dubai, UAE</span><span><span data-i18n="lbl_eta">ETA</span> 08:05 PM</span></div>
+          </div>
+          <div class="card" style="padding:18px;">
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_status">Status</span><span class="pill pill-progress" data-i18n="status_progress">In Progress</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_service">Service</span><span class="info-value">Air Ambulance</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_from">From</span><span class="info-value">Dubai, UAE</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_to">To</span><span class="info-value">Mumbai, India</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_patient">Patient</span><span class="info-value">Rakesh Sharma, 45 / Male</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_aircraft">Aircraft</span><span class="info-value">Falcon 2000LXS</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_reference_number">Reference Number</span><span class="info-value">HC-AMB-77821</span></div>
           </div>
         </div>
 
-        <div id="track-pane-timeline" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
-          <div style="display:flex;flex-direction:column;gap:16px;">
-            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:14px;font-weight:700;" data-i18n="timeline_submitted">Request Submitted</div><div style="font-size:12px;color:#97A4B8;">10 May 2024, 08:30 AM</div></div></div>
-            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:14px;font-weight:700;" data-i18n="timeline_confirmed">Request Confirmed</div><div style="font-size:12px;color:#97A4B8;">10 May 2024, 11:15 AM</div></div></div>
-            <div style="display:flex;gap:12px;"><div style="width:22px;height:22px;border-radius:999px;background:#1A73E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:11.5px;font-weight:800;">●</div><div><div style="font-size:14px;font-weight:700;color:#1A73E8;" data-i18n="status_progress">In Progress</div><div style="font-size:12px;color:#97A4B8;">10 May 2024, 01:45 PM — Aircraft assigned, departed from Dubai</div></div></div>
-            <div style="display:flex;gap:12px;opacity:0.5;"><div style="width:22px;height:22px;border-radius:999px;background:#E4E9F2;flex-shrink:0;"></div><div><div style="font-size:14px;font-weight:700;" data-i18n="timeline_completed">Service Completed</div><div style="font-size:12px;color:#97A4B8;" data-i18n="timeline_pending">Pending</div></div></div>
+        <div id="track-pane-timeline" class="noscroll" style="flex:1;overflow-y:auto;padding:24px 20px;display:none;flex-direction:column;">
+          <div style="display:flex;flex-direction:column;">
+            <div class="tl-row"><div style="width:26px;height:26px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:14.5px;font-weight:700;" data-i18n="timeline_submitted">Request Submitted</div><div style="font-size:12.5px;color:#97A4B8;margin-top:3px;">10 May 2024, 08:30 AM</div><div style="font-size:12.5px;color:#5B6B84;margin-top:6px;line-height:1.5;" data-i18n="timeline_submitted_detail">Your request was received and logged into our system for review.</div></div></div>
+            <div class="tl-row"><div style="width:26px;height:26px;border-radius:999px;background:#1E8E4A;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:14.5px;font-weight:700;" data-i18n="timeline_confirmed">Request Confirmed</div><div style="font-size:12.5px;color:#97A4B8;margin-top:3px;">10 May 2024, 11:15 AM</div><div style="font-size:12.5px;color:#5B6B84;margin-top:6px;line-height:1.5;" data-i18n="timeline_confirmed_detail">Care coordinator assigned and case verified with the receiving hospital.</div></div></div>
+            <div class="tl-row"><div style="width:26px;height:26px;border-radius:999px;background:#1A73E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:11.5px;font-weight:800;">●</div><div><div style="font-size:14.5px;font-weight:700;color:#1A73E8;" data-i18n="status_progress">In Progress</div><div style="font-size:12.5px;color:#97A4B8;margin-top:3px;">10 May 2024, 01:45 PM</div><div style="font-size:12.5px;color:#5B6B84;margin-top:6px;line-height:1.5;" data-i18n="timeline_progress_detail">Aircraft assigned and departed from Dubai with the full medical crew on board.</div></div></div>
+            <div class="tl-row" style="opacity:0.5;"><div style="width:26px;height:26px;border-radius:999px;background:#E4E9F2;flex-shrink:0;"></div><div><div style="font-size:14.5px;font-weight:700;" data-i18n="timeline_completed">Service Completed</div><div style="font-size:12.5px;color:#97A4B8;margin-top:3px;" data-i18n="timeline_pending">Pending</div></div></div>
           </div>
         </div>
 
-        <div id="track-pane-info" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
-          <div class="card">
-            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:10px;" data-i18n="lbl_care_team">Care Team</div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_attending_physician">Attending Physician</span><span class="info-value">Dr. Priya Mehta</span></div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_case_coordinator">Case Coordinator</span><span class="info-value">Rohit Verma</span></div>
+        <div id="track-pane-info" class="noscroll" style="flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;">
+          <div class="card" style="padding:18px;">
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:12px;" data-i18n="lbl_care_team">Care Team</div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_attending_physician">Attending Physician</span><span class="info-value">Dr. Priya Mehta</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_case_coordinator">Case Coordinator</span><span class="info-value">Rohit Verma</span></div>
           </div>
-          <div class="card" style="margin-top:12px;">
-            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:10px;" data-i18n="lbl_hospital">Hospital</div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_facility">Facility</span><span class="info-value">Apollo Hospital, Mumbai</span></div>
-            <div class="info-row"><span class="info-label" data-i18n="lbl_contact">Contact</span><span class="info-value">+91 98765 43210</span></div>
+          <div class="card" style="margin-top:14px;padding:18px;">
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:12px;" data-i18n="lbl_hospital">Hospital</div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_facility">Facility</span><span class="info-value">Apollo Hospital, Mumbai</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_contact">Contact</span><span class="info-value">+91 98765 43210</span></div>
           </div>
-          <div style="flex:1;min-height:14px;"></div>
-          <button class="btn-outline" onclick="toast('Opening chat with care team…')" data-i18n="btn_message_care_team">Message Care Team</button>
+          <div class="card" style="margin-top:14px;padding:18px;">
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:12px;" data-i18n="lbl_billing">Billing</div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="field_policy_gop_ref">Policy / GOP Reference</span><span class="info-value">GOP-2024-77821</span></div>
+            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_payment_status">Payment Status</span><span class="pill pill-completed" data-i18n="lbl_covered">Covered</span></div>
+          </div>
         </div>
 
         <div id="track-pane-docs" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
@@ -1283,7 +1301,7 @@
       air_opt_commercial_title: 'Commercial Airlines', air_opt_rotary_sub: 'Helicopter dispatch in under 2 hours', air_opt_rotary_title: 'Rotary Wing Medical Repatriation', btn_apply_filters: 'Apply Filters',
       btn_call_alarm_desk: 'Call Alarm Desk', btn_contact_team: 'Contact Team', btn_create_case: 'Create Case', btn_download_all: 'Download All',
       btn_download_summary: 'Download Summary', btn_email_ops: 'Email Support', btn_initiate_new_case: 'Initiate New Corporate Case', btn_mark_read: 'Mark read',
-      btn_message_care_team: 'Message Care Team', btn_next: 'Next', btn_reset: 'Reset', btn_return_home: 'Return to Home',
+      btn_next: 'Next', btn_reset: 'Reset', btn_return_home: 'Return to Home',
       btn_share: 'Share', btn_sign_in: 'Sign In', btn_track_details: 'Track Details',
       care_ambulatory: 'Ambulatory', care_banner_line1: 'Your care,', care_banner_line2: 'Our responsibility', care_icu: 'ICU / Critical',
       care_na: 'Not Applicable', care_stable: 'Stable / Monitored', chip_all: 'All', choose_login_sub: 'Select your portal to continue.',
@@ -1307,6 +1325,8 @@
       lbl_active: 'Active', lbl_age_gender: 'Age / Gender', lbl_aircraft: 'Aircraft', lbl_attending_physician: 'Attending Physician',
       lbl_care_team: 'Care Team', lbl_case_coordinator: 'Case Coordinator', lbl_contact: 'Contact', lbl_documents: 'Documents',
       lbl_done: 'Done', lbl_expected_date: 'Expected Date', lbl_extra_info: 'Extra Info', lbl_facility: 'Facility',
+      lbl_estimated_arrival: 'Estimated Arrival', lbl_remaining: 'remaining', lbl_eta: 'ETA',
+      lbl_billing: 'Billing', lbl_payment_status: 'Payment Status', lbl_covered: 'Covered',
       lbl_faq: 'Frequently Asked Questions', lbl_from: 'From', lbl_heard_about_us: 'Heard About Us', lbl_hospital: 'Hospital',
       lbl_identity_insurance: 'Identity & Insurance', lbl_location: 'Location', lbl_medical_records: 'Medical Records', lbl_medical_report: 'Medical Report',
       lbl_name: 'Name', lbl_new_vendor: 'New vendor?', lbl_patient: 'Patient', lbl_patient_name: 'Patient Name',
@@ -1330,6 +1350,7 @@
       submitting_under_prefix: 'Submitting under', tab_documents: 'Documents', tab_information: 'Information',
       tab_overview: 'Overview', tab_timeline: 'Timeline', terms_title: 'Terms & Conditions', thank_you_title: 'Thank You!',
       timeline_completed: 'Service Completed', timeline_confirmed: 'Request Confirmed', timeline_pending: 'Pending', timeline_submitted: 'Request Submitted',
+      timeline_submitted_detail: 'Your request was received and logged into our system for review.', timeline_confirmed_detail: 'Care coordinator assigned and case verified with the receiving hospital.', timeline_progress_detail: 'Aircraft assigned and departed from Dubai with the full medical crew on board.',
       tracking_details_title: 'Tracking Details', upload_file_btn: 'Upload File', upload_hint: 'PDF, JPG, PNG (Max 5MB)', vendor_contact_ops_text: 'Contact HumanCare Global Operations:',
       vendor_login_sub: 'Insurance · Government · TPA · Corporate clients', vendor_login_title: 'Vendor / Corporate Sign In', vendor_otp_title: 'Verify Your Identity', view_details_cta: 'View Details',
       view_my_request_btn: 'View My Request', we_provide_label: 'We Provide', welcome_btn: 'Get Started' },
@@ -1347,7 +1368,7 @@
       air_opt_commercial_title: 'कमर्शियल एयरलाइंस', air_opt_rotary_sub: '2 घंटे से कम समय में हेलीकॉप्टर भेजा जाएगा', air_opt_rotary_title: 'रोटरी विंग मेडिकल रेपेट्रिएशन', btn_apply_filters: 'फ़िल्टर लागू करें',
       btn_call_alarm_desk: 'अलार्म डेस्क को कॉल करें', btn_contact_team: 'टीम से संपर्क करें', btn_create_case: 'केस बनाएं', btn_download_all: 'सभी डाउनलोड करें',
       btn_download_summary: 'सारांश डाउनलोड करें', btn_email_ops: 'सहायता को ईमेल करें', btn_initiate_new_case: 'नया कॉर्पोरेट केस शुरू करें', btn_mark_read: 'पढ़ा हुआ चिह्नित करें',
-      btn_message_care_team: 'केयर टीम को मैसेज करें', btn_next: 'आगे', btn_reset: 'रीसेट करें', btn_return_home: 'होम पर वापस जाएं',
+      btn_next: 'आगे', btn_reset: 'रीसेट करें', btn_return_home: 'होम पर वापस जाएं',
       btn_share: 'शेयर करें', btn_sign_in: 'साइन इन करें', btn_track_details: 'ट्रैक विवरण',
       care_ambulatory: 'एंबुलेटरी', care_banner_line1: 'आपकी देखभाल,', care_banner_line2: 'हमारी ज़िम्मेदारी', care_icu: 'ICU / गंभीर',
       care_na: 'लागू नहीं', care_stable: 'स्थिर / निगरानी में', chip_all: 'सभी', choose_login_sub: 'जारी रखने के लिए अपना पोर्टल चुनें।',
@@ -1371,6 +1392,8 @@
       lbl_active: 'सक्रिय', lbl_age_gender: 'आयु / लिंग', lbl_aircraft: 'विमान', lbl_attending_physician: 'उपस्थित चिकित्सक',
       lbl_care_team: 'केयर टीम', lbl_case_coordinator: 'केस समन्वयक', lbl_contact: 'संपर्क', lbl_documents: 'दस्तावेज़',
       lbl_done: 'पूर्ण', lbl_expected_date: 'अपेक्षित तारीख', lbl_extra_info: 'अतिरिक्त जानकारी', lbl_facility: 'सुविधा',
+      lbl_estimated_arrival: 'अनुमानित आगमन', lbl_remaining: 'शेष', lbl_eta: 'अनुमानित समय',
+      lbl_billing: 'बिलिंग', lbl_payment_status: 'भुगतान स्थिति', lbl_covered: 'कवर किया गया',
       lbl_faq: 'अक्सर पूछे जाने वाले प्रश्न', lbl_from: 'से', lbl_heard_about_us: 'हमारे बारे में सुना', lbl_hospital: 'अस्पताल',
       lbl_identity_insurance: 'पहचान और बीमा', lbl_location: 'स्थान', lbl_medical_records: 'मेडिकल रिकॉर्ड्स', lbl_medical_report: 'मेडिकल रिपोर्ट',
       lbl_name: 'नाम', lbl_new_vendor: 'नए वेंडर हैं?', lbl_patient: 'मरीज़', lbl_patient_name: 'मरीज़ का नाम',
@@ -1394,6 +1417,7 @@
       submitting_under_prefix: 'इसके तहत सबमिट कर रहे हैं', tab_documents: 'दस्तावेज़', tab_information: 'जानकारी',
       tab_overview: 'अवलोकन', tab_timeline: 'टाइमलाइन', terms_title: 'नियम और शर्तें', thank_you_title: 'धन्यवाद!',
       timeline_completed: 'सेवा पूर्ण', timeline_confirmed: 'अनुरोध की पुष्टि हुई', timeline_pending: 'लंबित', timeline_submitted: 'अनुरोध सबमिट किया गया',
+      timeline_submitted_detail: 'आपका अनुरोध प्राप्त हो गया है और समीक्षा के लिए हमारे सिस्टम में दर्ज कर लिया गया है।', timeline_confirmed_detail: 'केयर समन्वयक नियुक्त किया गया और मामला प्राप्तकर्ता अस्पताल के साथ सत्यापित किया गया।', timeline_progress_detail: 'विमान नियुक्त किया गया और पूरी मेडिकल टीम के साथ दुबई से रवाना हो गया।',
       tracking_details_title: 'ट्रैकिंग विवरण', upload_file_btn: 'फ़ाइल अपलोड करें', upload_hint: 'PDF, JPG, PNG (अधिकतम 5MB)', vendor_contact_ops_text: 'HumanCare ग्लोबल ऑपरेशंस से संपर्क करें:',
       vendor_login_sub: 'बीमा · सरकार · TPA · कॉर्पोरेट क्लाइंट', vendor_login_title: 'वेंडर / कॉर्पोरेट साइन इन', vendor_otp_title: 'अपनी पहचान सत्यापित करें', view_details_cta: 'विवरण देखें',
       view_my_request_btn: 'मेरा अनुरोध देखें', we_provide_label: 'हम प्रदान करते हैं', welcome_btn: 'शुरू करें' },
@@ -1411,7 +1435,7 @@
       air_opt_commercial_title: 'కమర్షియల్ ఎయిర్‌లైన్స్', air_opt_rotary_sub: '2 గంటల్లోపు హెలికాప్టర్ డిస్పాచ్', air_opt_rotary_title: 'రోటరీ వింగ్ మెడికల్ రీపేట్రియేషన్', btn_apply_filters: 'ఫిల్టర్‌లను వర్తింపజేయండి',
       btn_call_alarm_desk: 'అలారం డెస్క్‌కు కాల్ చేయండి', btn_contact_team: 'టీమ్‌ను సంప్రదించండి', btn_create_case: 'కేస్ సృష్టించండి', btn_download_all: 'అన్నీ డౌన్‌లోడ్ చేయండి',
       btn_download_summary: 'సారాంశం డౌన్‌లోడ్ చేయండి', btn_email_ops: 'సపోర్ట్‌కు ఇమెయిల్ చేయండి', btn_initiate_new_case: 'కొత్త కార్పొరేట్ కేస్‌ను ప్రారంభించండి', btn_mark_read: 'చదివినట్లు గుర్తించండి',
-      btn_message_care_team: 'కేర్ టీమ్‌కు మెసేజ్ చేయండి', btn_next: 'తదుపరి', btn_reset: 'రీసెట్ చేయండి', btn_return_home: 'హోమ్‌కు తిరిగి వెళ్లండి',
+      btn_next: 'తదుపరి', btn_reset: 'రీసెట్ చేయండి', btn_return_home: 'హోమ్‌కు తిరిగి వెళ్లండి',
       btn_share: 'షేర్ చేయండి', btn_sign_in: 'సైన్ ఇన్ చేయండి', btn_track_details: 'ట్రాక్ వివరాలు',
       care_ambulatory: 'అంబులేటరీ', care_banner_line1: 'మీ సంరక్షణ,', care_banner_line2: 'మా బాధ్యత', care_icu: 'ICU / క్రిటికల్',
       care_na: 'వర్తించదు', care_stable: 'స్థిరంగా / పర్యవేక్షణలో', chip_all: 'అన్నీ', choose_login_sub: 'కొనసాగించడానికి మీ పోర్టల్‌ను ఎంచుకోండి.',
@@ -1435,6 +1459,8 @@
       lbl_active: 'యాక్టివ్', lbl_age_gender: 'వయస్సు / లింగం', lbl_aircraft: 'విమానం', lbl_attending_physician: 'అటెండింగ్ ఫిజిషియన్',
       lbl_care_team: 'కేర్ టీమ్', lbl_case_coordinator: 'కేస్ కోఆర్డినేటర్', lbl_contact: 'సంప్రదింపు', lbl_documents: 'డాక్యుమెంట్లు',
       lbl_done: 'పూర్తయింది', lbl_expected_date: 'ఆశించిన తేదీ', lbl_extra_info: 'అదనపు సమాచారం', lbl_facility: 'సదుపాయం',
+      lbl_estimated_arrival: 'అంచనా చేరిక', lbl_remaining: 'మిగిలి ఉంది', lbl_eta: 'అంచనా సమయం',
+      lbl_billing: 'బిల్లింగ్', lbl_payment_status: 'చెల్లింపు స్థితి', lbl_covered: 'కవర్ చేయబడింది',
       lbl_faq: 'తరచుగా అడిగే ప్రశ్నలు', lbl_from: 'నుండి', lbl_heard_about_us: 'మా గురించి తెలుసుకున్నారు', lbl_hospital: 'హాస్పిటల్',
       lbl_identity_insurance: 'గుర్తింపు & ఇన్సూరెన్స్', lbl_location: 'స్థానం', lbl_medical_records: 'మెడికల్ రికార్డులు', lbl_medical_report: 'మెడికల్ రిపోర్ట్',
       lbl_name: 'పేరు', lbl_new_vendor: 'కొత్త వెండర్‌నా?', lbl_patient: 'పేషెంట్', lbl_patient_name: 'పేషెంట్ పేరు',
@@ -1458,6 +1484,7 @@
       submitting_under_prefix: 'దీని కింద సమర్పిస్తున్నారు', tab_documents: 'డాక్యుమెంట్లు', tab_information: 'సమాచారం',
       tab_overview: 'అవలోకనం', tab_timeline: 'టైమ్‌లైన్', terms_title: 'నిబంధనలు & షరతులు', thank_you_title: 'ధన్యవాదాలు!',
       timeline_completed: 'సేవ పూర్తయింది', timeline_confirmed: 'అభ్యర్థన నిర్ధారించబడింది', timeline_pending: 'పెండింగ్‌లో ఉంది', timeline_submitted: 'అభ్యర్థన సమర్పించబడింది',
+      timeline_submitted_detail: 'మీ అభ్యర్థన స్వీకరించబడింది మరియు సమీక్ష కోసం మా సిస్టమ్‌లో నమోదు చేయబడింది.', timeline_confirmed_detail: 'కేర్ కోఆర్డినేటర్ కేటాయించబడింది మరియు కేసు స్వీకరించే హాస్పిటల్‌తో ధృవీకరించబడింది.', timeline_progress_detail: 'విమానం కేటాయించబడింది మరియు పూర్తి మెడికల్ సిబ్బందితో దుబాయ్ నుండి బయలుదేరింది.',
       tracking_details_title: 'ట్రాకింగ్ వివరాలు', upload_file_btn: 'ఫైల్‌ను అప్‌లోడ్ చేయండి', upload_hint: 'PDF, JPG, PNG (గరిష్టంగా 5MB)', vendor_contact_ops_text: 'HumanCare గ్లోబల్ ఆపరేషన్స్‌ను సంప్రదించండి:',
       vendor_login_sub: 'ఇన్సూరెన్స్ · ప్రభుత్వం · TPA · కార్పొరేట్ క్లయింట్లు', vendor_login_title: 'వెండర్ / కార్పొరేట్ సైన్ ఇన్', vendor_otp_title: 'మీ గుర్తింపును ధృవీకరించండి', view_details_cta: 'వివరాలు చూడండి',
       view_my_request_btn: 'నా అభ్యర్థనను చూడండి', we_provide_label: 'మేము అందిస్తున్నాము', welcome_btn: 'ప్రారంభించండి' },
@@ -1475,7 +1502,7 @@
       air_opt_commercial_title: 'شركات الطيران التجارية', air_opt_rotary_sub: 'إرسال طائرة هليكوبتر خلال أقل من ساعتين', air_opt_rotary_title: 'إعادة طبية بطائرة هليكوبتر', btn_apply_filters: 'تطبيق الفلاتر',
       btn_call_alarm_desk: 'الاتصال بمكتب الطوارئ', btn_contact_team: 'تواصل مع الفريق', btn_create_case: 'إنشاء حالة', btn_download_all: 'تنزيل الكل',
       btn_download_summary: 'تنزيل الملخص', btn_email_ops: 'مراسلة الدعم بالبريد الإلكتروني', btn_initiate_new_case: 'بدء حالة شركات جديدة', btn_mark_read: 'تحديد كمقروء',
-      btn_message_care_team: 'مراسلة فريق الرعاية', btn_next: 'التالي', btn_reset: 'إعادة تعيين', btn_return_home: 'العودة إلى الرئيسية',
+      btn_next: 'التالي', btn_reset: 'إعادة تعيين', btn_return_home: 'العودة إلى الرئيسية',
       btn_share: 'مشاركة', btn_sign_in: 'تسجيل الدخول', btn_track_details: 'تفاصيل التتبع',
       care_ambulatory: 'متنقل (غير طريح الفراش)', care_banner_line1: 'رعايتك،', care_banner_line2: 'مسؤوليتنا', care_icu: 'عناية مركزة / حرجة',
       care_na: 'غير منطبق', care_stable: 'مستقر / تحت المراقبة', chip_all: 'الكل', choose_login_sub: 'اختر بوابتك للمتابعة.',
@@ -1499,6 +1526,8 @@
       lbl_active: 'نشط', lbl_age_gender: 'العمر / الجنس', lbl_aircraft: 'الطائرة', lbl_attending_physician: 'الطبيب المعالج',
       lbl_care_team: 'فريق الرعاية', lbl_case_coordinator: 'منسق الحالة', lbl_contact: 'جهة الاتصال', lbl_documents: 'المستندات',
       lbl_done: 'تم', lbl_expected_date: 'التاريخ المتوقع', lbl_extra_info: 'معلومات إضافية', lbl_facility: 'المنشأة',
+      lbl_estimated_arrival: 'الوصول المتوقع', lbl_remaining: 'متبقٍ', lbl_eta: 'الوقت المتوقع للوصول',
+      lbl_billing: 'الفواتير', lbl_payment_status: 'حالة الدفع', lbl_covered: 'مغطى',
       lbl_faq: 'الأسئلة الشائعة', lbl_from: 'من', lbl_heard_about_us: 'كيف سمعت عنا', lbl_hospital: 'المستشفى',
       lbl_identity_insurance: 'الهوية والتأمين', lbl_location: 'الموقع', lbl_medical_records: 'السجلات الطبية', lbl_medical_report: 'التقرير الطبي',
       lbl_name: 'الاسم', lbl_new_vendor: 'مورّد جديد؟', lbl_patient: 'المريض', lbl_patient_name: 'اسم المريض',
@@ -1522,6 +1551,7 @@
       submitting_under_prefix: 'الإرسال تحت', tab_documents: 'المستندات', tab_information: 'المعلومات',
       tab_overview: 'نظرة عامة', tab_timeline: 'الجدول الزمني', terms_title: 'الشروط والأحكام', thank_you_title: 'شكراً لك!',
       timeline_completed: 'اكتملت الخدمة', timeline_confirmed: 'تم تأكيد الطلب', timeline_pending: 'قيد الانتظار', timeline_submitted: 'تم إرسال الطلب',
+      timeline_submitted_detail: 'تم استلام طلبك وتسجيله في نظامنا للمراجعة.', timeline_confirmed_detail: 'تم تعيين منسق الرعاية والتحقق من الحالة مع المستشفى المستقبل.', timeline_progress_detail: 'تم تعيين الطائرة وغادرت من دبي مع الطاقم الطبي الكامل.',
       tracking_details_title: 'تفاصيل التتبع', upload_file_btn: 'تحميل الملف', upload_hint: 'PDF أو JPG أو PNG (بحد أقصى 5 ميغابايت)', vendor_contact_ops_text: 'تواصل مع عمليات HumanCare العالمية:',
       vendor_login_sub: 'تأمين · حكومي · TPA · عملاء الشركات', vendor_login_title: 'تسجيل دخول المورّدين / الشركات', vendor_otp_title: 'تحقق من هويتك', view_details_cta: 'عرض التفاصيل',
       view_my_request_btn: 'عرض طلبي', we_provide_label: 'نحن نقدم', welcome_btn: 'ابدأ الآن' }
