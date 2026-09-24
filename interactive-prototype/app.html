@@ -408,41 +408,41 @@
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:20px 18px 84px;">
           <div style="margin-bottom:20px;">
-            <div style="font-size:20.5px;font-weight:800;color:#0D2340;">Hello, Rakesh 👋</div>
-            <div style="font-size:14px;color:#5B6B84;margin-top:3px;">How can we assist you today?</div>
+            <div style="font-size:20.5px;font-weight:800;color:#0D2340;"><span data-i18n="greeting">Hello,</span> Rakesh 👋</div>
+            <div style="font-size:14px;color:#5B6B84;margin-top:3px;" data-i18n="greetingSub">How can we assist you today?</div>
           </div>
           <div style="background:linear-gradient(135deg,#1A73E8,#3E8EF7);border-radius:18px;padding:22px;color:#fff;cursor:pointer;margin-bottom:20px;" onclick="nav('select-service')">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;">
               <div>
-                <div style="font-size:16.5px;font-weight:800;">Create New Request</div>
-                <div style="font-size:13.5px;opacity:0.9;margin-top:7px;line-height:1.4;">Request any medical assistance</div>
+                <div style="font-size:16.5px;font-weight:800;" data-i18n="createReq">Create New Request</div>
+                <div style="font-size:13.5px;opacity:0.9;margin-top:7px;line-height:1.4;" data-i18n="createReqSub">Request any medical assistance</div>
               </div>
               <div class="cta-pulse-dot" style="width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
             </div>
           </div>
 
           <div style="margin-bottom:10px;">
-            <span style="font-size:13.5px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;">Our Services</span>
+            <span style="font-size:13.5px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;" data-i18n="ourServices">Our Services</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-            <div class="svc-tile" onclick="nav('air-ambulance-options')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div style="font-size:13.5px;font-weight:700;">Air Ambulance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Domestic / International</div></div>
-            <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Ground Ambulance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Basic &amp; Advanced Care</div></div>
-            <div class="svc-tile" onclick="openService('hospital')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg></div><div style="font-size:13.5px;font-weight:700;">Hospitalization Assistance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Domestic &amp; International</div></div>
-            <div class="svc-tile" onclick="openService('mortal')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 1.5 1 2.5 0 4-1-1.5-1-2.5 0-4Z"/><rect x="10" y="6" width="4" height="14" rx="1"/><line x1="7" y1="20" x2="17" y2="20"/></svg></div><div style="font-size:13.5px;font-weight:700;">Mortal Remains Transportation</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Transportation &amp; Rituals</div></div>
-            <div class="svc-tile" onclick="openService('homecare')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></div><div style="font-size:13.5px;font-weight:700;">Home Healthcare Services</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Nursing &amp; Post-Surgery Care</div></div>
-            <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Teleconsultation</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">&amp; House-Call</div></div>
-            <div class="svc-tile" style="grid-column:1 / -1;" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Corporate Medical Solutions</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Workplace Health Programs</div></div>
+            <div class="svc-tile" onclick="nav('air-ambulance-options')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div style="font-size:13.5px;font-weight:700;" data-i18n="svc_air">Air Ambulance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;" data-i18n="svc_air_sub">Domestic / International</div></div>
+            <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div style="font-size:13.5px;font-weight:700;" data-i18n="svc_ground">Ground Ambulance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;" data-i18n="svc_ground_sub">Basic &amp; Advanced Care</div></div>
+            <div class="svc-tile" onclick="openService('hospital')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg></div><div style="font-size:13.5px;font-weight:700;" data-i18n="svc_hospital">Hospitalization Assistance</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;" data-i18n="svc_hospital_sub">Domestic &amp; International</div></div>
+            <div class="svc-tile" onclick="openService('mortal')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 1.5 1 2.5 0 4-1-1.5-1-2.5 0-4Z"/><rect x="10" y="6" width="4" height="14" rx="1"/><line x1="7" y1="20" x2="17" y2="20"/></svg></div><div style="font-size:13.5px;font-weight:700;" data-i18n="svc_mortal">Mortal Remains Transportation</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;" data-i18n="svc_mortal_sub">Transportation &amp; Rituals</div></div>
+            <div class="svc-tile" onclick="openService('homecare')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/><path d="M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></div><div style="font-size:13.5px;font-weight:700;" data-i18n="svc_homecare">Home Healthcare Services</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;" data-i18n="svc_homecare_sub">Nursing &amp; Post-Surgery Care</div></div>
+            <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;" data-i18n="svc_tele">Teleconsultation</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;" data-i18n="svc_tele_sub">&amp; House-Call</div></div>
+            <div class="svc-tile" style="grid-column:1 / -1;" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;" data-i18n="svc_corporate">Corporate Medical Solutions</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;" data-i18n="svc_corporate_sub">Workplace Health Programs</div></div>
           </div>
 
           <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FBEDED;border-color:#F3C6C6;">
             <div style="display:flex;align-items:center;gap:10px;min-width:0;">
               <div style="width:38px;height:38px;border-radius:999px;background:#D64545;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></div>
               <div style="min-width:0;">
-                <div style="font-size:13.5px;font-weight:800;color:#B02A2A;">SOS &middot; Emergency Assistance</div>
-                <div style="font-size:12px;color:#97644E;margin-top:2px;">One tap connects you to our 24/7 team</div>
+                <div style="font-size:13.5px;font-weight:800;color:#B02A2A;" data-i18n="sos_title">SOS &middot; Emergency Assistance</div>
+                <div style="font-size:12px;color:#97644E;margin-top:2px;" data-i18n="sos_sub">One tap connects you to our 24/7 team</div>
               </div>
             </div>
-            <button onclick="openSOSConfirm()" style="flex-shrink:0;padding:10px 16px;border-radius:10px;background:#D64545;color:#fff;font-size:13px;font-weight:800;border:none;cursor:pointer;">SOS</button>
+            <button onclick="openSOSConfirm()" style="flex-shrink:0;padding:10px 16px;border-radius:10px;background:#D64545;color:#fff;font-size:13px;font-weight:800;border:none;cursor:pointer;" data-i18n="sos_btn">SOS</button>
           </div>
 
         </div>
@@ -1112,7 +1112,7 @@
       <section id="screen-profile" class="screen hidden">
         <div class="topbar">
           <div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-          <span class="topbar-title">My Profile</span>
+          <span class="topbar-title" data-i18n="profile_title">My Profile</span>
           <span style="width:32px;"></span>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px 18px 90px;display:flex;flex-direction:column;">
@@ -1121,29 +1121,29 @@
             <div><div style="font-size:15.5px;font-weight:800;">Rakesh Sharma</div><div style="font-size:12.5px;color:#97A4B8;margin-top:2px;">+91 98765 43210</div><div style="font-size:12px;color:#97A4B8;">rakesh.sharma@example.com</div></div>
           </div>
           <div class="card" style="margin-bottom:12px;">
-            <div class="info-row" onclick="nav('my-documents')" style="cursor:pointer;"><span class="info-label">My Documents</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
-            <div class="info-row" onclick="nav('help-support')" style="cursor:pointer;"><span class="info-label">Emergency Contact</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
-            <div class="info-row" onclick="nav('help-support')" style="cursor:pointer;"><span class="info-label">Help &amp; Support</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
-            <div class="info-row" onclick="openLanguageSheet()" style="cursor:pointer;"><span class="info-label">Language</span><span class="info-value" id="profile-lang-value" style="color:#1A73E8;">English (EN) &gt;</span></div>
+            <div class="info-row" onclick="nav('my-documents')" style="cursor:pointer;"><span class="info-label" data-i18n="my_documents">My Documents</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
+            <div class="info-row" onclick="nav('help-support')" style="cursor:pointer;"><span class="info-label" data-i18n="emergency_contact">Emergency Contact</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
+            <div class="info-row" onclick="nav('help-support')" style="cursor:pointer;"><span class="info-label" data-i18n="help_support">Help &amp; Support</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
+            <div class="info-row" onclick="openLanguageSheet()" style="cursor:pointer;"><span class="info-label" data-i18n="language">Language</span><span class="info-value" id="profile-lang-value" style="color:#1A73E8;">English (EN) &gt;</span></div>
           </div>
           <div class="card" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:32px;height:32px;border-radius:999px;background:#EEF3FB;color:#45526B;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></div>
-              <span style="font-size:13.5px;font-weight:700;color:#17233D;">Dark Mode</span>
+              <span style="font-size:13.5px;font-weight:700;color:#17233D;" data-i18n="dark_mode">Dark Mode</span>
             </div>
             <div id="dark-mode-switch" onclick="toggleDarkMode()" style="width:44px;height:26px;border-radius:999px;background:#E4E9F2;position:relative;cursor:pointer;transition:background 0.2s ease;flex-shrink:0;">
               <div id="dark-mode-knob" style="width:20px;height:20px;border-radius:999px;background:#fff;position:absolute;top:3px;left:3px;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:transform 0.2s ease;"></div>
             </div>
           </div>
           <div style="flex:1;min-height:16px;"></div>
-          <button class="btn-danger-outline" onclick="navReplace('welcome')">Sign Out</button>
+          <button class="btn-danger-outline" onclick="navReplace('welcome')" data-i18n="sign_out">Sign Out</button>
         </div>
         <div class="bottom-nav-v2" data-tabbar="profile"></div>
 
         <div id="lang-backdrop" onclick="closeLanguageSheet()" style="position:absolute;inset:0;background:rgba(13,35,64,0.45);opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:40;"></div>
         <div id="lang-sheet" style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;padding:20px 20px 24px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(.32,.72,0,1);z-index:41;box-shadow:0 -10px 30px rgba(13,35,64,0.15);">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-            <span style="font-size:16px;font-weight:800;color:#0D2340;">Choose Language</span>
+            <span style="font-size:16px;font-weight:800;color:#0D2340;" data-i18n="choose_language">Choose Language</span>
             <div class="icon-btn" style="width:30px;height:30px;" onclick="closeLanguageSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
           </div>
           <div id="lang-options" style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px;">
@@ -1206,11 +1206,12 @@
   function restart() { navReplace('home'); }
 
   var TABS = [
-    { id: 'home', label: 'Home', icon: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' },
-    { id: 'my-requests', label: 'Requests', icon: '<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/>' },
-    { id: 'profile', label: 'Profile', icon: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' }
+    { id: 'home', label: 'Home', labelKey: 'nav_home', icon: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' },
+    { id: 'my-requests', label: 'Requests', labelKey: 'nav_requests', icon: '<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/>' },
+    { id: 'profile', label: 'Profile', labelKey: 'nav_profile', icon: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' }
   ];
   function renderNavBars(activeId) {
+    var dict = I18N[currentLang] || I18N.EN;
     document.querySelectorAll('.bottom-nav-v2').forEach(function (bar) {
       if (bar.getAttribute('data-tabbar') === 'none') {
         bar.style.display = 'none';
@@ -1220,9 +1221,76 @@
       bar.style.display = 'flex';
       bar.innerHTML = TABS.map(function (t) {
         var on = t.id === activeId ? ' on' : '';
-        return '<button class="nav-item-v2' + on + '" onclick="navReplace(\'' + t.id + '\')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + t.icon + '</svg><span>' + t.label + '</span></button>';
+        var label = dict[t.labelKey] || t.label;
+        return '<button class="nav-item-v2' + on + '" onclick="navReplace(\'' + t.id + '\')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + t.icon + '</svg><span>' + label + '</span></button>';
       }).join('');
     });
+  }
+
+  // ---- i18n ----
+  var currentLang = 'EN';
+  var I18N = {
+    EN: { greeting: 'Hello,', greetingSub: 'How can we assist you today?', createReq: 'Create New Request', createReqSub: 'Request any medical assistance', ourServices: 'Our Services',
+      svc_air: 'Air Ambulance', svc_air_sub: 'Domestic / International', svc_ground: 'Ground Ambulance', svc_ground_sub: 'Basic & Advanced Care',
+      svc_hospital: 'Hospitalization Assistance', svc_hospital_sub: 'Domestic & International', svc_mortal: 'Mortal Remains Transportation', svc_mortal_sub: 'Transportation & Rituals',
+      svc_homecare: 'Home Healthcare Services', svc_homecare_sub: 'Nursing & Post-Surgery Care', svc_tele: 'Teleconsultation', svc_tele_sub: '& House-Call',
+      svc_corporate: 'Corporate Medical Solutions', svc_corporate_sub: 'Workplace Health Programs',
+      sos_title: 'SOS · Emergency Assistance', sos_sub: 'One tap connects you to our 24/7 team', sos_btn: 'SOS',
+      nav_home: 'Home', nav_requests: 'Requests', nav_profile: 'Profile',
+      profile_title: 'My Profile', my_documents: 'My Documents', emergency_contact: 'Emergency Contact', help_support: 'Help & Support', language: 'Language',
+      dark_mode: 'Dark Mode', sign_out: 'Sign Out', choose_language: 'Choose Language' },
+    HI: { greeting: 'नमस्ते,', greetingSub: 'आज हम आपकी कैसे मदद कर सकते हैं?', createReq: 'नई रिक्वेस्ट बनाएं', createReqSub: 'किसी भी मेडिकल सहायता का अनुरोध करें', ourServices: 'हमारी सेवाएं',
+      svc_air: 'एयर एम्बुलेंस', svc_air_sub: 'घरेलू / अंतरराष्ट्रीय', svc_ground: 'ग्राउंड एम्बुलेंस', svc_ground_sub: 'बेसिक और एडवांस्ड केयर',
+      svc_hospital: 'अस्पताल सहायता', svc_hospital_sub: 'घरेलू और अंतरराष्ट्रीय', svc_mortal: 'शव परिवहन सेवा', svc_mortal_sub: 'परिवहन और अंतिम संस्कार',
+      svc_homecare: 'होम हेल्थकेयर सेवाएं', svc_homecare_sub: 'नर्सिंग और पोस्ट-सर्जरी देखभाल', svc_tele: 'टेलीकंसल्टेशन', svc_tele_sub: 'और हाउस-कॉल',
+      svc_corporate: 'कॉर्पोरेट मेडिकल समाधान', svc_corporate_sub: 'कार्यस्थल स्वास्थ्य कार्यक्रम',
+      sos_title: 'SOS · आपातकालीन सहायता', sos_sub: 'एक टैप में हमारी 24/7 टीम से जुड़ें', sos_btn: 'SOS',
+      nav_home: 'होम', nav_requests: 'रिक्वेस्ट', nav_profile: 'प्रोफाइल',
+      profile_title: 'मेरी प्रोफाइल', my_documents: 'मेरे दस्तावेज़', emergency_contact: 'आपातकालीन संपर्क', help_support: 'सहायता और समर्थन', language: 'भाषा',
+      dark_mode: 'डार्क मोड', sign_out: 'साइन आउट', choose_language: 'भाषा चुनें' },
+    TE: { greeting: 'నమస్తే,', greetingSub: 'ఈ రోజు మేము మీకు ఎలా సహాయం చేయగలం?', createReq: 'కొత్త రిక్వెస్ట్ సృష్టించండి', createReqSub: 'ఏదైనా వైద్య సహాయం కోసం అభ్యర్థించండి', ourServices: 'మా సేవలు',
+      svc_air: 'ఎయిర్ అంబులెన్స్', svc_air_sub: 'దేశీయ / అంతర్జాతీయ', svc_ground: 'గ్రౌండ్ అంబులెన్స్', svc_ground_sub: 'బేసిక్ & అడ్వాన్స్డ్ కేర్',
+      svc_hospital: 'హాస్పిటలైజేషన్ సహాయం', svc_hospital_sub: 'దేశీయ & అంతర్జాతీయ', svc_mortal: 'మృతదేహ రవాణా', svc_mortal_sub: 'రవాణా & సంస్కారాలు',
+      svc_homecare: 'హోమ్ హెల్త్‌కేర్ సేవలు', svc_homecare_sub: 'నర్సింగ్ & పోస్ట్-సర్జరీ కేర్', svc_tele: 'టెలీకన్సల్టేషన్', svc_tele_sub: '& హౌస్-కాల్',
+      svc_corporate: 'కార్పొరేట్ మెడికల్ సొల్యూషన్స్', svc_corporate_sub: 'వర్క్‌ప్లేస్ హెల్త్ ప్రోగ్రామ్స్',
+      sos_title: 'SOS · అత్యవసర సహాయం', sos_sub: 'ఒక్క టాప్‌తో మా 24/7 టీమ్‌ని సంప్రదించండి', sos_btn: 'SOS',
+      nav_home: 'హోమ్', nav_requests: 'రిక్వెస్ట్‌లు', nav_profile: 'ప్రొఫైల్',
+      profile_title: 'నా ప్రొఫైల్', my_documents: 'నా డాక్యుమెంట్లు', emergency_contact: 'ఎమర్జెన్సీ కాంటాక్ట్', help_support: 'సహాయం & మద్దతు', language: 'భాష',
+      dark_mode: 'డార్క్ మోడ్', sign_out: 'సైన్ అవుట్', choose_language: 'భాష ఎంచుకోండి' },
+    AR: { greeting: 'مرحباً,', greetingSub: 'كيف يمكننا مساعدتك اليوم؟', createReq: 'إنشاء طلب جديد', createReqSub: 'اطلب أي مساعدة طبية', ourServices: 'خدماتنا',
+      svc_air: 'إسعاف جوي', svc_air_sub: 'محلي / دولي', svc_ground: 'إسعاف بري', svc_ground_sub: 'رعاية أساسية ومتقدمة',
+      svc_hospital: 'مساعدة الاستشفاء', svc_hospital_sub: 'محلي ودولي', svc_mortal: 'نقل الرفات', svc_mortal_sub: 'النقل والطقوس',
+      svc_homecare: 'خدمات الرعاية المنزلية', svc_homecare_sub: 'التمريض ورعاية ما بعد الجراحة', svc_tele: 'استشارة عن بعد', svc_tele_sub: 'وزيارة منزلية',
+      svc_corporate: 'حلول طبية للشركات', svc_corporate_sub: 'برامج الصحة في مكان العمل',
+      sos_title: 'SOS · مساعدة طارئة', sos_sub: 'اتصال فوري بفريقنا على مدار الساعة', sos_btn: 'SOS',
+      nav_home: 'الرئيسية', nav_requests: 'الطلبات', nav_profile: 'الملف الشخصي',
+      profile_title: 'ملفي الشخصي', my_documents: 'مستنداتي', emergency_contact: 'جهة اتصال الطوارئ', help_support: 'المساعدة والدعم', language: 'اللغة',
+      dark_mode: 'الوضع الداكن', sign_out: 'تسجيل الخروج', choose_language: 'اختر اللغة' }
+  };
+  function applyLanguage(code) {
+    var dict = I18N[code] || I18N.EN;
+    currentLang = I18N[code] ? code : 'EN';
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (dict[key] !== undefined) el.textContent = dict[key];
+    });
+    renderNavBars(historyStack[historyStack.length - 1]);
+    var opt = document.querySelector('.lang-opt[data-code="' + currentLang + '"]');
+    if (opt) {
+      document.querySelectorAll('.lang-opt').forEach(function (o) {
+        o.classList.remove('on');
+        o.style.border = '1.5px solid #E4E9F2';
+        o.style.background = '#fff';
+        o.querySelector('.lang-check').style.display = 'none';
+      });
+      opt.classList.add('on');
+      opt.style.border = '1.5px solid #1A73E8';
+      opt.style.background = '#E7F0FE';
+      opt.querySelector('.lang-check').style.display = 'block';
+      var valEl = document.getElementById('profile-lang-value');
+      if (valEl) valEl.innerHTML = opt.getAttribute('data-label') + ' &gt;';
+    }
+    try { localStorage.setItem('hc-lang', currentLang); } catch (e) {}
   }
 
   var toastTimer;
@@ -1370,17 +1438,7 @@
     document.getElementById('lang-sheet').style.transform = 'translateY(100%)';
   }
   function selectLanguage(el) {
-    document.querySelectorAll('.lang-opt').forEach(function (o) {
-      o.classList.remove('on');
-      o.style.border = '1.5px solid #E4E9F2';
-      o.style.background = '#fff';
-      o.querySelector('.lang-check').style.display = 'none';
-    });
-    el.classList.add('on');
-    el.style.border = '1.5px solid #1A73E8';
-    el.style.background = '#E7F0FE';
-    el.querySelector('.lang-check').style.display = 'block';
-    document.getElementById('profile-lang-value').innerHTML = el.getAttribute('data-label') + ' &gt;';
+    applyLanguage(el.getAttribute('data-code'));
     toast('Language set to ' + el.querySelector('span').textContent);
     setTimeout(closeLanguageSheet, 350);
   }
@@ -1574,6 +1632,10 @@
   // ---- boot ----
   renderWizard();
   renderNavBars('splash');
+  try {
+    var savedLang = localStorage.getItem('hc-lang');
+    if (savedLang && I18N[savedLang] && savedLang !== 'EN') applyLanguage(savedLang);
+  } catch (e) {}
   try {
     if (localStorage.getItem('hc-dark-mode') === '1') {
       document.querySelector('.phone').classList.add('dark-mode');
