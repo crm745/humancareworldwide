@@ -252,7 +252,7 @@
           <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px;">
             <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;">
               <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-              <span style="font-size:13.5px;color:#5B6B84;line-height:1.5;">By submitting the above information, you agree to our <span style="color:#0D2340;font-weight:700;">Terms and Conditions</span> and <span style="color:#0D2340;font-weight:700;">Privacy Policy</span></span>
+              <span style="font-size:13.5px;color:#5B6B84;line-height:1.5;">By submitting the above information, you agree to our <span onclick="event.stopPropagation();nav('terms')" style="color:#1A73E8;font-weight:700;cursor:pointer;">Terms and Conditions</span> and <span onclick="event.stopPropagation();nav('privacy')" style="color:#1A73E8;font-weight:700;cursor:pointer;">Privacy Policy</span></span>
             </label>
             <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;">
               <div class="consent-box on" onclick="this.classList.toggle('on');checkRegister()" style="margin-top:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -281,6 +281,78 @@
         </div>
         <div style="flex:1;min-height:24px;"></div>
         <button class="btn-primary" style="padding:16px;font-size:16.5px;flex-shrink:0;" onclick="verifyOtp('register')">Verify &amp; Continue</button>
+      </section>
+
+      <!-- TERMS & CONDITIONS -->
+      <section id="screen-terms" class="screen hidden">
+        <div class="topbar">
+          <div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+          <span class="topbar-title">Terms &amp; Conditions</span>
+          <span style="width:32px;"></span>
+        </div>
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:22px;">
+          <p style="font-size:12px;color:#97A4B8;margin:0 0 20px;">Last updated: 1 January 2026</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">1. Acceptance of Terms</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">By creating an account or using the HumanCare WorldWide app, you agree to be bound by these Terms &amp; Conditions. If you do not agree, please do not use the platform.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">2. Nature of Services</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">HumanCare WorldWide facilitates medical assistance services including air and ground ambulance coordination, hospitalization assistance, teleconsultation, home healthcare, and related support. We act as a coordinator between you and licensed medical providers — we do not ourselves provide direct medical treatment through this app.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">3. Not a Substitute for Emergency Services</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">This app is not a replacement for local emergency services. In a life-threatening emergency, contact your local emergency number immediately in addition to using this app.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">4. Account Responsibilities</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">You are responsible for the accuracy of information you submit, including patient details, medical history, and contact information. Inaccurate information may delay or affect the assistance provided.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">5. Payments &amp; Insurance</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">Where services are billed directly or coordinated through an insurance provider or corporate account, applicable charges, coverage limits, and payment terms will be communicated prior to service confirmation.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">6. Limitation of Liability</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">HumanCare WorldWide coordinates with third-party medical providers and transport operators. While we vet our partner network, we are not liable for the independent actions of third-party providers beyond our reasonable coordination responsibilities.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">7. Changes to These Terms</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">We may update these Terms from time to time. Continued use of the app after changes are posted constitutes acceptance of the revised Terms.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">8. Contact Us</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 4px;">For questions about these Terms, contact us at <span style="color:#1A73E8;font-weight:700;">ops@humancareworldwide.com</span>.</p>
+        </div>
+      </section>
+
+      <!-- PRIVACY POLICY -->
+      <section id="screen-privacy" class="screen hidden">
+        <div class="topbar">
+          <div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+          <span class="topbar-title">Privacy Policy</span>
+          <span style="width:32px;"></span>
+        </div>
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:22px;">
+          <p style="font-size:12px;color:#97A4B8;margin:0 0 20px;">Last updated: 1 January 2026</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">1. Information We Collect</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">We collect information you provide directly, including your name, contact number, email, and — where relevant to a request — patient medical details, care level, and uploaded medical reports.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">2. How We Use Your Information</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">Your information is used to process and coordinate your requests, communicate updates about your case, verify your identity via OTP, and improve our services. We do not sell your personal data to third parties.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">3. Sharing With Medical Providers</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">Relevant medical and contact information is shared only with the specific hospitals, transport providers, or care teams involved in fulfilling your request, and only to the extent necessary for that purpose.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">4. Data Security</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">We use industry-standard measures to protect your data, including encrypted transmission and access controls limiting who within our team can view sensitive medical information.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">5. Data Retention</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">We retain your account and case data for as long as your account is active, or as required to meet legal, regulatory, and insurance record-keeping obligations.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">6. Your Rights</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">You may request access to, correction of, or deletion of your personal data, subject to applicable legal and record-keeping requirements, by contacting our support team.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">7. Communication Preferences</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 20px;">You may opt out of non-essential communications at any time from your Profile settings, while still receiving essential updates about active requests.</p>
+
+          <div style="font-size:14px;font-weight:800;color:#0D2340;margin-bottom:8px;">8. Contact Us</div>
+          <p style="font-size:13.5px;color:#5B6B84;line-height:1.65;margin:0 0 4px;">For privacy-related questions or requests, contact us at <span style="color:#1A73E8;font-weight:700;">ops@humancareworldwide.com</span>.</p>
+        </div>
       </section>
 
       <!-- HOME DASHBOARD -->
@@ -320,14 +392,29 @@
             <div class="svc-tile" style="grid-column:1 / -1;" onclick="openService('corporate')"><div class="svc-tile-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></div><div style="font-size:13.5px;font-weight:700;">Corporate Medical Solutions</div><div style="font-size:11.5px;color:#97A4B8;margin-top:2px;">Workplace Health Programs</div></div>
           </div>
 
-          <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
-            <div>
-              <div style="font-size:13.5px;font-weight:800;">Need Immediate Help?</div>
-              <div style="font-size:12.5px;color:#97A4B8;margin-top:2px;">Our assistance team is available 24/7</div>
+          <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FBEDED;border-color:#F3C6C6;">
+            <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+              <div style="width:38px;height:38px;border-radius:999px;background:#D64545;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></div>
+              <div style="min-width:0;">
+                <div style="font-size:13.5px;font-weight:800;color:#B02A2A;">SOS &middot; Emergency Assistance</div>
+                <div style="font-size:12px;color:#97644E;margin-top:2px;">One tap connects you to our 24/7 team</div>
+              </div>
             </div>
-            <a href="tel:+971585787878" style="flex-shrink:0;padding:9px 14px;border-radius:10px;background:#17233D;color:#fff;font-size:13px;font-weight:700;text-decoration:none;">Contact Now</a>
+            <button onclick="openSOSConfirm()" style="flex-shrink:0;padding:10px 16px;border-radius:10px;background:#D64545;color:#fff;font-size:13px;font-weight:800;border:none;cursor:pointer;">SOS</button>
           </div>
 
+        </div>
+
+        <div id="sos-backdrop" onclick="closeSOSConfirm()" style="position:absolute;inset:0;background:rgba(13,35,64,0.5);opacity:0;pointer-events:none;transition:opacity 0.2s ease;z-index:50;display:flex;align-items:center;justify-content:center;padding:26px;">
+          <div onclick="event.stopPropagation()" style="width:100%;background:#fff;border-radius:20px;padding:24px;text-align:center;transform:scale(0.9);transition:transform 0.2s ease;" id="sos-modal">
+            <div style="width:56px;height:56px;border-radius:999px;background:#FBEDED;color:#D64545;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></div>
+            <div style="font-size:16.5px;font-weight:800;color:#0D2340;margin-bottom:8px;">Call Emergency Assistance?</div>
+            <div style="font-size:13.5px;color:#5B6B84;line-height:1.5;margin-bottom:22px;">This will immediately call our 24/7 emergency line at <span style="color:#0D2340;font-weight:700;">+971 58 578 7878</span>.</div>
+            <div style="display:flex;gap:10px;">
+              <button onclick="closeSOSConfirm()" class="btn-outline" style="width:auto;flex:1;">Cancel</button>
+              <a href="tel:+971585787878" onclick="closeSOSConfirm()" style="flex:1;display:flex;align-items:center;justify-content:center;padding:13px;border-radius:12px;background:#D64545;color:#fff;font-weight:700;font-size:14px;text-decoration:none;">Call Now</a>
+            </div>
+          </div>
         </div>
         <div class="bottom-nav-v2" data-tabbar="home"></div>
       </section>
@@ -882,7 +969,7 @@
           </div>
           <div style="text-align:right;margin-top:10px;"><span onclick="startForgotPassword('vendor-login')" style="cursor:pointer;font-size:14.5px;color:#1A73E8;font-weight:700;">Forgot password?</span></div>
           <div style="margin-top:20px;display:flex;flex-direction:column;gap:14px;">
-            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:14px;color:#5B6B84;line-height:1.5;">I agree to the Terms &amp; Conditions and Privacy Policy.</span></label>
+            <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:14px;color:#5B6B84;line-height:1.5;">I agree to the <span onclick="event.stopPropagation();nav('terms')" style="color:#1A73E8;font-weight:700;cursor:pointer;">Terms &amp; Conditions</span> and <span onclick="event.stopPropagation();nav('privacy')" style="color:#1A73E8;font-weight:700;cursor:pointer;">Privacy Policy</span>.</span></label>
             <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;"><div class="consent-box on" onclick="this.classList.toggle('on');checkVendorLogin()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span style="font-size:14px;color:#5B6B84;line-height:1.5;">I confirm I am authorized to submit and manage cases for this organization.</span></label>
           </div>
           <button id="vl-submit" class="btn-primary" style="margin-top:26px;padding:16px;font-size:16.5px;opacity:0.45;" onclick="vendorLoginSubmit()">Sign In</button>
@@ -1170,6 +1257,18 @@
   }
 
   // ---- filter sheet ----
+  // ---- SOS confirm ----
+  function openSOSConfirm() {
+    document.getElementById('sos-backdrop').style.opacity = '1';
+    document.getElementById('sos-backdrop').style.pointerEvents = 'auto';
+    document.getElementById('sos-modal').style.transform = 'scale(1)';
+  }
+  function closeSOSConfirm() {
+    document.getElementById('sos-backdrop').style.opacity = '0';
+    document.getElementById('sos-backdrop').style.pointerEvents = 'none';
+    document.getElementById('sos-modal').style.transform = 'scale(0.9)';
+  }
+
   function openFilterSheet() {
     document.getElementById('filter-backdrop').style.opacity = '1';
     document.getElementById('filter-backdrop').style.pointerEvents = 'auto';
