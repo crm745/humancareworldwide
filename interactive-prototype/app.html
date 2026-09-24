@@ -2166,6 +2166,9 @@
   // ---- boot ----
   renderWizard();
   renderNavBars('splash');
+  setTimeout(function () {
+    if (historyStack[historyStack.length - 1] === 'splash') navReplace('welcome');
+  }, 3000);
   try {
     var savedLang = localStorage.getItem('hc-lang');
     if (savedLang && I18N[savedLang] && savedLang !== 'EN') applyLanguage(savedLang);
