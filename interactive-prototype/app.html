@@ -1049,52 +1049,6 @@
         <button class="btn-primary" onclick="verifyOtp('vendor')" data-i18n="otp_verify_btn">Verify &amp; Continue</button>
       </section>
 
-      <!-- VENDOR HOME -->
-      <section id="screen-vendor-home" class="screen hidden">
-        <div class="topbar">
-          <div>
-            <div style="font-size:14.5px;font-weight:800;">Bupa Global Assistance</div>
-            <div style="font-size:11.5px;color:#1A73E8;font-family:'Inter',sans-serif;">Partner #HC-CORP-482</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="icon-btn" onclick="nav('notifications')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:999px;background:#E5484D;"></span></div>
-            <span onclick="navReplace('welcome')" style="cursor:pointer;font-size:12px;color:#97A4B8;" data-i18n="sign_out">Sign Out</span>
-          </div>
-        </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:20px 18px 26px;display:flex;flex-direction:column;">
-          <div style="margin-bottom:20px;">
-            <div style="font-size:20.5px;font-weight:800;color:#0D2340;" data-i18n="vendor_home_greeting">Welcome back 👋</div>
-            <div style="font-size:14px;color:#5B6B84;margin-top:3px;" data-i18n="vendor_home_sub">Manage your corporate cases</div>
-          </div>
-          <div style="background:linear-gradient(135deg,#1A73E8,#3E8EF7);border-radius:18px;padding:22px;color:#fff;cursor:pointer;margin-bottom:20px;" onclick="nav('vendor-new-case')">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;">
-              <div>
-                <div style="font-size:16.5px;font-weight:800;" data-i18n="btn_initiate_new_case">Initiate New Corporate Case</div>
-                <div style="font-size:13.5px;opacity:0.9;margin-top:7px;line-height:1.4;" data-i18n="vendor_home_cta_sub">Submit a case on behalf of a member</div>
-              </div>
-              <div class="cta-pulse-dot" style="width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;">
-            <div class="card" onclick="nav('vendor-dashboard')" style="cursor:pointer;text-align:center;"><div style="font-size:17.5px;font-weight:800;">24</div><div style="font-size:10.5px;color:#97A4B8;margin-top:2px;" data-i18n="lbl_total">Total</div></div>
-            <div class="card" onclick="nav('vendor-dashboard')" style="cursor:pointer;text-align:center;background:#E7F0FE;border-color:#CFE0FB;"><div style="font-size:17.5px;font-weight:800;color:#1A5FC4;">4</div><div style="font-size:10.5px;color:#1A5FC4;margin-top:2px;" data-i18n="lbl_active">Active</div></div>
-            <div class="card" onclick="nav('vendor-dashboard')" style="cursor:pointer;text-align:center;"><div style="font-size:17.5px;font-weight:800;color:#1E8E4A;">20</div><div style="font-size:10.5px;color:#97A4B8;margin-top:2px;" data-i18n="lbl_done">Done</div></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <span style="font-size:13.5px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;" data-i18n="lbl_recent_cases">Recent Cases</span>
-            <span onclick="nav('vendor-dashboard')" style="cursor:pointer;font-size:12.5px;font-weight:700;color:#1A73E8;" data-i18n="btn_view_all">View All &gt;</span>
-          </div>
-          <div class="card case-card" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-089</span><span class="pill pill-progress" data-i18n="status_progress">In Progress</span></div>
-            <div style="font-size:14.5px;font-weight:700;">Robert Evans</div><div style="font-size:12.5px;color:#97A4B8;">Bangkok → Frankfurt</div>
-          </div>
-          <div class="card case-card" onclick="nav('tracking')" style="cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-094</span><span class="pill" style="background:#EEF1FE;color:#5B4FE0;" data-i18n="status_scheduled">Scheduled</span></div>
-            <div style="font-size:14.5px;font-weight:700;">Sarah Jenkins</div><div style="font-size:12.5px;color:#97A4B8;">Dubai → Mumbai</div>
-          </div>
-        </div>
-      </section>
-
       <!-- VENDOR DASHBOARD (all cases) -->
       <section id="screen-vendor-dashboard" class="screen hidden">
         <div class="topbar">
@@ -1306,8 +1260,7 @@
   function back() {
     if (historyStack.length > 1) { historyStack.pop(); showScreen(historyStack[historyStack.length - 1]); }
     else if (historyStack[0] !== 'welcome') {
-      var isVendorScreen = historyStack[0].indexOf('vendor') === 0;
-      navReplace(isVendorScreen ? 'vendor-home' : 'home');
+      navReplace('home');
     }
   }
   function restart() { navReplace('home'); }
@@ -1351,8 +1304,8 @@
       air_opt_commercial_title: 'Commercial Airlines', air_opt_rotary_sub: 'Helicopter dispatch in under 2 hours', air_opt_rotary_title: 'Rotary Wing Medical Repatriation', btn_apply_filters: 'Apply Filters',
       btn_call_alarm_desk: 'Call Alarm Desk', btn_contact_team: 'Contact Team', btn_create_case: 'Create Case', btn_download_all: 'Download All',
       btn_download_summary: 'Download Summary', btn_email_ops: 'Email Support', btn_initiate_new_case: 'Initiate New Corporate Case', btn_mark_read: 'Mark read',
-      vendor_home_greeting: 'Welcome back 👋', vendor_home_sub: 'Manage your corporate cases', vendor_home_cta_sub: 'Submit a case on behalf of a member',
-      lbl_recent_cases: 'Recent Cases', btn_view_all: 'View All >', lbl_all_cases: 'All Cases',
+     
+      lbl_all_cases: 'All Cases',
       btn_next: 'Next', btn_reset: 'Reset', btn_return_home: 'Return to Home',
       btn_share: 'Share', btn_sign_in: 'Sign In', btn_track_details: 'Track Details',
       care_ambulatory: 'Ambulatory', care_banner_line1: 'Your care,', care_banner_line2: 'Our responsibility', care_icu: 'ICU / Critical',
@@ -1427,8 +1380,8 @@
       air_opt_commercial_title: 'कमर्शियल एयरलाइंस', air_opt_rotary_sub: '2 घंटे से कम समय में हेलीकॉप्टर भेजा जाएगा', air_opt_rotary_title: 'रोटरी विंग मेडिकल रेपेट्रिएशन', btn_apply_filters: 'फ़िल्टर लागू करें',
       btn_call_alarm_desk: 'अलार्म डेस्क को कॉल करें', btn_contact_team: 'टीम से संपर्क करें', btn_create_case: 'केस बनाएं', btn_download_all: 'सभी डाउनलोड करें',
       btn_download_summary: 'सारांश डाउनलोड करें', btn_email_ops: 'सहायता को ईमेल करें', btn_initiate_new_case: 'नया कॉर्पोरेट केस शुरू करें', btn_mark_read: 'पढ़ा हुआ चिह्नित करें',
-      vendor_home_greeting: 'वापसी पर स्वागत है 👋', vendor_home_sub: 'अपने कॉर्पोरेट केस प्रबंधित करें', vendor_home_cta_sub: 'किसी सदस्य की ओर से केस सबमिट करें',
-      lbl_recent_cases: 'हाल के केस', btn_view_all: 'सभी देखें >', lbl_all_cases: 'सभी केस',
+     
+      lbl_all_cases: 'सभी केस',
       btn_next: 'आगे', btn_reset: 'रीसेट करें', btn_return_home: 'होम पर वापस जाएं',
       btn_share: 'शेयर करें', btn_sign_in: 'साइन इन करें', btn_track_details: 'ट्रैक विवरण',
       care_ambulatory: 'एंबुलेटरी', care_banner_line1: 'आपकी देखभाल,', care_banner_line2: 'हमारी ज़िम्मेदारी', care_icu: 'ICU / गंभीर',
@@ -1503,8 +1456,8 @@
       air_opt_commercial_title: 'कमर्शियल एअरलाइन्स', air_opt_rotary_sub: '2 तासांपेक्षा कमी वेळेत हेलिकॉप्टर पाठवले जाईल', air_opt_rotary_title: 'रोटरी विंग मेडिकल रिपॅट्रिएशन', btn_apply_filters: 'फिल्टर लागू करा',
       btn_call_alarm_desk: 'अलार्म डेस्कला कॉल करा', btn_contact_team: 'टीमशी संपर्क साधा', btn_create_case: 'केस तयार करा', btn_download_all: 'सर्व डाउनलोड करा',
       btn_download_summary: 'सारांश डाउनलोड करा', btn_email_ops: 'सहाय्यला ईमेल करा', btn_initiate_new_case: 'नवीन कॉर्पोरेट केस सुरू करा', btn_mark_read: 'वाचले म्हणून चिन्हांकित करा',
-      vendor_home_greeting: 'परत स्वागत आहे 👋', vendor_home_sub: 'तुमचे कॉर्पोरेट केस व्यवस्थापित करा', vendor_home_cta_sub: 'सदस्याच्या वतीने केस सबमिट करा',
-      lbl_recent_cases: 'अलीकडील केस', btn_view_all: 'सर्व पहा >', lbl_all_cases: 'सर्व केस',
+     
+      lbl_all_cases: 'सर्व केस',
       btn_next: 'पुढे', btn_reset: 'रीसेट करा', btn_return_home: 'होमवर परत जा',
       btn_share: 'शेअर करा', btn_sign_in: 'साइन इन करा', btn_track_details: 'ट्रॅक तपशील',
       care_ambulatory: 'अँब्युलेटरी', care_banner_line1: 'तुमची काळजी,', care_banner_line2: 'आमची जबाबदारी', care_icu: 'ICU / गंभीर',
@@ -1579,8 +1532,8 @@
       air_opt_commercial_title: 'કમર્શિયલ એરલાઇન્સ', air_opt_rotary_sub: '2 કલાકથી ઓછા સમયમાં હેલિકોપ્ટર મોકલવામાં આવશે', air_opt_rotary_title: 'રોટરી વિંગ મેડિકલ રિપેટ્રિએશન', btn_apply_filters: 'ફિલ્ટર લાગુ કરો',
       btn_call_alarm_desk: 'એલાર્મ ડેસ્કને કૉલ કરો', btn_contact_team: 'ટીમનો સંપર્ક કરો', btn_create_case: 'કેસ બનાવો', btn_download_all: 'બધું ડાઉનલોડ કરો',
       btn_download_summary: 'સારાંશ ડાઉનલોડ કરો', btn_email_ops: 'સહાયને ઈમેલ કરો', btn_initiate_new_case: 'નવો કોર્પોરેટ કેસ શરૂ કરો', btn_mark_read: 'વાંચેલું ચિહ્નિત કરો',
-      vendor_home_greeting: 'પાછા આવવા બદલ સ્વાગત છે 👋', vendor_home_sub: 'તમારા કોર્પોરેટ કેસનું સંચાલન કરો', vendor_home_cta_sub: 'સભ્ય વતી કેસ સબમિટ કરો',
-      lbl_recent_cases: 'તાજેતરના કેસ', btn_view_all: 'બધા જુઓ >', lbl_all_cases: 'બધા કેસ',
+     
+      lbl_all_cases: 'બધા કેસ',
       btn_next: 'આગળ', btn_reset: 'રીસેટ કરો', btn_return_home: 'હોમ પર પાછા જાઓ',
       btn_share: 'શેર કરો', btn_sign_in: 'સાઇન ઇન કરો', btn_track_details: 'ટ્રેક વિગતો',
       care_ambulatory: 'એમ્બ્યુલેટરી', care_banner_line1: 'તમારી કાળજી,', care_banner_line2: 'અમારી જવાબદારી', care_icu: 'ICU / ગંભીર',
@@ -1655,8 +1608,8 @@
       air_opt_commercial_title: 'కమర్షియల్ ఎయిర్‌లైన్స్', air_opt_rotary_sub: '2 గంటల్లోపు హెలికాప్టర్ డిస్పాచ్', air_opt_rotary_title: 'రోటరీ వింగ్ మెడికల్ రీపేట్రియేషన్', btn_apply_filters: 'ఫిల్టర్‌లను వర్తింపజేయండి',
       btn_call_alarm_desk: 'అలారం డెస్క్‌కు కాల్ చేయండి', btn_contact_team: 'టీమ్‌ను సంప్రదించండి', btn_create_case: 'కేస్ సృష్టించండి', btn_download_all: 'అన్నీ డౌన్‌లోడ్ చేయండి',
       btn_download_summary: 'సారాంశం డౌన్‌లోడ్ చేయండి', btn_email_ops: 'సపోర్ట్‌కు ఇమెయిల్ చేయండి', btn_initiate_new_case: 'కొత్త కార్పొరేట్ కేస్‌ను ప్రారంభించండి', btn_mark_read: 'చదివినట్లు గుర్తించండి',
-      vendor_home_greeting: 'తిరిగి స్వాగతం 👋', vendor_home_sub: 'మీ కార్పొరేట్ కేసులను నిర్వహించండి', vendor_home_cta_sub: 'సభ్యుని తరపున కేస్ సమర్పించండి',
-      lbl_recent_cases: 'ఇటీవలి కేసులు', btn_view_all: 'అన్నీ చూడండి >', lbl_all_cases: 'అన్ని కేసులు',
+     
+      lbl_all_cases: 'అన్ని కేసులు',
       btn_next: 'తదుపరి', btn_reset: 'రీసెట్ చేయండి', btn_return_home: 'హోమ్‌కు తిరిగి వెళ్లండి',
       btn_share: 'షేర్ చేయండి', btn_sign_in: 'సైన్ ఇన్ చేయండి', btn_track_details: 'ట్రాక్ వివరాలు',
       care_ambulatory: 'అంబులేటరీ', care_banner_line1: 'మీ సంరక్షణ,', care_banner_line2: 'మా బాధ్యత', care_icu: 'ICU / క్రిటికల్',
@@ -1731,8 +1684,8 @@
       air_opt_commercial_title: 'شركات الطيران التجارية', air_opt_rotary_sub: 'إرسال طائرة هليكوبتر خلال أقل من ساعتين', air_opt_rotary_title: 'إعادة طبية بطائرة هليكوبتر', btn_apply_filters: 'تطبيق الفلاتر',
       btn_call_alarm_desk: 'الاتصال بمكتب الطوارئ', btn_contact_team: 'تواصل مع الفريق', btn_create_case: 'إنشاء حالة', btn_download_all: 'تنزيل الكل',
       btn_download_summary: 'تنزيل الملخص', btn_email_ops: 'مراسلة الدعم بالبريد الإلكتروني', btn_initiate_new_case: 'بدء حالة شركات جديدة', btn_mark_read: 'تحديد كمقروء',
-      vendor_home_greeting: 'مرحباً بعودتك 👋', vendor_home_sub: 'إدارة حالات شركتك', vendor_home_cta_sub: 'إرسال حالة نيابة عن أحد الأعضاء',
-      lbl_recent_cases: 'الحالات الأخيرة', btn_view_all: 'عرض الكل >', lbl_all_cases: 'جميع الحالات',
+     
+      lbl_all_cases: 'جميع الحالات',
       btn_next: 'التالي', btn_reset: 'إعادة تعيين', btn_return_home: 'العودة إلى الرئيسية',
       btn_share: 'مشاركة', btn_sign_in: 'تسجيل الدخول', btn_track_details: 'تفاصيل التتبع',
       care_ambulatory: 'متنقل (غير طريح الفراش)', care_banner_line1: 'رعايتك،', care_banner_line2: 'مسؤوليتنا', care_icu: 'عناية مركزة / حرجة',
@@ -2194,7 +2147,7 @@
   }
   function vendorLoginSubmit() {
     if (document.getElementById('vl-submit').style.opacity !== '1') return;
-    navReplace('vendor-home');
+    navReplace('home');
   }
   function otpAdvance(input) {
     input.value = input.value.replace(/[^0-9]/g, '').slice(-1);
@@ -2205,7 +2158,7 @@
     var inputs = group.querySelectorAll('input');
     var filled = Array.prototype.every.call(inputs, function (i) { return i.value.length === 1; });
     if (!filled) { toast('Enter all 6 digits'); return; }
-    navReplace((who === 'login' || who === 'register') ? 'home' : 'vendor-home');
+    navReplace('home');
   }
   function filterCases(chip) {
     document.querySelectorAll('#screen-vendor-dashboard .tab-chip').forEach(function (c) { c.classList.remove('on'); });
