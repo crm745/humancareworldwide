@@ -15,7 +15,7 @@ model User {
   name         String
   email        String   @unique
   mobile       String   @unique
-  passwordHash String   @map("password_hash")
+  passwordHash String?  @map("password_hash")
   countryCode  String   @default("+91") @map("country_code")
   createdAt    DateTime @default(now()) @map("created_at")
   requests     ServiceRequest[]
@@ -27,7 +27,7 @@ model OtpCode {
   id         Int       @id @default(autoincrement())
   identifier String    // mobile number or email, depending on purpose
   codeHash   String    @map("code_hash")
-  purpose    String    // "patient_login" | "vendor_login"
+  purpose    String    // "patient_register" | "patient_login" | "vendor_password_reset"
   expiresAt  DateTime  @map("expires_at")
   consumedAt DateTime? @map("consumed_at")
   createdAt  DateTime  @default(now()) @map("created_at")
