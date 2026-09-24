@@ -1110,8 +1110,13 @@
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px 18px 90px;display:flex;flex-direction:column;">
           <div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div style="width:52px;height:52px;border-radius:14px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17.5px;flex-shrink:0;">RS</div>
-            <div><div style="font-size:15.5px;font-weight:800;">Rakesh Sharma</div><div style="font-size:12.5px;color:#97A4B8;margin-top:2px;">+91 98765 43210</div><div style="font-size:12px;color:#97A4B8;">rakesh.sharma@example.com</div></div>
+            <div id="profile-avatar" style="width:52px;height:52px;border-radius:14px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17.5px;flex-shrink:0;">RS</div>
+            <div style="flex:1;min-width:0;">
+              <div id="profile-name-display" style="font-size:15.5px;font-weight:800;">Rakesh Sharma</div>
+              <div id="profile-phone-display" style="font-size:12.5px;color:#97A4B8;margin-top:2px;">+91 98765 43210</div>
+              <div id="profile-email-display" style="font-size:12px;color:#97A4B8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">rakesh.sharma@example.com</div>
+            </div>
+            <div class="icon-btn" onclick="nav('edit-profile')" style="flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .622.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></div>
           </div>
           <div class="card" style="margin-bottom:16px;">
             <div style="font-size:12px;font-weight:800;color:#97A4B8;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:14px;" data-i18n="lbl_overview">Overview</div>
@@ -1162,6 +1167,31 @@
             <div class="lang-opt" data-code="TE" data-label="&#3111;&#3140;&#3122;&#3137;&#3095;&#3137; (TE)" onclick="selectLanguage(this)" style="display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-radius:12px;border:1.5px solid #E4E9F2;background:#fff;cursor:pointer;"><span style="font-size:14px;font-weight:700;color:#0D2340;">&#3111;&#3140;&#3122;&#3137;&#3095;&#3137; (Telugu)</span><svg class="lang-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20 6 9 17l-5-5"/></svg></div>
             <div class="lang-opt" data-code="AR" data-label="&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577; (AR)" onclick="selectLanguage(this)" style="display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-radius:12px;border:1.5px solid #E4E9F2;background:#fff;cursor:pointer;"><span style="font-size:14px;font-weight:700;color:#0D2340;">&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577; (Arabic)</span><svg class="lang-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20 6 9 17l-5-5"/></svg></div>
           </div>
+        </div>
+      </section>
+
+      <!-- EDIT PROFILE -->
+      <section id="screen-edit-profile" class="screen hidden" style="background:#FFFFFF;">
+        <div style="flex-shrink:0;padding:26px 26px 0;"><div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div></div>
+        <div class="noscroll" style="flex:1;overflow-y:auto;padding:20px 26px 26px;display:flex;flex-direction:column;">
+          <h2 class="display" style="font-size:23.5px;margin:0;color:#0D2340;text-align:center;" data-i18n="edit_profile_title">Edit Profile</h2>
+          <p style="font-size:14.5px;color:#5B6B84;margin:10px 0 26px;text-align:center;" data-i18n="edit_profile_sub">Update your personal details</p>
+          <div style="display:flex;justify-content:center;margin-bottom:26px;">
+            <div id="ep-avatar" style="width:64px;height:64px;border-radius:18px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:21px;">RS</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px;">
+            <div><span class="field-label" style="font-size:14px;" data-i18n="field_full_name">Full Name</span><input id="ep-name" class="field-input" style="font-size:16.5px;padding:14px 13px;" value="Rakesh Sharma" oninput="checkEditProfile()"/></div>
+            <div>
+              <span class="field-label" style="font-size:14px;" data-i18n="field_mobile_number">Mobile Number</span>
+              <div style="display:flex;gap:8px;">
+                <select id="ep-cc" class="field-input" style="width:84px;flex-shrink:0;font-size:16.5px;padding:14px 13px;"><option>+91</option><option>+971</option><option>+44</option><option>+1</option></select>
+                <input id="ep-phone" class="field-input" style="font-size:16.5px;padding:14px 13px;" value="98765 43210" oninput="checkEditProfile()"/>
+              </div>
+            </div>
+            <div><span class="field-label" style="font-size:14px;" data-i18n="field_email_address">Email Address</span><input id="ep-email" class="field-input" style="font-size:16.5px;padding:14px 13px;" value="rakesh.sharma@example.com" oninput="checkEditProfile()"/></div>
+          </div>
+          <div style="flex:1;min-height:24px;"></div>
+          <button id="ep-submit" class="btn-primary" style="padding:16px;font-size:16.5px;" onclick="saveEditProfile()" data-i18n="btn_save_changes">Save Changes</button>
         </div>
       </section>
 
@@ -1246,6 +1276,7 @@
       svc_corporate: 'Corporate Medical Solutions', svc_corporate_sub: 'Workplace Health Programs',
       sos_title: 'SOS · Emergency Assistance', sos_sub: 'One tap connects you to our 24/7 team', sos_btn: 'SOS',
       nav_home: 'Home', nav_requests: 'Requests', nav_profile: 'Profile', lbl_overview: 'Overview', lbl_total_requests: 'Total Requests', lbl_active: 'Active',
+      edit_profile_title: 'Edit Profile', edit_profile_sub: 'Update your personal details', btn_save_changes: 'Save Changes',
       profile_title: 'My Profile', my_documents: 'My Documents', emergency_contact: 'Emergency Contact', help_support: 'Help & Support', language: 'Language',
       dark_mode: 'Dark Mode', sign_out: 'Sign Out', choose_language: 'Choose Language',
       air_amb_sub: 'Choose how you\'d like to travel', air_opt_charter_sub: 'Airborne with a full ICU team in under 4 hours', air_opt_charter_title: 'Private Charter Service', air_opt_commercial_sub: 'Stretcher & wheelchair on scheduled flights',
@@ -1309,6 +1340,7 @@
       svc_corporate: 'कॉर्पोरेट मेडिकल समाधान', svc_corporate_sub: 'कार्यस्थल स्वास्थ्य कार्यक्रम',
       sos_title: 'SOS · आपातकालीन सहायता', sos_sub: 'एक टैप में हमारी 24/7 टीम से जुड़ें', sos_btn: 'SOS',
       nav_home: 'होम', nav_requests: 'रिक्वेस्ट', nav_profile: 'प्रोफाइल', lbl_overview: 'विवरण', lbl_total_requests: 'कुल अनुरोध', lbl_active: 'सक्रिय',
+      edit_profile_title: 'प्रोफाइल संपादित करें', edit_profile_sub: 'अपना व्यक्तिगत विवरण अपडेट करें', btn_save_changes: 'बदलाव सहेजें',
       profile_title: 'मेरी प्रोफाइल', my_documents: 'मेरे दस्तावेज़', emergency_contact: 'आपातकालीन संपर्क', help_support: 'सहायता और समर्थन', language: 'भाषा',
       dark_mode: 'डार्क मोड', sign_out: 'साइन आउट', choose_language: 'भाषा चुनें',
       air_amb_sub: 'आप कैसे यात्रा करना चाहेंगे, चुनें', air_opt_charter_sub: '4 घंटे से कम समय में पूर्ण ICU टीम के साथ हवाई यात्रा', air_opt_charter_title: 'प्राइवेट चार्टर सेवा', air_opt_commercial_sub: 'निर्धारित उड़ानों में स्ट्रेचर और व्हीलचेयर',
@@ -1372,6 +1404,7 @@
       svc_corporate: 'కార్పొరేట్ మెడికల్ సొల్యూషన్స్', svc_corporate_sub: 'వర్క్‌ప్లేస్ హెల్త్ ప్రోగ్రామ్స్',
       sos_title: 'SOS · అత్యవసర సహాయం', sos_sub: 'ఒక్క టాప్‌తో మా 24/7 టీమ్‌ని సంప్రదించండి', sos_btn: 'SOS',
       nav_home: 'హోమ్', nav_requests: 'రిక్వెస్ట్‌లు', nav_profile: 'ప్రొఫైల్', lbl_overview: 'అవలోకనం', lbl_total_requests: 'మొత్తం రిక్వెస్ట్‌లు', lbl_active: 'యాక్టివ్',
+      edit_profile_title: 'ప్రొఫైల్ సవరించండి', edit_profile_sub: 'మీ వ్యక్తిగత వివరాలను అప్‌డేట్ చేయండి', btn_save_changes: 'మార్పులను సేవ్ చేయండి',
       profile_title: 'నా ప్రొఫైల్', my_documents: 'నా డాక్యుమెంట్లు', emergency_contact: 'ఎమర్జెన్సీ కాంటాక్ట్', help_support: 'సహాయం & మద్దతు', language: 'భాష',
       dark_mode: 'డార్క్ మోడ్', sign_out: 'సైన్ అవుట్', choose_language: 'భాష ఎంచుకోండి',
       air_amb_sub: 'మీరు ఎలా ప్రయాణించాలనుకుంటున్నారో ఎంచుకోండి', air_opt_charter_sub: '4 గంటల్లోపు పూర్తి ICU టీమ్‌తో గగనవిహారం', air_opt_charter_title: 'ప్రైవేట్ చార్టర్ సేవ', air_opt_commercial_sub: 'షెడ్యూల్డ్ విమానాల్లో స్ట్రెచర్ & వీల్‌చైర్',
@@ -1435,6 +1468,7 @@
       svc_corporate: 'حلول طبية للشركات', svc_corporate_sub: 'برامج الصحة في مكان العمل',
       sos_title: 'SOS · مساعدة طارئة', sos_sub: 'اتصال فوري بفريقنا على مدار الساعة', sos_btn: 'SOS',
       nav_home: 'الرئيسية', nav_requests: 'الطلبات', nav_profile: 'الملف الشخصي', lbl_overview: 'نظرة عامة', lbl_total_requests: 'إجمالي الطلبات', lbl_active: 'نشط',
+      edit_profile_title: 'تعديل الملف الشخصي', edit_profile_sub: 'قم بتحديث بياناتك الشخصية', btn_save_changes: 'حفظ التغييرات',
       profile_title: 'ملفي الشخصي', my_documents: 'مستنداتي', emergency_contact: 'جهة اتصال الطوارئ', help_support: 'المساعدة والدعم', language: 'اللغة',
       dark_mode: 'الوضع الداكن', sign_out: 'تسجيل الخروج', choose_language: 'اختر اللغة',
       air_amb_sub: 'اختر طريقة السفر التي تفضلها', air_opt_charter_sub: 'الإقلاع مع فريق عناية مركزة كامل خلال أقل من 4 ساعات', air_opt_charter_title: 'خدمة الطائرة الخاصة المستأجرة', air_opt_commercial_sub: 'نقالة وكرسي متحرك على الرحلات المجدولة',
@@ -1675,6 +1709,27 @@
     document.getElementById('dark-mode-switch').style.background = on ? '#1A73E8' : '#E4E9F2';
     document.getElementById('dark-mode-knob').style.transform = on ? 'translateX(18px)' : 'translateX(0)';
     try { localStorage.setItem('hc-dark-mode', on ? '1' : '0'); } catch (e) {}
+  }
+
+  // ---- edit profile ----
+  function checkEditProfile() {
+    var ok = document.getElementById('ep-name').value.trim() && document.getElementById('ep-phone').value.trim() && document.getElementById('ep-email').value.trim();
+    document.getElementById('ep-submit').style.opacity = ok ? '1' : '0.45';
+  }
+  function saveEditProfile() {
+    if (document.getElementById('ep-submit').style.opacity === '0.45') return;
+    var name = document.getElementById('ep-name').value.trim();
+    var cc = document.getElementById('ep-cc').value;
+    var phone = document.getElementById('ep-phone').value.trim();
+    var email = document.getElementById('ep-email').value.trim();
+    document.getElementById('profile-name-display').textContent = name;
+    document.getElementById('profile-phone-display').textContent = cc + ' ' + phone;
+    document.getElementById('profile-email-display').textContent = email;
+    var initials = name.split(' ').filter(Boolean).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase() || 'U';
+    document.getElementById('profile-avatar').textContent = initials;
+    document.getElementById('ep-avatar').textContent = initials;
+    toast('Profile updated');
+    back();
   }
 
   function openFilterSheet() {
