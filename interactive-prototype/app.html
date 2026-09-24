@@ -1131,8 +1131,16 @@
             <div id="profile-avatar" style="width:52px;height:52px;border-radius:14px;background:#E7F0FE;color:#1A73E8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17.5px;flex-shrink:0;">RS</div>
             <div style="flex:1;min-width:0;">
               <div id="profile-name-display" style="font-size:15.5px;font-weight:800;">Rakesh Sharma</div>
-              <div id="profile-phone-display" style="font-size:12.5px;color:#97A4B8;margin-top:2px;">+91 98765 43210</div>
-              <div id="profile-email-display" style="font-size:12px;color:#97A4B8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">rakesh.sharma@example.com</div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:4px;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg>
+                <span style="font-size:11px;color:#97A4B8;font-weight:700;text-transform:uppercase;letter-spacing:0.02em;" data-i18n="lbl_mobile">Mobile</span>
+                <span id="profile-phone-display" style="font-size:12.5px;color:#5B6B84;">+91 98765 43210</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:4px;overflow:hidden;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <span style="font-size:11px;color:#97A4B8;font-weight:700;text-transform:uppercase;letter-spacing:0.02em;flex-shrink:0;" data-i18n="lbl_email">Email</span>
+                <span id="profile-email-display" style="font-size:12px;color:#5B6B84;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">rakesh.sharma@example.com</span>
+              </div>
             </div>
             <div class="icon-btn" onclick="nav('edit-profile')" style="flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .622.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></div>
           </div>
@@ -1326,7 +1334,7 @@
       lbl_care_team: 'Care Team', lbl_case_coordinator: 'Case Coordinator', lbl_contact: 'Contact', lbl_documents: 'Documents',
       lbl_done: 'Done', lbl_expected_date: 'Expected Date', lbl_extra_info: 'Extra Info', lbl_facility: 'Facility',
       lbl_estimated_arrival: 'Estimated Arrival', lbl_remaining: 'remaining', lbl_eta: 'ETA',
-      lbl_billing: 'Billing', lbl_payment_status: 'Payment Status', lbl_covered: 'Covered',
+      lbl_billing: 'Billing', lbl_payment_status: 'Payment Status', lbl_covered: 'Covered', lbl_mobile: 'Mobile', lbl_email: 'Email',
       lbl_faq: 'Frequently Asked Questions', lbl_from: 'From', lbl_heard_about_us: 'Heard About Us', lbl_hospital: 'Hospital',
       lbl_identity_insurance: 'Identity & Insurance', lbl_location: 'Location', lbl_medical_records: 'Medical Records', lbl_medical_report: 'Medical Report',
       lbl_name: 'Name', lbl_new_vendor: 'New vendor?', lbl_patient: 'Patient', lbl_patient_name: 'Patient Name',
@@ -1393,7 +1401,7 @@
       lbl_care_team: 'केयर टीम', lbl_case_coordinator: 'केस समन्वयक', lbl_contact: 'संपर्क', lbl_documents: 'दस्तावेज़',
       lbl_done: 'पूर्ण', lbl_expected_date: 'अपेक्षित तारीख', lbl_extra_info: 'अतिरिक्त जानकारी', lbl_facility: 'सुविधा',
       lbl_estimated_arrival: 'अनुमानित आगमन', lbl_remaining: 'शेष', lbl_eta: 'अनुमानित समय',
-      lbl_billing: 'बिलिंग', lbl_payment_status: 'भुगतान स्थिति', lbl_covered: 'कवर किया गया',
+      lbl_billing: 'बिलिंग', lbl_payment_status: 'भुगतान स्थिति', lbl_covered: 'कवर किया गया', lbl_mobile: 'मोबाइल', lbl_email: 'ईमेल',
       lbl_faq: 'अक्सर पूछे जाने वाले प्रश्न', lbl_from: 'से', lbl_heard_about_us: 'हमारे बारे में सुना', lbl_hospital: 'अस्पताल',
       lbl_identity_insurance: 'पहचान और बीमा', lbl_location: 'स्थान', lbl_medical_records: 'मेडिकल रिकॉर्ड्स', lbl_medical_report: 'मेडिकल रिपोर्ट',
       lbl_name: 'नाम', lbl_new_vendor: 'नए वेंडर हैं?', lbl_patient: 'मरीज़', lbl_patient_name: 'मरीज़ का नाम',
@@ -1460,7 +1468,7 @@
       lbl_care_team: 'కేర్ టీమ్', lbl_case_coordinator: 'కేస్ కోఆర్డినేటర్', lbl_contact: 'సంప్రదింపు', lbl_documents: 'డాక్యుమెంట్లు',
       lbl_done: 'పూర్తయింది', lbl_expected_date: 'ఆశించిన తేదీ', lbl_extra_info: 'అదనపు సమాచారం', lbl_facility: 'సదుపాయం',
       lbl_estimated_arrival: 'అంచనా చేరిక', lbl_remaining: 'మిగిలి ఉంది', lbl_eta: 'అంచనా సమయం',
-      lbl_billing: 'బిల్లింగ్', lbl_payment_status: 'చెల్లింపు స్థితి', lbl_covered: 'కవర్ చేయబడింది',
+      lbl_billing: 'బిల్లింగ్', lbl_payment_status: 'చెల్లింపు స్థితి', lbl_covered: 'కవర్ చేయబడింది', lbl_mobile: 'మొబైల్', lbl_email: 'ఇమెయిల్',
       lbl_faq: 'తరచుగా అడిగే ప్రశ్నలు', lbl_from: 'నుండి', lbl_heard_about_us: 'మా గురించి తెలుసుకున్నారు', lbl_hospital: 'హాస్పిటల్',
       lbl_identity_insurance: 'గుర్తింపు & ఇన్సూరెన్స్', lbl_location: 'స్థానం', lbl_medical_records: 'మెడికల్ రికార్డులు', lbl_medical_report: 'మెడికల్ రిపోర్ట్',
       lbl_name: 'పేరు', lbl_new_vendor: 'కొత్త వెండర్‌నా?', lbl_patient: 'పేషెంట్', lbl_patient_name: 'పేషెంట్ పేరు',
@@ -1527,7 +1535,7 @@
       lbl_care_team: 'فريق الرعاية', lbl_case_coordinator: 'منسق الحالة', lbl_contact: 'جهة الاتصال', lbl_documents: 'المستندات',
       lbl_done: 'تم', lbl_expected_date: 'التاريخ المتوقع', lbl_extra_info: 'معلومات إضافية', lbl_facility: 'المنشأة',
       lbl_estimated_arrival: 'الوصول المتوقع', lbl_remaining: 'متبقٍ', lbl_eta: 'الوقت المتوقع للوصول',
-      lbl_billing: 'الفواتير', lbl_payment_status: 'حالة الدفع', lbl_covered: 'مغطى',
+      lbl_billing: 'الفواتير', lbl_payment_status: 'حالة الدفع', lbl_covered: 'مغطى', lbl_mobile: 'الجوال', lbl_email: 'البريد الإلكتروني',
       lbl_faq: 'الأسئلة الشائعة', lbl_from: 'من', lbl_heard_about_us: 'كيف سمعت عنا', lbl_hospital: 'المستشفى',
       lbl_identity_insurance: 'الهوية والتأمين', lbl_location: 'الموقع', lbl_medical_records: 'السجلات الطبية', lbl_medical_report: 'التقرير الطبي',
       lbl_name: 'الاسم', lbl_new_vendor: 'مورّد جديد؟', lbl_patient: 'المريض', lbl_patient_name: 'اسم المريض',
