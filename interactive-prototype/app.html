@@ -1056,19 +1056,19 @@
             <div class="card" style="text-align:center;background:#E7F0FE;border-color:#CFE0FB;"><div style="font-size:17.5px;font-weight:800;color:#1A5FC4;">4</div><div style="font-size:10.5px;color:#1A5FC4;margin-top:2px;" data-i18n="lbl_active">Active</div></div>
             <div class="card" style="text-align:center;"><div style="font-size:17.5px;font-weight:800;color:#1E8E4A;">20</div><div style="font-size:10.5px;color:#97A4B8;margin-top:2px;" data-i18n="lbl_done">Done</div></div>
           </div>
-          <div class="card case-card" data-stage="submitted" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
+          <div class="card case-card" data-stage="submitted" data-service="ground" data-date="2026-05-12" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-107</span><span class="pill pill-submitted" data-i18n="status_submitted">Submitted</span></div>
             <div style="font-size:14.5px;font-weight:700;">Klaus Weber</div><div style="font-size:12.5px;color:#97A4B8;">Munich → Berlin</div>
           </div>
-          <div class="card case-card" data-stage="progress" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
+          <div class="card case-card" data-stage="progress" data-service="air" data-date="2026-05-02" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-102</span><span class="pill pill-progress" data-i18n="status_progress">In Progress</span></div>
             <div style="font-size:14.5px;font-weight:700;">Elena Rostova</div><div style="font-size:12.5px;color:#97A4B8;">Doha → London</div>
           </div>
-          <div class="card case-card" data-stage="scheduled" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
+          <div class="card case-card" data-stage="scheduled" data-service="hospital" data-date="2026-03-15" onclick="nav('tracking')" style="cursor:pointer;margin-bottom:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-094</span><span class="pill" style="background:#EEF1FE;color:#5B4FE0;" data-i18n="status_scheduled">Scheduled</span></div>
             <div style="font-size:14.5px;font-weight:700;">Sarah Jenkins</div><div style="font-size:12.5px;color:#97A4B8;">Dubai → Mumbai</div>
           </div>
-          <div class="card case-card" data-stage="progress" onclick="nav('tracking')" style="cursor:pointer;">
+          <div class="card case-card" data-stage="progress" data-service="air" data-date="2025-11-20" onclick="nav('tracking')" style="cursor:pointer;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12.5px;font-weight:800;font-family:'Inter',sans-serif;color:#1A73E8;">#HC-2026-089</span><span class="pill pill-progress" data-i18n="status_progress">In Progress</span></div>
             <div style="font-size:14.5px;font-weight:700;">Robert Evans</div><div style="font-size:12.5px;color:#97A4B8;">Bangkok → Frankfurt</div>
           </div>
@@ -1083,6 +1083,27 @@
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
             <span style="font-size:16px;font-weight:800;color:#0D2340;" data-i18n="filter_cases_title">Filter Cases</span>
             <div class="icon-btn" style="width:30px;height:30px;" onclick="closeCaseFilterSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+          </div>
+          <div style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:10px;" data-i18n="filter_service_type_label">Service Type</div>
+          <div id="case-service-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+            <span class="tab-chip on" data-val="all" onclick="selectFilterChip(this)" data-i18n="filter_svc_all">All Services</span>
+            <span class="tab-chip" data-val="air" onclick="selectFilterChip(this)" data-i18n="svc_air">Air Ambulance</span>
+            <span class="tab-chip" data-val="ground" onclick="selectFilterChip(this)" data-i18n="svc_ground">Ground Ambulance</span>
+            <span class="tab-chip" data-val="hospital" onclick="selectFilterChip(this)" data-i18n="filter_svc_hospital">Hospitalization</span>
+            <span class="tab-chip" data-val="homecare" onclick="selectFilterChip(this)" data-i18n="filter_svc_homecare">Home Healthcare</span>
+          </div>
+          <div style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:10px;" data-i18n="filter_date_range_label">Date Range</div>
+          <div id="case-date-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+            <span class="tab-chip on" data-val="all" onclick="selectFilterChip(this)" data-i18n="filter_date_all">All Time</span>
+            <span class="tab-chip" data-val="today" onclick="selectFilterChip(this)" data-i18n="filter_date_today">Today</span>
+            <span class="tab-chip" data-val="week" onclick="selectFilterChip(this)" data-i18n="filter_date_week">This Week</span>
+            <span class="tab-chip" data-val="month" onclick="selectFilterChip(this)" data-i18n="filter_date_month">This Month</span>
+            <span class="tab-chip" data-val="year" onclick="selectFilterChip(this)" data-i18n="filter_date_year">This Year</span>
+            <span class="tab-chip" data-val="custom" onclick="selectFilterChip(this)" data-i18n="filter_date_custom">Custom Range</span>
+          </div>
+          <div id="case-custom-range" style="display:none;gap:10px;margin-bottom:20px;">
+            <div style="flex:1;"><span class="field-label" style="font-size:11px;" data-i18n="lbl_from">From</span><input id="case-date-from" type="date" class="field-input" style="font-size:13px;padding:11px 10px;"/></div>
+            <div style="flex:1;"><span class="field-label" style="font-size:11px;" data-i18n="lbl_to">To</span><input id="case-date-to" type="date" class="field-input" style="font-size:13px;padding:11px 10px;"/></div>
           </div>
           <div style="font-size:12px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:10px;" data-i18n="filter_sort_label">Sort By</div>
           <div id="case-sort-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
@@ -2102,6 +2123,9 @@
     if (chip.parentElement.id === 'filter-date-row') {
       document.getElementById('filter-custom-range').style.display = chip.getAttribute('data-val') === 'custom' ? 'flex' : 'none';
     }
+    if (chip.parentElement.id === 'case-date-row') {
+      document.getElementById('case-custom-range').style.display = chip.getAttribute('data-val') === 'custom' ? 'flex' : 'none';
+    }
   }
   function resetFilterSheet() {
     ['filter-service-row', 'filter-date-row'].forEach(function (id) {
@@ -2238,16 +2262,58 @@
   function applyCaseFilters() {
     var stageChip = document.querySelector('#screen-vendor-dashboard .tab-row .tab-chip.on');
     var stage = stageChip ? stageChip.getAttribute('data-stage') : 'all';
+    var serviceChip = document.querySelector('#case-service-row .tab-chip.on');
+    var service = serviceChip ? serviceChip.getAttribute('data-val') : 'all';
+    var dateChip = document.querySelector('#case-date-row .tab-chip.on');
+    var dateRange = dateChip ? dateChip.getAttribute('data-val') : 'all';
+    var sortChip = document.querySelector('#case-sort-row .tab-chip.on');
+    var sort = sortChip ? sortChip.getAttribute('data-val') : 'newest';
+    var customFrom = document.getElementById('case-date-from').value;
+    var customTo = document.getElementById('case-date-to').value;
     var q = (document.getElementById('vd-search').value || '').trim().toLowerCase();
-    var any = false;
-    document.querySelectorAll('#screen-vendor-dashboard .case-card').forEach(function (card) {
-      var stageOk = stage === 'all' || card.getAttribute('data-stage') === stage;
+
+    // Mock cases are anchored around 12 May 2026 (the latest case), so that date
+    // stands in for "today" here — the real device date would make every
+    // Today/This Week/This Month filter come up empty against 2026 mock data.
+    var today = new Date('2026-05-12');
+    var weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - 6);
+
+    var container = document.querySelector('#screen-vendor-dashboard .case-card').parentElement;
+    var cards = Array.prototype.slice.call(container.querySelectorAll('.case-card'));
+    var visible = [];
+
+    cards.forEach(function (card) {
+      var stage2 = card.getAttribute('data-stage');
+      var sv = card.getAttribute('data-service');
+      var dateStr = card.getAttribute('data-date');
+      var dt = new Date(dateStr);
+
+      var stageOk = stage === 'all' || stage2 === stage;
+      var serviceOk = service === 'all' || sv === service;
       var searchOk = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
-      var show = stageOk && searchOk;
+      var dateOk = true;
+      if (dateRange === 'today') dateOk = dateStr === '2026-05-12';
+      else if (dateRange === 'week') dateOk = dt >= weekStart && dt <= today;
+      else if (dateRange === 'month') dateOk = dt.getFullYear() === today.getFullYear() && dt.getMonth() === today.getMonth();
+      else if (dateRange === 'year') dateOk = dt.getFullYear() === today.getFullYear();
+      else if (dateRange === 'custom') {
+        if (customFrom) dateOk = dateOk && dateStr >= customFrom;
+        if (customTo) dateOk = dateOk && dateStr <= customTo;
+      }
+
+      var show = stageOk && serviceOk && searchOk && dateOk;
       card.style.display = show ? 'block' : 'none';
-      if (show) any = true;
+      if (show) visible.push(card);
     });
-    document.getElementById('vd-empty').style.display = any ? 'none' : 'block';
+
+    visible.sort(function (a, b) {
+      var da = a.getAttribute('data-date'), db = b.getAttribute('data-date');
+      return sort === 'oldest' ? da.localeCompare(db) : db.localeCompare(da);
+    });
+    visible.forEach(function (card) { container.insertBefore(card, document.getElementById('vd-empty')); });
+
+    document.getElementById('vd-empty').style.display = visible.length ? 'none' : 'block';
   }
   function openCaseFilterSheet() {
     document.getElementById('case-filter-backdrop').style.opacity = '1';
@@ -2260,16 +2326,22 @@
     document.getElementById('case-filter-sheet').style.transform = 'translateY(100%)';
   }
   function resetCaseFilterSheet() {
-    document.querySelectorAll('#case-sort-row .tab-chip').forEach(function (c) { c.classList.remove('on'); });
-    document.querySelector('#case-sort-row .tab-chip[data-val="newest"]').classList.add('on');
+    ['case-service-row', 'case-date-row'].forEach(function (id) {
+      var row = document.getElementById(id);
+      row.querySelectorAll('.tab-chip').forEach(function (c) { c.classList.remove('on'); });
+      row.querySelector('.tab-chip').classList.add('on');
+    });
+    var sortRow = document.getElementById('case-sort-row');
+    sortRow.querySelectorAll('.tab-chip').forEach(function (c) { c.classList.remove('on'); });
+    sortRow.querySelector('.tab-chip').classList.add('on');
+    document.getElementById('case-custom-range').style.display = 'none';
+    document.getElementById('case-date-from').value = '';
+    document.getElementById('case-date-to').value = '';
+    applyCaseFilters();
   }
   function applyCaseFilterSheet() {
-    var sortChip = document.querySelector('#case-sort-row .tab-chip.on');
-    var sort = sortChip ? sortChip.getAttribute('data-val') : 'newest';
-    var container = document.querySelector('#screen-vendor-dashboard .case-card').parentElement;
-    var cards = Array.prototype.slice.call(container.querySelectorAll('.case-card'));
-    if (sort === 'oldest') cards.reverse();
-    cards.forEach(function (card) { container.insertBefore(card, document.getElementById('vd-empty')); });
+    applyCaseFilters();
+    toast('Filters applied');
     closeCaseFilterSheet();
   }
   function selectUrgency(chip) {
