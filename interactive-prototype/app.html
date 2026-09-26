@@ -1167,7 +1167,6 @@
           <div class="card" style="padding:6px 18px;margin-bottom:20px;">
             <div id="profile-row-documents" class="info-row" onclick="nav('my-documents')" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="my_documents">My Documents</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div id="profile-row-emergency" class="info-row" onclick="nav('help-support')" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="emergency_contact">Emergency Contact</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
-            <div id="profile-row-my-cases" class="info-row" onclick="nav('vendor-dashboard')" style="display:none;cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="my_cases">My Cases</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div class="info-row" onclick="nav('help-support')" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="help_support">Help &amp; Support</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div class="info-row" onclick="openLanguageSheet()" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="language">Language</span><span class="info-value" id="profile-lang-value" style="color:#1A73E8;">English (EN) &gt;</span></div>
           </div>
@@ -1307,9 +1306,6 @@
     var isVendor = currentSession === 'vendor';
     var vi = VENDOR_IDENTITY;
 
-    var myCasesRow = document.getElementById('profile-row-my-cases');
-    if (myCasesRow) myCasesRow.style.display = isVendor ? 'flex' : 'none';
-
     var homeName = document.getElementById('home-greeting-name');
     if (homeName) homeName.textContent = isVendor ? vi.name : 'Rakesh';
 
@@ -1328,10 +1324,6 @@
 
     var editBtn = document.getElementById('profile-edit-btn');
     if (editBtn) editBtn.style.display = isVendor ? 'none' : 'flex';
-    ['profile-row-documents', 'profile-row-emergency'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.style.display = isVendor ? 'none' : 'flex';
-    });
 
     var totalNum = document.getElementById('ov-total-num');
     var activeNum = document.getElementById('ov-active-num');
@@ -1366,7 +1358,7 @@
       btn_call_alarm_desk: 'Call Alarm Desk', btn_contact_team: 'Contact Team', btn_create_case: 'Create Case',
       btn_download_summary: 'Download Summary', btn_email_ops: 'Email Support', btn_initiate_new_case: 'Initiate New Corporate Case', btn_mark_read: 'Mark read',
      
-      lbl_all_cases: 'All Cases', my_cases: 'My Cases', lbl_pending: 'Pending',
+      lbl_all_cases: 'All Cases', lbl_pending: 'Pending',
       doc_medical_report: 'Medical Report',
       btn_download_report: 'Download Report',
       btn_next: 'Next', btn_reset: 'Reset', btn_return_home: 'Return to Home',
@@ -1444,7 +1436,7 @@
       btn_call_alarm_desk: 'अलार्म डेस्क को कॉल करें', btn_contact_team: 'टीम से संपर्क करें', btn_create_case: 'केस बनाएं',
       btn_download_summary: 'सारांश डाउनलोड करें', btn_email_ops: 'सहायता को ईमेल करें', btn_initiate_new_case: 'नया कॉर्पोरेट केस शुरू करें', btn_mark_read: 'पढ़ा हुआ चिह्नित करें',
      
-      lbl_all_cases: 'सभी केस', my_cases: 'मेरे केस', lbl_pending: 'लंबित',
+      lbl_all_cases: 'सभी केस', lbl_pending: 'लंबित',
       doc_medical_report: 'मेडिकल रिपोर्ट',
       btn_download_report: 'रिपोर्ट डाउनलोड करें',
       btn_next: 'आगे', btn_reset: 'रीसेट करें', btn_return_home: 'होम पर वापस जाएं',
@@ -1522,7 +1514,7 @@
       btn_call_alarm_desk: 'अलार्म डेस्कला कॉल करा', btn_contact_team: 'टीमशी संपर्क साधा', btn_create_case: 'केस तयार करा',
       btn_download_summary: 'सारांश डाउनलोड करा', btn_email_ops: 'सहाय्यला ईमेल करा', btn_initiate_new_case: 'नवीन कॉर्पोरेट केस सुरू करा', btn_mark_read: 'वाचले म्हणून चिन्हांकित करा',
      
-      lbl_all_cases: 'सर्व केस', my_cases: 'माझे केस', lbl_pending: 'प्रलंबित',
+      lbl_all_cases: 'सर्व केस', lbl_pending: 'प्रलंबित',
       doc_medical_report: 'वैद्यकीय अहवाल',
       btn_download_report: 'अहवाल डाउनलोड करा',
       btn_next: 'पुढे', btn_reset: 'रीसेट करा', btn_return_home: 'होमवर परत जा',
@@ -1600,7 +1592,7 @@
       btn_call_alarm_desk: 'એલાર્મ ડેસ્કને કૉલ કરો', btn_contact_team: 'ટીમનો સંપર્ક કરો', btn_create_case: 'કેસ બનાવો',
       btn_download_summary: 'સારાંશ ડાઉનલોડ કરો', btn_email_ops: 'સહાયને ઈમેલ કરો', btn_initiate_new_case: 'નવો કોર્પોરેટ કેસ શરૂ કરો', btn_mark_read: 'વાંચેલું ચિહ્નિત કરો',
      
-      lbl_all_cases: 'બધા કેસ', my_cases: 'મારા કેસ', lbl_pending: 'બાકી',
+      lbl_all_cases: 'બધા કેસ', lbl_pending: 'બાકી',
       doc_medical_report: 'મેડિકલ રિપોર્ટ',
       btn_download_report: 'રિપોર્ટ ડાઉનલોડ કરો',
       btn_next: 'આગળ', btn_reset: 'રીસેટ કરો', btn_return_home: 'હોમ પર પાછા જાઓ',
@@ -1678,7 +1670,7 @@
       btn_call_alarm_desk: 'అలారం డెస్క్‌కు కాల్ చేయండి', btn_contact_team: 'టీమ్‌ను సంప్రదించండి', btn_create_case: 'కేస్ సృష్టించండి',
       btn_download_summary: 'సారాంశం డౌన్‌లోడ్ చేయండి', btn_email_ops: 'సపోర్ట్‌కు ఇమెయిల్ చేయండి', btn_initiate_new_case: 'కొత్త కార్పొరేట్ కేస్‌ను ప్రారంభించండి', btn_mark_read: 'చదివినట్లు గుర్తించండి',
      
-      lbl_all_cases: 'అన్ని కేసులు', my_cases: 'నా కేసులు', lbl_pending: 'పెండింగ్',
+      lbl_all_cases: 'అన్ని కేసులు', lbl_pending: 'పెండింగ్',
       doc_medical_report: 'మెడికల్ రిపోర్ట్',
       btn_download_report: 'రిపోర్ట్ డౌన్‌లోడ్ చేయండి',
       btn_next: 'తదుపరి', btn_reset: 'రీసెట్ చేయండి', btn_return_home: 'హోమ్‌కు తిరిగి వెళ్లండి',
@@ -1756,7 +1748,7 @@
       btn_call_alarm_desk: 'الاتصال بمكتب الطوارئ', btn_contact_team: 'تواصل مع الفريق', btn_create_case: 'إنشاء حالة',
       btn_download_summary: 'تنزيل الملخص', btn_email_ops: 'مراسلة الدعم بالبريد الإلكتروني', btn_initiate_new_case: 'بدء حالة شركات جديدة', btn_mark_read: 'تحديد كمقروء',
      
-      lbl_all_cases: 'جميع الحالات', my_cases: 'حالاتي', lbl_pending: 'معلق',
+      lbl_all_cases: 'جميع الحالات', lbl_pending: 'معلق',
       doc_medical_report: 'التقرير الطبي',
       btn_download_report: 'تنزيل التقرير',
       btn_next: 'التالي', btn_reset: 'إعادة تعيين', btn_return_home: 'العودة إلى الرئيسية',
