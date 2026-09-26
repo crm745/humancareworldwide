@@ -168,6 +168,12 @@
   .phone.dark-mode [style*="background:#E4F7EA"] { background-color: rgba(30,142,74,0.26) !important; }
   .phone.dark-mode [style*="background:#FBEDED"] { background-color: rgba(214,69,69,0.2) !important; }
   .phone.dark-mode [style*="background:#EEF3FB"] { background-color: rgba(90,105,132,0.4) !important; }
+
+  .phone.rtl { direction: rtl; }
+  .phone.rtl svg:has(path[d="m15 18-6-6 6-6"]), .phone.rtl svg:has(path[d="m9 18 6-6-6-6"]) { transform: scaleX(-1); }
+  .phone.rtl [style*="position:absolute;left:11px"] { left: auto !important; right: 11px !important; }
+  .phone.rtl input.field-input[style*="padding-left:32px"] { padding-left: 13px !important; padding-right: 32px !important; }
+  .phone.rtl [style*="text-align:left"] { text-align: right !important; }
 </style>
 
 <div class="page">
@@ -891,7 +897,9 @@
 
 
         <div id="track-pane-docs" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
-          <div class="doc-row" onclick="toast('Downloading Medical Report…')" style="cursor:pointer;margin-bottom:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_medical_report">Medical Report</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 320 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div class="doc-row" onclick="toast('Downloading Medical Report…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_medical_report">Medical Report</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 320 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div class="doc-row" onclick="toast('Downloading Quotation…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_quotation">Quotation</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 180 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div class="doc-row" onclick="toast('Downloading Invoice…')" style="cursor:pointer;margin-bottom:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_invoice">Invoice</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 210 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
           <div style="flex:1;min-height:14px;"></div>
           <button class="btn-primary" style="margin-top:6px;" onclick="toast('Downloading Medical Report…')" data-i18n="btn_download_report">Download Report</button>
         </div>
@@ -1380,7 +1388,7 @@
       btn_download_summary: 'Download Summary', btn_email_ops: 'Email Support', btn_initiate_new_case: 'Initiate New Corporate Case', btn_mark_read: 'Mark read',
      
       lbl_all_cases: 'All Cases', lbl_pending: 'Pending',
-      doc_medical_report: 'Medical Report',
+      doc_medical_report: 'Medical Report', doc_quotation: 'Quotation', doc_invoice: 'Invoice',
       btn_download_report: 'Download Report',
       btn_next: 'Next', btn_reset: 'Reset', btn_return_home: 'Return to Home',
       btn_share: 'Share', btn_sign_in: 'Sign In', btn_track_details: 'Track Details',
@@ -1458,7 +1466,7 @@
       btn_download_summary: 'सारांश डाउनलोड करें', btn_email_ops: 'सहायता को ईमेल करें', btn_initiate_new_case: 'नया कॉर्पोरेट केस शुरू करें', btn_mark_read: 'पढ़ा हुआ चिह्नित करें',
      
       lbl_all_cases: 'सभी केस', lbl_pending: 'लंबित',
-      doc_medical_report: 'मेडिकल रिपोर्ट',
+      doc_medical_report: 'मेडिकल रिपोर्ट', doc_quotation: 'कोटेशन', doc_invoice: 'इनवॉइस',
       btn_download_report: 'रिपोर्ट डाउनलोड करें',
       btn_next: 'आगे', btn_reset: 'रीसेट करें', btn_return_home: 'होम पर वापस जाएं',
       btn_share: 'शेयर करें', btn_sign_in: 'साइन इन करें', btn_track_details: 'ट्रैक विवरण',
@@ -1536,7 +1544,7 @@
       btn_download_summary: 'सारांश डाउनलोड करा', btn_email_ops: 'सहाय्यला ईमेल करा', btn_initiate_new_case: 'नवीन कॉर्पोरेट केस सुरू करा', btn_mark_read: 'वाचले म्हणून चिन्हांकित करा',
      
       lbl_all_cases: 'सर्व केस', lbl_pending: 'प्रलंबित',
-      doc_medical_report: 'वैद्यकीय अहवाल',
+      doc_medical_report: 'वैद्यकीय अहवाल', doc_quotation: 'कोटेशन', doc_invoice: 'इनव्हॉइस',
       btn_download_report: 'अहवाल डाउनलोड करा',
       btn_next: 'पुढे', btn_reset: 'रीसेट करा', btn_return_home: 'होमवर परत जा',
       btn_share: 'शेअर करा', btn_sign_in: 'साइन इन करा', btn_track_details: 'ट्रॅक तपशील',
@@ -1614,7 +1622,7 @@
       btn_download_summary: 'સારાંશ ડાઉનલોડ કરો', btn_email_ops: 'સહાયને ઈમેલ કરો', btn_initiate_new_case: 'નવો કોર્પોરેટ કેસ શરૂ કરો', btn_mark_read: 'વાંચેલું ચિહ્નિત કરો',
      
       lbl_all_cases: 'બધા કેસ', lbl_pending: 'બાકી',
-      doc_medical_report: 'મેડિકલ રિપોર્ટ',
+      doc_medical_report: 'મેડિકલ રિપોર્ટ', doc_quotation: 'ક્વોટેશન', doc_invoice: 'ઇનવોઇસ',
       btn_download_report: 'રિપોર્ટ ડાઉનલોડ કરો',
       btn_next: 'આગળ', btn_reset: 'રીસેટ કરો', btn_return_home: 'હોમ પર પાછા જાઓ',
       btn_share: 'શેર કરો', btn_sign_in: 'સાઇન ઇન કરો', btn_track_details: 'ટ્રેક વિગતો',
@@ -1692,7 +1700,7 @@
       btn_download_summary: 'సారాంశం డౌన్‌లోడ్ చేయండి', btn_email_ops: 'సపోర్ట్‌కు ఇమెయిల్ చేయండి', btn_initiate_new_case: 'కొత్త కార్పొరేట్ కేస్‌ను ప్రారంభించండి', btn_mark_read: 'చదివినట్లు గుర్తించండి',
      
       lbl_all_cases: 'అన్ని కేసులు', lbl_pending: 'పెండింగ్',
-      doc_medical_report: 'మెడికల్ రిపోర్ట్',
+      doc_medical_report: 'మెడికల్ రిపోర్ట్', doc_quotation: 'కొటేషన్', doc_invoice: 'ఇన్వాయిస్',
       btn_download_report: 'రిపోర్ట్ డౌన్‌లోడ్ చేయండి',
       btn_next: 'తదుపరి', btn_reset: 'రీసెట్ చేయండి', btn_return_home: 'హోమ్‌కు తిరిగి వెళ్లండి',
       btn_share: 'షేర్ చేయండి', btn_sign_in: 'సైన్ ఇన్ చేయండి', btn_track_details: 'ట్రాక్ వివరాలు',
@@ -1770,7 +1778,7 @@
       btn_download_summary: 'تنزيل الملخص', btn_email_ops: 'مراسلة الدعم بالبريد الإلكتروني', btn_initiate_new_case: 'بدء حالة شركات جديدة', btn_mark_read: 'تحديد كمقروء',
      
       lbl_all_cases: 'جميع الحالات', lbl_pending: 'معلق',
-      doc_medical_report: 'التقرير الطبي',
+      doc_medical_report: 'التقرير الطبي', doc_quotation: 'عرض السعر', doc_invoice: 'الفاتورة',
       btn_download_report: 'تنزيل التقرير',
       btn_next: 'التالي', btn_reset: 'إعادة تعيين', btn_return_home: 'العودة إلى الرئيسية',
       btn_share: 'مشاركة', btn_sign_in: 'تسجيل الدخول', btn_track_details: 'تفاصيل التتبع',
@@ -1840,6 +1848,11 @@
       var key = el.getAttribute('data-i18n');
       if (dict[key] !== undefined) el.textContent = dict[key];
     });
+    var phoneEl = document.querySelector('.phone');
+    if (phoneEl) {
+      if (currentLang === 'AR') { phoneEl.setAttribute('dir', 'rtl'); phoneEl.classList.add('rtl'); }
+      else { phoneEl.setAttribute('dir', 'ltr'); phoneEl.classList.remove('rtl'); }
+    }
     applyIdentity();
     renderNavBars(historyStack[historyStack.length - 1]);
     var opt = document.querySelector('.lang-opt[data-code="' + currentLang + '"]');
