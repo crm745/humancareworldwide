@@ -1199,15 +1199,6 @@
             <div class="info-row" onclick="nav('help-support')" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="help_support">Help &amp; Support</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div class="info-row" onclick="openLanguageSheet()" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="language">Language</span><span class="info-value" id="profile-lang-value" style="color:#1A73E8;">English (EN) &gt;</span></div>
           </div>
-          <div class="card" style="padding:16px 18px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:32px;height:32px;border-radius:999px;background:#EEF3FB;color:#45526B;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></div>
-              <span style="font-size:13.5px;font-weight:700;color:#17233D;" data-i18n="dark_mode">Dark Mode</span>
-            </div>
-            <div id="dark-mode-switch" onclick="toggleDarkMode()" style="width:44px;height:26px;border-radius:999px;background:#E4E9F2;position:relative;cursor:pointer;transition:background 0.2s ease;flex-shrink:0;">
-              <div id="dark-mode-knob" style="width:20px;height:20px;border-radius:999px;background:#fff;position:absolute;top:3px;left:3px;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:transform 0.2s ease;"></div>
-            </div>
-          </div>
           <button class="btn-danger-outline" style="padding:15px;" onclick="navReplace('welcome')" data-i18n="sign_out">Sign Out</button>
         </div>
         <div class="bottom-nav-v2" data-tabbar="profile"></div>
@@ -1381,7 +1372,7 @@
       nav_home: 'Home', nav_requests: 'Requests', nav_cases: 'Cases', nav_profile: 'Profile', lbl_overview: 'Overview', lbl_total_requests: 'Total Requests', lbl_active: 'Active',
       edit_profile_title: 'Edit Profile', edit_profile_sub: 'Update your personal details', btn_save_changes: 'Save Changes',
       profile_title: 'My Profile', my_documents: 'My Documents', emergency_contact: 'Emergency Contact', help_support: 'Help & Support', language: 'Language',
-      dark_mode: 'Dark Mode', sign_out: 'Sign Out', choose_language: 'Choose Language',
+      sign_out: 'Sign Out', choose_language: 'Choose Language',
       air_amb_sub: 'Choose how you\'d like to travel', air_opt_charter_sub: 'Airborne with a full ICU team in under 4 hours', air_opt_charter_title: 'Private Charter Service', air_opt_commercial_sub: 'Stretcher & wheelchair on scheduled flights',
       air_opt_commercial_title: 'Commercial Airlines', air_opt_rotary_sub: 'Helicopter dispatch in under 2 hours', air_opt_rotary_title: 'Rotary Wing Medical Repatriation', btn_apply_filters: 'Apply Filters',
       btn_call_alarm_desk: 'Call Alarm Desk', btn_contact_team: 'Contact Team', btn_create_case: 'Create Case',
@@ -1459,7 +1450,7 @@
       nav_home: 'होम', nav_requests: 'रिक्वेस्ट', nav_cases: 'केस', nav_profile: 'प्रोफाइल', lbl_overview: 'विवरण', lbl_total_requests: 'कुल अनुरोध', lbl_active: 'सक्रिय',
       edit_profile_title: 'प्रोफाइल संपादित करें', edit_profile_sub: 'अपना व्यक्तिगत विवरण अपडेट करें', btn_save_changes: 'बदलाव सहेजें',
       profile_title: 'मेरी प्रोफाइल', my_documents: 'मेरे दस्तावेज़', emergency_contact: 'आपातकालीन संपर्क', help_support: 'सहायता और समर्थन', language: 'भाषा',
-      dark_mode: 'डार्क मोड', sign_out: 'साइन आउट', choose_language: 'भाषा चुनें',
+      sign_out: 'साइन आउट', choose_language: 'भाषा चुनें',
       air_amb_sub: 'आप कैसे यात्रा करना चाहेंगे, चुनें', air_opt_charter_sub: '4 घंटे से कम समय में पूर्ण ICU टीम के साथ हवाई यात्रा', air_opt_charter_title: 'प्राइवेट चार्टर सेवा', air_opt_commercial_sub: 'निर्धारित उड़ानों में स्ट्रेचर और व्हीलचेयर',
       air_opt_commercial_title: 'कमर्शियल एयरलाइंस', air_opt_rotary_sub: '2 घंटे से कम समय में हेलीकॉप्टर भेजा जाएगा', air_opt_rotary_title: 'रोटरी विंग मेडिकल रेपेट्रिएशन', btn_apply_filters: 'फ़िल्टर लागू करें',
       btn_call_alarm_desk: 'अलार्म डेस्क को कॉल करें', btn_contact_team: 'टीम से संपर्क करें', btn_create_case: 'केस बनाएं',
@@ -1537,7 +1528,7 @@
       nav_home: 'होम', nav_requests: 'रिक्वेस्ट', nav_cases: 'केस', nav_profile: 'प्रोफाइल', lbl_overview: 'तपशील', lbl_total_requests: 'एकूण विनंत्या', lbl_active: 'सक्रिय',
       edit_profile_title: 'प्रोफाइल संपादित करा', edit_profile_sub: 'तुमचा वैयक्तिक तपशील अपडेट करा', btn_save_changes: 'बदल जतन करा',
       profile_title: 'माझी प्रोफाइल', my_documents: 'माझी कागदपत्रे', emergency_contact: 'आपत्कालीन संपर्क', help_support: 'मदत आणि सहाय्य', language: 'भाषा',
-      dark_mode: 'डार्क मोड', sign_out: 'साइन आउट', choose_language: 'भाषा निवडा',
+      sign_out: 'साइन आउट', choose_language: 'भाषा निवडा',
       air_amb_sub: 'तुम्हाला कसा प्रवास करायचा आहे ते निवडा', air_opt_charter_sub: '4 तासांपेक्षा कमी वेळेत पूर्ण ICU टीमसह हवाई प्रवास', air_opt_charter_title: 'खाजगी चार्टर सेवा', air_opt_commercial_sub: 'नियोजित उड्डाणांमध्ये स्ट्रेचर आणि व्हीलचेअर',
       air_opt_commercial_title: 'कमर्शियल एअरलाइन्स', air_opt_rotary_sub: '2 तासांपेक्षा कमी वेळेत हेलिकॉप्टर पाठवले जाईल', air_opt_rotary_title: 'रोटरी विंग मेडिकल रिपॅट्रिएशन', btn_apply_filters: 'फिल्टर लागू करा',
       btn_call_alarm_desk: 'अलार्म डेस्कला कॉल करा', btn_contact_team: 'टीमशी संपर्क साधा', btn_create_case: 'केस तयार करा',
@@ -1615,7 +1606,7 @@
       nav_home: 'હોમ', nav_requests: 'રિક્વેસ્ટ', nav_cases: 'કેસ', nav_profile: 'પ્રોફાઇલ', lbl_overview: 'વિગતો', lbl_total_requests: 'કુલ વિનંતીઓ', lbl_active: 'સક્રિય',
       edit_profile_title: 'પ્રોફાઇલ એડિટ કરો', edit_profile_sub: 'તમારી વ્યક્તિગત વિગતો અપડેટ કરો', btn_save_changes: 'ફેરફારો સેવ કરો',
       profile_title: 'મારી પ્રોફાઇલ', my_documents: 'મારા દસ્તાવેજો', emergency_contact: 'ઇમરજન્સી કોન્ટેક્ટ', help_support: 'મદદ અને સહાય', language: 'ભાષા',
-      dark_mode: 'ડાર્ક મોડ', sign_out: 'સાઇન આઉટ', choose_language: 'ભાષા પસંદ કરો',
+      sign_out: 'સાઇન આઉટ', choose_language: 'ભાષા પસંદ કરો',
       air_amb_sub: 'તમારે કેવી રીતે મુસાફરી કરવી છે તે પસંદ કરો', air_opt_charter_sub: '4 કલાકથી ઓછા સમયમાં સંપૂર્ણ ICU ટીમ સાથે હવાઈ મુસાફરી', air_opt_charter_title: 'પ્રાઇવેટ ચાર્ટર સેવા', air_opt_commercial_sub: 'નિયમિત ફ્લાઇટ્સમાં સ્ટ્રેચર અને વ્હીલચેર',
       air_opt_commercial_title: 'કમર્શિયલ એરલાઇન્સ', air_opt_rotary_sub: '2 કલાકથી ઓછા સમયમાં હેલિકોપ્ટર મોકલવામાં આવશે', air_opt_rotary_title: 'રોટરી વિંગ મેડિકલ રિપેટ્રિએશન', btn_apply_filters: 'ફિલ્ટર લાગુ કરો',
       btn_call_alarm_desk: 'એલાર્મ ડેસ્કને કૉલ કરો', btn_contact_team: 'ટીમનો સંપર્ક કરો', btn_create_case: 'કેસ બનાવો',
@@ -1693,7 +1684,7 @@
       nav_home: 'హోమ్', nav_requests: 'రిక్వెస్ట్‌లు', nav_cases: 'కేసులు', nav_profile: 'ప్రొఫైల్', lbl_overview: 'అవలోకనం', lbl_total_requests: 'మొత్తం రిక్వెస్ట్‌లు', lbl_active: 'యాక్టివ్',
       edit_profile_title: 'ప్రొఫైల్ సవరించండి', edit_profile_sub: 'మీ వ్యక్తిగత వివరాలను అప్‌డేట్ చేయండి', btn_save_changes: 'మార్పులను సేవ్ చేయండి',
       profile_title: 'నా ప్రొఫైల్', my_documents: 'నా డాక్యుమెంట్లు', emergency_contact: 'ఎమర్జెన్సీ కాంటాక్ట్', help_support: 'సహాయం & మద్దతు', language: 'భాష',
-      dark_mode: 'డార్క్ మోడ్', sign_out: 'సైన్ అవుట్', choose_language: 'భాష ఎంచుకోండి',
+      sign_out: 'సైన్ అవుట్', choose_language: 'భాష ఎంచుకోండి',
       air_amb_sub: 'మీరు ఎలా ప్రయాణించాలనుకుంటున్నారో ఎంచుకోండి', air_opt_charter_sub: '4 గంటల్లోపు పూర్తి ICU టీమ్‌తో గగనవిహారం', air_opt_charter_title: 'ప్రైవేట్ చార్టర్ సేవ', air_opt_commercial_sub: 'షెడ్యూల్డ్ విమానాల్లో స్ట్రెచర్ & వీల్‌చైర్',
       air_opt_commercial_title: 'కమర్షియల్ ఎయిర్‌లైన్స్', air_opt_rotary_sub: '2 గంటల్లోపు హెలికాప్టర్ డిస్పాచ్', air_opt_rotary_title: 'రోటరీ వింగ్ మెడికల్ రీపేట్రియేషన్', btn_apply_filters: 'ఫిల్టర్‌లను వర్తింపజేయండి',
       btn_call_alarm_desk: 'అలారం డెస్క్‌కు కాల్ చేయండి', btn_contact_team: 'టీమ్‌ను సంప్రదించండి', btn_create_case: 'కేస్ సృష్టించండి',
@@ -1771,7 +1762,7 @@
       nav_home: 'الرئيسية', nav_requests: 'الطلبات', nav_cases: 'الحالات', nav_profile: 'الملف الشخصي', lbl_overview: 'نظرة عامة', lbl_total_requests: 'إجمالي الطلبات', lbl_active: 'نشط',
       edit_profile_title: 'تعديل الملف الشخصي', edit_profile_sub: 'قم بتحديث بياناتك الشخصية', btn_save_changes: 'حفظ التغييرات',
       profile_title: 'ملفي الشخصي', my_documents: 'مستنداتي', emergency_contact: 'جهة اتصال الطوارئ', help_support: 'المساعدة والدعم', language: 'اللغة',
-      dark_mode: 'الوضع الداكن', sign_out: 'تسجيل الخروج', choose_language: 'اختر اللغة',
+      sign_out: 'تسجيل الخروج', choose_language: 'اختر اللغة',
       air_amb_sub: 'اختر طريقة السفر التي تفضلها', air_opt_charter_sub: 'الإقلاع مع فريق عناية مركزة كامل خلال أقل من 4 ساعات', air_opt_charter_title: 'خدمة الطائرة الخاصة المستأجرة', air_opt_commercial_sub: 'نقالة وكرسي متحرك على الرحلات المجدولة',
       air_opt_commercial_title: 'شركات الطيران التجارية', air_opt_rotary_sub: 'إرسال طائرة هليكوبتر خلال أقل من ساعتين', air_opt_rotary_title: 'إعادة طبية بطائرة هليكوبتر', btn_apply_filters: 'تطبيق الفلاتر',
       btn_call_alarm_desk: 'الاتصال بمكتب الطوارئ', btn_contact_team: 'تواصل مع الفريق', btn_create_case: 'إنشاء حالة',
@@ -2091,14 +2082,6 @@
   }
 
   // ---- dark mode ----
-  function toggleDarkMode() {
-    var phone = document.querySelector('.phone');
-    var on = phone.classList.toggle('dark-mode');
-    document.getElementById('dark-mode-switch').style.background = on ? '#1A73E8' : '#E4E9F2';
-    document.getElementById('dark-mode-knob').style.transform = on ? 'translateX(18px)' : 'translateX(0)';
-    try { localStorage.setItem('hc-dark-mode', on ? '1' : '0'); } catch (e) {}
-  }
-
   // ---- edit profile ----
   function checkEditProfile() {
     var ok = document.getElementById('ep-name').value.trim() && document.getElementById('ep-phone').value.trim() && document.getElementById('ep-email').value.trim();
@@ -2393,13 +2376,6 @@
   try {
     var savedLang = localStorage.getItem('hc-lang');
     if (savedLang && I18N[savedLang] && savedLang !== 'EN') applyLanguage(savedLang);
-  } catch (e) {}
-  try {
-    if (localStorage.getItem('hc-dark-mode') === '1') {
-      document.querySelector('.phone').classList.add('dark-mode');
-      document.getElementById('dark-mode-switch').style.background = '#1A73E8';
-      document.getElementById('dark-mode-knob').style.transform = 'translateX(18px)';
-    }
   } catch (e) {}
   var ssCareBanner = document.getElementById('ss-care-banner');
   if (ssCareBanner) {
