@@ -909,12 +909,16 @@
         </div>
 
         <div id="track-pane-docs" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
-          <div class="doc-row" onclick="toast('Downloading Service Summary…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_service_summary">Service Summary</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 250 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
-          <div class="doc-row" onclick="toast('Downloading Discharge Summary…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_discharge_summary">Discharge Summary</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 250 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
-          <div class="doc-row" onclick="toast('Downloading Invoice…')" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_invoice">Invoice</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 180 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
-          <div class="doc-row" onclick="toast('Downloading Payment Receipt…')" style="cursor:pointer;margin-bottom:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_payment_receipt">Payment Receipt</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 120 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
+          <div class="card" style="margin-bottom:16px;">
+            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:14px;" data-i18n="doc_medical_report">Medical Report</div>
+            <div class="info-row" style="padding:11px 0;"><span class="info-label" data-i18n="lbl_report_type">Report Type</span><span class="info-value" data-i18n="lbl_pre_transfer_assessment">Pre-Transfer Assessment</span></div>
+            <div class="info-row" style="padding:11px 0;"><span class="info-label" data-i18n="lbl_date_issued">Date Issued</span><span class="info-value">10 May 2024</span></div>
+            <div class="info-row" style="padding:11px 0;"><span class="info-label" data-i18n="lbl_attending_physician">Attending Physician</span><span class="info-value">Dr. Priya Mehta</span></div>
+            <div class="info-row" style="padding:11px 0;"><span class="info-label" data-i18n="lbl_issuing_facility">Issuing Facility</span><span class="info-value">Apollo Hospital, Mumbai</span></div>
+          </div>
+          <div class="doc-row" onclick="toast('Downloading Medical Report…')" style="cursor:pointer;margin-bottom:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_medical_report">Medical Report</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 320 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
           <div style="flex:1;min-height:14px;"></div>
-          <button class="btn-primary" style="margin-top:6px;" onclick="toast('Downloading all documents…')" data-i18n="btn_download_all">Download All</button>
+          <button class="btn-primary" style="margin-top:6px;" onclick="toast('Downloading Medical Report…')" data-i18n="btn_download_report">Download Report</button>
         </div>
       </section>
 
@@ -1618,7 +1622,7 @@
       dark_mode: 'Dark Mode', sign_out: 'Sign Out', choose_language: 'Choose Language',
       air_amb_sub: 'Choose how you\'d like to travel', air_opt_charter_sub: 'Airborne with a full ICU team in under 4 hours', air_opt_charter_title: 'Private Charter Service', air_opt_commercial_sub: 'Stretcher & wheelchair on scheduled flights',
       air_opt_commercial_title: 'Commercial Airlines', air_opt_rotary_sub: 'Helicopter dispatch in under 2 hours', air_opt_rotary_title: 'Rotary Wing Medical Repatriation', btn_apply_filters: 'Apply Filters',
-      btn_call_alarm_desk: 'Call Alarm Desk', btn_contact_team: 'Contact Team', btn_create_case: 'Create Case', btn_download_all: 'Download All',
+      btn_call_alarm_desk: 'Call Alarm Desk', btn_contact_team: 'Contact Team', btn_create_case: 'Create Case',
       btn_download_summary: 'Download Summary', btn_email_ops: 'Email Support', btn_initiate_new_case: 'Initiate New Corporate Case', btn_mark_read: 'Mark read',
      
       lbl_all_cases: 'All Cases',
@@ -1636,6 +1640,8 @@
       lbl_icu_beds: 'ICU Beds', lbl_general_beds: 'General Beds', lbl_pending_referrals: 'Pending Referrals',
       lbl_air_ambulance_from: 'Air Ambulance from', ref_icu_admission: 'ICU Admission Required', ref_post_op_care: 'Post-Op Care Required',
       ref_general_ward: 'General Ward Admission', btn_decline: 'Decline', btn_accept: 'Accept', lbl_accepted: 'Accepted', lbl_declined: 'Declined',
+      doc_medical_report: 'Medical Report', lbl_report_type: 'Report Type', lbl_pre_transfer_assessment: 'Pre-Transfer Assessment',
+      lbl_date_issued: 'Date Issued', lbl_issuing_facility: 'Issuing Facility', btn_download_report: 'Download Report',
       btn_next: 'Next', btn_reset: 'Reset', btn_return_home: 'Return to Home',
       btn_share: 'Share', btn_sign_in: 'Sign In', btn_track_details: 'Track Details',
       care_ambulatory: 'Ambulatory', care_banner_line1: 'Your care,', care_banner_line2: 'Our responsibility', care_icu: 'ICU / Critical',
@@ -1643,8 +1649,8 @@
       choose_login_title: 'Sign In to HumanCare', confirm_request_title: 'Confirm Your Request', country_bangladesh: 'Bangladesh', country_india: 'India',
       country_oman: 'Oman', country_uae_global: 'UAE (Global Alarm)', country_uk: 'UK', cta_back_to_login: 'Back to Login',
       cta_forgot_password: 'Forgot password?', cta_login: 'Login', cta_signup: 'Sign Up', cta_vendor_partner: 'Vendor / Corporate Partner?',
-      doc_current_prescription: 'Current Prescription', doc_discharge_summary: 'Discharge Summary', doc_insurance_card: 'Insurance Card', doc_invoice: 'Invoice',
-      doc_medical_history_summary: 'Medical History Summary', doc_passport_copy: 'Passport Copy', doc_payment_receipt: 'Payment Receipt', doc_service_summary: 'Service Summary',
+      doc_current_prescription: 'Current Prescription', doc_insurance_card: 'Insurance Card',
+      doc_medical_history_summary: 'Medical History Summary', doc_passport_copy: 'Passport Copy',
       empty_no_cases: 'No cases in this stage.', faq_q1: 'How fast can an air ambulance be dispatched?', faq_q2: 'Will my insurance / TPA cover the cost?', faq_q3: 'How do I track my request status?',
       faq_q4: 'Do you operate in my country?', field_age: 'Age', field_care_level: 'Care Level', field_case_notes: 'Case Notes',
       field_contact_number: 'Contact Number', field_destination: 'Destination', field_email_address: 'Email Address', field_extra_info: 'Any additional information',
@@ -1708,7 +1714,7 @@
       dark_mode: 'डार्क मोड', sign_out: 'साइन आउट', choose_language: 'भाषा चुनें',
       air_amb_sub: 'आप कैसे यात्रा करना चाहेंगे, चुनें', air_opt_charter_sub: '4 घंटे से कम समय में पूर्ण ICU टीम के साथ हवाई यात्रा', air_opt_charter_title: 'प्राइवेट चार्टर सेवा', air_opt_commercial_sub: 'निर्धारित उड़ानों में स्ट्रेचर और व्हीलचेयर',
       air_opt_commercial_title: 'कमर्शियल एयरलाइंस', air_opt_rotary_sub: '2 घंटे से कम समय में हेलीकॉप्टर भेजा जाएगा', air_opt_rotary_title: 'रोटरी विंग मेडिकल रेपेट्रिएशन', btn_apply_filters: 'फ़िल्टर लागू करें',
-      btn_call_alarm_desk: 'अलार्म डेस्क को कॉल करें', btn_contact_team: 'टीम से संपर्क करें', btn_create_case: 'केस बनाएं', btn_download_all: 'सभी डाउनलोड करें',
+      btn_call_alarm_desk: 'अलार्म डेस्क को कॉल करें', btn_contact_team: 'टीम से संपर्क करें', btn_create_case: 'केस बनाएं',
       btn_download_summary: 'सारांश डाउनलोड करें', btn_email_ops: 'सहायता को ईमेल करें', btn_initiate_new_case: 'नया कॉर्पोरेट केस शुरू करें', btn_mark_read: 'पढ़ा हुआ चिह्नित करें',
      
       lbl_all_cases: 'सभी केस',
@@ -1726,6 +1732,8 @@
       lbl_icu_beds: 'आईसीयू बेड', lbl_general_beds: 'सामान्य बेड', lbl_pending_referrals: 'लंबित रेफरल',
       lbl_air_ambulance_from: 'से एयर एम्बुलेंस', ref_icu_admission: 'आईसीयू में भर्ती आवश्यक', ref_post_op_care: 'सर्जरी के बाद देखभाल आवश्यक',
       ref_general_ward: 'सामान्य वार्ड में भर्ती', btn_decline: 'अस्वीकार करें', btn_accept: 'स्वीकार करें', lbl_accepted: 'स्वीकृत', lbl_declined: 'अस्वीकृत',
+      doc_medical_report: 'मेडिकल रिपोर्ट', lbl_report_type: 'रिपोर्ट प्रकार', lbl_pre_transfer_assessment: 'ट्रांसफर-पूर्व मूल्यांकन',
+      lbl_date_issued: 'जारी करने की तारीख', lbl_issuing_facility: 'जारीकर्ता सुविधा', btn_download_report: 'रिपोर्ट डाउनलोड करें',
       btn_next: 'आगे', btn_reset: 'रीसेट करें', btn_return_home: 'होम पर वापस जाएं',
       btn_share: 'शेयर करें', btn_sign_in: 'साइन इन करें', btn_track_details: 'ट्रैक विवरण',
       care_ambulatory: 'एंबुलेटरी', care_banner_line1: 'आपकी देखभाल,', care_banner_line2: 'हमारी ज़िम्मेदारी', care_icu: 'ICU / गंभीर',
@@ -1733,8 +1741,8 @@
       choose_login_title: 'HumanCare में साइन इन करें', confirm_request_title: 'अपने अनुरोध की पुष्टि करें', country_bangladesh: 'बांग्लादेश', country_india: 'भारत',
       country_oman: 'ओमान', country_uae_global: 'UAE (ग्लोबल अलार्म)', country_uk: 'यूके', cta_back_to_login: 'लॉगिन पर वापस जाएं',
       cta_forgot_password: 'पासवर्ड भूल गए?', cta_login: 'लॉगिन', cta_signup: 'साइन अप करें', cta_vendor_partner: 'वेंडर / कॉर्पोरेट पार्टनर?',
-      doc_current_prescription: 'वर्तमान प्रिस्क्रिप्शन', doc_discharge_summary: 'डिस्चार्ज सारांश', doc_insurance_card: 'बीमा कार्ड', doc_invoice: 'इनवॉइस',
-      doc_medical_history_summary: 'चिकित्सा इतिहास सारांश', doc_passport_copy: 'पासपोर्ट की प्रति', doc_payment_receipt: 'भुगतान रसीद', doc_service_summary: 'सेवा सारांश',
+      doc_current_prescription: 'वर्तमान प्रिस्क्रिप्शन', doc_insurance_card: 'बीमा कार्ड',
+      doc_medical_history_summary: 'चिकित्सा इतिहास सारांश', doc_passport_copy: 'पासपोर्ट की प्रति',
       empty_no_cases: 'इस चरण में कोई केस नहीं है।', faq_q1: 'एयर एम्बुलेंस कितनी जल्दी भेजी जा सकती है?', faq_q2: 'क्या मेरा बीमा / TPA लागत को कवर करेगा?', faq_q3: 'मैं अपने अनुरोध की स्थिति कैसे ट्रैक करूं?',
       faq_q4: 'क्या आप मेरे देश में सेवा देते हैं?', field_age: 'आयु', field_care_level: 'देखभाल स्तर', field_case_notes: 'केस नोट्स',
       field_contact_number: 'संपर्क नंबर', field_destination: 'गंतव्य', field_email_address: 'ईमेल पता', field_extra_info: 'कोई अतिरिक्त जानकारी',
@@ -1798,7 +1806,7 @@
       dark_mode: 'डार्क मोड', sign_out: 'साइन आउट', choose_language: 'भाषा निवडा',
       air_amb_sub: 'तुम्हाला कसा प्रवास करायचा आहे ते निवडा', air_opt_charter_sub: '4 तासांपेक्षा कमी वेळेत पूर्ण ICU टीमसह हवाई प्रवास', air_opt_charter_title: 'खाजगी चार्टर सेवा', air_opt_commercial_sub: 'नियोजित उड्डाणांमध्ये स्ट्रेचर आणि व्हीलचेअर',
       air_opt_commercial_title: 'कमर्शियल एअरलाइन्स', air_opt_rotary_sub: '2 तासांपेक्षा कमी वेळेत हेलिकॉप्टर पाठवले जाईल', air_opt_rotary_title: 'रोटरी विंग मेडिकल रिपॅट्रिएशन', btn_apply_filters: 'फिल्टर लागू करा',
-      btn_call_alarm_desk: 'अलार्म डेस्कला कॉल करा', btn_contact_team: 'टीमशी संपर्क साधा', btn_create_case: 'केस तयार करा', btn_download_all: 'सर्व डाउनलोड करा',
+      btn_call_alarm_desk: 'अलार्म डेस्कला कॉल करा', btn_contact_team: 'टीमशी संपर्क साधा', btn_create_case: 'केस तयार करा',
       btn_download_summary: 'सारांश डाउनलोड करा', btn_email_ops: 'सहाय्यला ईमेल करा', btn_initiate_new_case: 'नवीन कॉर्पोरेट केस सुरू करा', btn_mark_read: 'वाचले म्हणून चिन्हांकित करा',
      
       lbl_all_cases: 'सर्व केस',
@@ -1816,6 +1824,8 @@
       lbl_icu_beds: 'आयसीयू बेड', lbl_general_beds: 'सामान्य बेड', lbl_pending_referrals: 'प्रलंबित रेफरल',
       lbl_air_ambulance_from: 'येथून एअर अ‍ॅम्ब्युलन्स', ref_icu_admission: 'आयसीयूमध्ये दाखल करणे आवश्यक', ref_post_op_care: 'शस्त्रक्रियेनंतरची काळजी आवश्यक',
       ref_general_ward: 'सामान्य वॉर्डमध्ये दाखल', btn_decline: 'नाकारा', btn_accept: 'स्वीकारा', lbl_accepted: 'स्वीकारले', lbl_declined: 'नाकारले',
+      doc_medical_report: 'वैद्यकीय अहवाल', lbl_report_type: 'अहवाल प्रकार', lbl_pre_transfer_assessment: 'ट्रान्सफर-पूर्व मूल्यांकन',
+      lbl_date_issued: 'जारी केल्याची तारीख', lbl_issuing_facility: 'जारी करणारी सुविधा', btn_download_report: 'अहवाल डाउनलोड करा',
       btn_next: 'पुढे', btn_reset: 'रीसेट करा', btn_return_home: 'होमवर परत जा',
       btn_share: 'शेअर करा', btn_sign_in: 'साइन इन करा', btn_track_details: 'ट्रॅक तपशील',
       care_ambulatory: 'अँब्युलेटरी', care_banner_line1: 'तुमची काळजी,', care_banner_line2: 'आमची जबाबदारी', care_icu: 'ICU / गंभीर',
@@ -1823,8 +1833,8 @@
       choose_login_title: 'HumanCare मध्ये साइन इन करा', confirm_request_title: 'तुमच्या विनंतीची पुष्टी करा', country_bangladesh: 'बांगलादेश', country_india: 'भारत',
       country_oman: 'ओमान', country_uae_global: 'UAE (ग्लोबल अलार्म)', country_uk: 'यूके', cta_back_to_login: 'लॉगिनवर परत जा',
       cta_forgot_password: 'पासवर्ड विसरलात?', cta_login: 'लॉगिन', cta_signup: 'साइन अप करा', cta_vendor_partner: 'वेंडर / कॉर्पोरेट पार्टनर?',
-      doc_current_prescription: 'सध्याचे प्रिस्क्रिप्शन', doc_discharge_summary: 'डिस्चार्ज सारांश', doc_insurance_card: 'विमा कार्ड', doc_invoice: 'इनव्हॉइस',
-      doc_medical_history_summary: 'वैद्यकीय इतिहास सारांश', doc_passport_copy: 'पासपोर्टची प्रत', doc_payment_receipt: 'पेमेंट पावती', doc_service_summary: 'सेवा सारांश',
+      doc_current_prescription: 'सध्याचे प्रिस्क्रिप्शन', doc_insurance_card: 'विमा कार्ड',
+      doc_medical_history_summary: 'वैद्यकीय इतिहास सारांश', doc_passport_copy: 'पासपोर्टची प्रत',
       empty_no_cases: 'या टप्प्यात कोणताही केस नाही.', faq_q1: 'एअर अ‍ॅम्ब्युलन्स किती लवकर पाठवली जाऊ शकते?', faq_q2: 'माझा विमा / TPA खर्च कव्हर करेल का?', faq_q3: 'मी माझ्या विनंतीची स्थिती कशी ट्रॅक करू?',
       faq_q4: 'तुम्ही माझ्या देशात सेवा देता का?', field_age: 'वय', field_care_level: 'काळजीची पातळी', field_case_notes: 'केस नोट्स',
       field_contact_number: 'संपर्क क्रमांक', field_destination: 'गंतव्यस्थान', field_email_address: 'ईमेल पत्ता', field_extra_info: 'काही अतिरिक्त माहिती',
@@ -1888,7 +1898,7 @@
       dark_mode: 'ડાર્ક મોડ', sign_out: 'સાઇન આઉટ', choose_language: 'ભાષા પસંદ કરો',
       air_amb_sub: 'તમારે કેવી રીતે મુસાફરી કરવી છે તે પસંદ કરો', air_opt_charter_sub: '4 કલાકથી ઓછા સમયમાં સંપૂર્ણ ICU ટીમ સાથે હવાઈ મુસાફરી', air_opt_charter_title: 'પ્રાઇવેટ ચાર્ટર સેવા', air_opt_commercial_sub: 'નિયમિત ફ્લાઇટ્સમાં સ્ટ્રેચર અને વ્હીલચેર',
       air_opt_commercial_title: 'કમર્શિયલ એરલાઇન્સ', air_opt_rotary_sub: '2 કલાકથી ઓછા સમયમાં હેલિકોપ્ટર મોકલવામાં આવશે', air_opt_rotary_title: 'રોટરી વિંગ મેડિકલ રિપેટ્રિએશન', btn_apply_filters: 'ફિલ્ટર લાગુ કરો',
-      btn_call_alarm_desk: 'એલાર્મ ડેસ્કને કૉલ કરો', btn_contact_team: 'ટીમનો સંપર્ક કરો', btn_create_case: 'કેસ બનાવો', btn_download_all: 'બધું ડાઉનલોડ કરો',
+      btn_call_alarm_desk: 'એલાર્મ ડેસ્કને કૉલ કરો', btn_contact_team: 'ટીમનો સંપર્ક કરો', btn_create_case: 'કેસ બનાવો',
       btn_download_summary: 'સારાંશ ડાઉનલોડ કરો', btn_email_ops: 'સહાયને ઈમેલ કરો', btn_initiate_new_case: 'નવો કોર્પોરેટ કેસ શરૂ કરો', btn_mark_read: 'વાંચેલું ચિહ્નિત કરો',
      
       lbl_all_cases: 'બધા કેસ',
@@ -1906,6 +1916,8 @@
       lbl_icu_beds: 'ICU બેડ', lbl_general_beds: 'સામાન્ય બેડ', lbl_pending_referrals: 'બાકી રેફરલ',
       lbl_air_ambulance_from: 'થી એર એમ્બ્યુલન્સ', ref_icu_admission: 'ICU માં દાખલ કરવું જરૂરી', ref_post_op_care: 'સર્જરી પછીની સંભાળ જરૂરી',
       ref_general_ward: 'સામાન્ય વોર્ડમાં દાખલ', btn_decline: 'નકારો', btn_accept: 'સ્વીકારો', lbl_accepted: 'સ્વીકૃત', lbl_declined: 'નકારેલ',
+      doc_medical_report: 'મેડિકલ રિપોર્ટ', lbl_report_type: 'રિપોર્ટ પ્રકાર', lbl_pre_transfer_assessment: 'ટ્રાન્સફર-પૂર્વ મૂલ્યાંકન',
+      lbl_date_issued: 'જારી કરવાની તારીખ', lbl_issuing_facility: 'જારી કરનાર સુવિધા', btn_download_report: 'રિપોર્ટ ડાઉનલોડ કરો',
       btn_next: 'આગળ', btn_reset: 'રીસેટ કરો', btn_return_home: 'હોમ પર પાછા જાઓ',
       btn_share: 'શેર કરો', btn_sign_in: 'સાઇન ઇન કરો', btn_track_details: 'ટ્રેક વિગતો',
       care_ambulatory: 'એમ્બ્યુલેટરી', care_banner_line1: 'તમારી કાળજી,', care_banner_line2: 'અમારી જવાબદારી', care_icu: 'ICU / ગંભીર',
@@ -1913,8 +1925,8 @@
       choose_login_title: 'HumanCare માં સાઇન ઇન કરો', confirm_request_title: 'તમારી વિનંતીની પુષ્ટિ કરો', country_bangladesh: 'બાંગ્લાદેશ', country_india: 'ભારત',
       country_oman: 'ઓમાન', country_uae_global: 'UAE (ગ્લોબલ એલાર્મ)', country_uk: 'યુકે', cta_back_to_login: 'લોગિન પર પાછા જાઓ',
       cta_forgot_password: 'પાસવર્ડ ભૂલી ગયા?', cta_login: 'લોગિન', cta_signup: 'સાઇન અપ કરો', cta_vendor_partner: 'વેન્ડર / કોર્પોરેટ પાર્ટનર?',
-      doc_current_prescription: 'વર્તમાન પ્રિસ્ક્રિપ્શન', doc_discharge_summary: 'ડિસ્ચાર્જ સારાંશ', doc_insurance_card: 'ઇન્શ્યોરન્સ કાર્ડ', doc_invoice: 'ઇન્વોઇસ',
-      doc_medical_history_summary: 'મેડિકલ હિસ્ટ્રી સારાંશ', doc_passport_copy: 'પાસપોર્ટની નકલ', doc_payment_receipt: 'પેમેન્ટ રસીદ', doc_service_summary: 'સેવા સારાંશ',
+      doc_current_prescription: 'વર્તમાન પ્રિસ્ક્રિપ્શન', doc_insurance_card: 'ઇન્શ્યોરન્સ કાર્ડ',
+      doc_medical_history_summary: 'મેડિકલ હિસ્ટ્રી સારાંશ', doc_passport_copy: 'પાસપોર્ટની નકલ',
       empty_no_cases: 'આ તબક્કામાં કોઈ કેસ નથી.', faq_q1: 'એર એમ્બ્યુલન્સ કેટલી ઝડપથી મોકલી શકાય છે?', faq_q2: 'શું મારો ઇન્શ્યોરન્સ / TPA ખર્ચ કવર કરશે?', faq_q3: 'હું મારી વિનંતીની સ્થિતિ કેવી રીતે ટ્રેક કરું?',
       faq_q4: 'શું તમે મારા દેશમાં સેવા આપો છો?', field_age: 'ઉંમર', field_care_level: 'કેરનું સ્તર', field_case_notes: 'કેસ નોંધો',
       field_contact_number: 'સંપર્ક નંબર', field_destination: 'ગંતવ્ય સ્થળ', field_email_address: 'ઈમેલ સરનામું', field_extra_info: 'કોઈ વધારાની માહિતી',
@@ -1978,7 +1990,7 @@
       dark_mode: 'డార్క్ మోడ్', sign_out: 'సైన్ అవుట్', choose_language: 'భాష ఎంచుకోండి',
       air_amb_sub: 'మీరు ఎలా ప్రయాణించాలనుకుంటున్నారో ఎంచుకోండి', air_opt_charter_sub: '4 గంటల్లోపు పూర్తి ICU టీమ్‌తో గగనవిహారం', air_opt_charter_title: 'ప్రైవేట్ చార్టర్ సేవ', air_opt_commercial_sub: 'షెడ్యూల్డ్ విమానాల్లో స్ట్రెచర్ & వీల్‌చైర్',
       air_opt_commercial_title: 'కమర్షియల్ ఎయిర్‌లైన్స్', air_opt_rotary_sub: '2 గంటల్లోపు హెలికాప్టర్ డిస్పాచ్', air_opt_rotary_title: 'రోటరీ వింగ్ మెడికల్ రీపేట్రియేషన్', btn_apply_filters: 'ఫిల్టర్‌లను వర్తింపజేయండి',
-      btn_call_alarm_desk: 'అలారం డెస్క్‌కు కాల్ చేయండి', btn_contact_team: 'టీమ్‌ను సంప్రదించండి', btn_create_case: 'కేస్ సృష్టించండి', btn_download_all: 'అన్నీ డౌన్‌లోడ్ చేయండి',
+      btn_call_alarm_desk: 'అలారం డెస్క్‌కు కాల్ చేయండి', btn_contact_team: 'టీమ్‌ను సంప్రదించండి', btn_create_case: 'కేస్ సృష్టించండి',
       btn_download_summary: 'సారాంశం డౌన్‌లోడ్ చేయండి', btn_email_ops: 'సపోర్ట్‌కు ఇమెయిల్ చేయండి', btn_initiate_new_case: 'కొత్త కార్పొరేట్ కేస్‌ను ప్రారంభించండి', btn_mark_read: 'చదివినట్లు గుర్తించండి',
      
       lbl_all_cases: 'అన్ని కేసులు',
@@ -1996,6 +2008,8 @@
       lbl_icu_beds: 'ICU బెడ్‌లు', lbl_general_beds: 'జనరల్ బెడ్‌లు', lbl_pending_referrals: 'పెండింగ్ రిఫరల్స్',
       lbl_air_ambulance_from: 'నుండి ఎయిర్ అంబులెన్స్', ref_icu_admission: 'ICU అడ్మిషన్ అవసరం', ref_post_op_care: 'పోస్ట్-ఆప్ కేర్ అవసరం',
       ref_general_ward: 'జనరల్ వార్డ్ అడ్మిషన్', btn_decline: 'తిరస్కరించండి', btn_accept: 'ఆమోదించండి', lbl_accepted: 'ఆమోదించబడింది', lbl_declined: 'తిరస్కరించబడింది',
+      doc_medical_report: 'మెడికల్ రిపోర్ట్', lbl_report_type: 'రిపోర్ట్ రకం', lbl_pre_transfer_assessment: 'ట్రాన్స్‌ఫర్‌కు ముందు మూల్యాంకనం',
+      lbl_date_issued: 'జారీ చేసిన తేదీ', lbl_issuing_facility: 'జారీ చేసిన సంస్థ', btn_download_report: 'రిపోర్ట్ డౌన్‌లోడ్ చేయండి',
       btn_next: 'తదుపరి', btn_reset: 'రీసెట్ చేయండి', btn_return_home: 'హోమ్‌కు తిరిగి వెళ్లండి',
       btn_share: 'షేర్ చేయండి', btn_sign_in: 'సైన్ ఇన్ చేయండి', btn_track_details: 'ట్రాక్ వివరాలు',
       care_ambulatory: 'అంబులేటరీ', care_banner_line1: 'మీ సంరక్షణ,', care_banner_line2: 'మా బాధ్యత', care_icu: 'ICU / క్రిటికల్',
@@ -2003,8 +2017,8 @@
       choose_login_title: 'HumanCareలోకి సైన్ ఇన్ చేయండి', confirm_request_title: 'మీ అభ్యర్థనను నిర్ధారించండి', country_bangladesh: 'బంగ్లాదేశ్', country_india: 'భారతదేశం',
       country_oman: 'ఒమాన్', country_uae_global: 'UAE (గ్లోబల్ అలారం)', country_uk: 'యూకే', cta_back_to_login: 'లాగిన్‌కు తిరిగి వెళ్లండి',
       cta_forgot_password: 'పాస్‌వర్డ్ మర్చిపోయారా?', cta_login: 'లాగిన్', cta_signup: 'సైన్ అప్ చేయండి', cta_vendor_partner: 'వెండర్ / కార్పొరేట్ పార్ట్‌నర్?',
-      doc_current_prescription: 'ప్రస్తుత ప్రిస్క్రిప్షన్', doc_discharge_summary: 'డిశ్చార్జ్ సారాంశం', doc_insurance_card: 'ఇన్సూరెన్స్ కార్డు', doc_invoice: 'ఇన్వాయిస్',
-      doc_medical_history_summary: 'వైద్య చరిత్ర సారాంశం', doc_passport_copy: 'పాస్‌పోర్ట్ కాపీ', doc_payment_receipt: 'చెల్లింపు రసీదు', doc_service_summary: 'సేవా సారాంశం',
+      doc_current_prescription: 'ప్రస్తుత ప్రిస్క్రిప్షన్', doc_insurance_card: 'ఇన్సూరెన్స్ కార్డు',
+      doc_medical_history_summary: 'వైద్య చరిత్ర సారాంశం', doc_passport_copy: 'పాస్‌పోర్ట్ కాపీ',
       empty_no_cases: 'ఈ దశలో కేసులు లేవు.', faq_q1: 'ఎయిర్ అంబులెన్స్‌ను ఎంత త్వరగా పంపవచ్చు?', faq_q2: 'నా ఇన్సూరెన్స్ / TPA ఖర్చును కవర్ చేస్తుందా?', faq_q3: 'నా అభ్యర్థన స్థితిని నేను ఎలా ట్రాక్ చేయాలి?',
       faq_q4: 'మీరు నా దేశంలో సేవలు అందిస్తున్నారా?', field_age: 'వయస్సు', field_care_level: 'సంరక్షణ స్థాయి', field_case_notes: 'కేస్ నోట్స్',
       field_contact_number: 'సంప్రదింపు నంబర్', field_destination: 'గమ్యస్థానం', field_email_address: 'ఇమెయిల్ చిరునామా', field_extra_info: 'ఏదైనా అదనపు సమాచారం',
@@ -2068,7 +2082,7 @@
       dark_mode: 'الوضع الداكن', sign_out: 'تسجيل الخروج', choose_language: 'اختر اللغة',
       air_amb_sub: 'اختر طريقة السفر التي تفضلها', air_opt_charter_sub: 'الإقلاع مع فريق عناية مركزة كامل خلال أقل من 4 ساعات', air_opt_charter_title: 'خدمة الطائرة الخاصة المستأجرة', air_opt_commercial_sub: 'نقالة وكرسي متحرك على الرحلات المجدولة',
       air_opt_commercial_title: 'شركات الطيران التجارية', air_opt_rotary_sub: 'إرسال طائرة هليكوبتر خلال أقل من ساعتين', air_opt_rotary_title: 'إعادة طبية بطائرة هليكوبتر', btn_apply_filters: 'تطبيق الفلاتر',
-      btn_call_alarm_desk: 'الاتصال بمكتب الطوارئ', btn_contact_team: 'تواصل مع الفريق', btn_create_case: 'إنشاء حالة', btn_download_all: 'تنزيل الكل',
+      btn_call_alarm_desk: 'الاتصال بمكتب الطوارئ', btn_contact_team: 'تواصل مع الفريق', btn_create_case: 'إنشاء حالة',
       btn_download_summary: 'تنزيل الملخص', btn_email_ops: 'مراسلة الدعم بالبريد الإلكتروني', btn_initiate_new_case: 'بدء حالة شركات جديدة', btn_mark_read: 'تحديد كمقروء',
      
       lbl_all_cases: 'جميع الحالات',
@@ -2086,6 +2100,8 @@
       lbl_icu_beds: 'أسرّة العناية المركزة', lbl_general_beds: 'الأسرّة العامة', lbl_pending_referrals: 'الإحالات المعلقة',
       lbl_air_ambulance_from: 'إسعاف جوي من', ref_icu_admission: 'مطلوب دخول العناية المركزة', ref_post_op_care: 'مطلوب رعاية ما بعد الجراحة',
       ref_general_ward: 'دخول الجناح العام', btn_decline: 'رفض', btn_accept: 'قبول', lbl_accepted: 'مقبول', lbl_declined: 'مرفوض',
+      doc_medical_report: 'التقرير الطبي', lbl_report_type: 'نوع التقرير', lbl_pre_transfer_assessment: 'تقييم ما قبل النقل',
+      lbl_date_issued: 'تاريخ الإصدار', lbl_issuing_facility: 'الجهة المُصدرة', btn_download_report: 'تنزيل التقرير',
       btn_next: 'التالي', btn_reset: 'إعادة تعيين', btn_return_home: 'العودة إلى الرئيسية',
       btn_share: 'مشاركة', btn_sign_in: 'تسجيل الدخول', btn_track_details: 'تفاصيل التتبع',
       care_ambulatory: 'متنقل (غير طريح الفراش)', care_banner_line1: 'رعايتك،', care_banner_line2: 'مسؤوليتنا', care_icu: 'عناية مركزة / حرجة',
@@ -2093,8 +2109,8 @@
       choose_login_title: 'تسجيل الدخول إلى HumanCare', confirm_request_title: 'تأكيد طلبك', country_bangladesh: 'بنغلاديش', country_india: 'الهند',
       country_oman: 'عُمان', country_uae_global: 'الإمارات (الإنذار العالمي)', country_uk: 'المملكة المتحدة', cta_back_to_login: 'العودة إلى تسجيل الدخول',
       cta_forgot_password: 'هل نسيت كلمة المرور؟', cta_login: 'تسجيل الدخول', cta_signup: 'إنشاء حساب', cta_vendor_partner: 'مورّد / شريك شركات؟',
-      doc_current_prescription: 'الوصفة الطبية الحالية', doc_discharge_summary: 'ملخص الخروج من المستشفى', doc_insurance_card: 'بطاقة التأمين', doc_invoice: 'الفاتورة',
-      doc_medical_history_summary: 'ملخص التاريخ الطبي', doc_passport_copy: 'نسخة من جواز السفر', doc_payment_receipt: 'إيصال الدفع', doc_service_summary: 'ملخص الخدمة',
+      doc_current_prescription: 'الوصفة الطبية الحالية', doc_insurance_card: 'بطاقة التأمين',
+      doc_medical_history_summary: 'ملخص التاريخ الطبي', doc_passport_copy: 'نسخة من جواز السفر',
       empty_no_cases: 'لا توجد حالات في هذه المرحلة.', faq_q1: 'ما مدى سرعة إرسال الإسعاف الجوي؟', faq_q2: 'هل سيغطي تأميني / شركة إدارة المطالبات التكلفة؟', faq_q3: 'كيف أتتبع حالة طلبي؟',
       faq_q4: 'هل تعملون في بلدي؟', field_age: 'العمر', field_care_level: 'مستوى الرعاية', field_case_notes: 'ملاحظات الحالة',
       field_contact_number: 'رقم التواصل', field_destination: 'الوجهة', field_email_address: 'البريد الإلكتروني', field_extra_info: 'أي معلومات إضافية',
