@@ -865,7 +865,6 @@
         <div class="step-tabs">
           <div class="step-tab-btn on" id="tt-overview" onclick="switchTrackTab('overview')" data-i18n="tab_overview">Overview</div>
           <div class="step-tab-btn" id="tt-timeline" onclick="switchTrackTab('timeline')" data-i18n="tab_timeline">Timeline</div>
-          <div class="step-tab-btn" id="tt-info" onclick="switchTrackTab('info')" data-i18n="tab_information">Information</div>
           <div class="step-tab-btn" id="tt-docs" onclick="switchTrackTab('docs')" data-i18n="tab_documents">Documents</div>
         </div>
 
@@ -890,23 +889,6 @@
           </div>
         </div>
 
-        <div id="track-pane-info" class="noscroll" style="flex:1;overflow-y:auto;padding:22px;display:none;flex-direction:column;">
-          <div class="card" style="padding:18px;">
-            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:12px;" data-i18n="lbl_care_team">Care Team</div>
-            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_attending_physician">Attending Physician</span><span class="info-value">Dr. Priya Mehta</span></div>
-            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_case_coordinator">Case Coordinator</span><span class="info-value">Rohit Verma</span></div>
-          </div>
-          <div class="card" style="margin-top:14px;padding:18px;">
-            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:12px;" data-i18n="lbl_hospital">Hospital</div>
-            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_facility">Facility</span><span class="info-value">Apollo Hospital, Mumbai</span></div>
-            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_contact">Contact</span><span class="info-value">+91 98765 43210</span></div>
-          </div>
-          <div class="card" style="margin-top:14px;padding:18px;">
-            <div style="font-size:12.5px;font-weight:800;color:#1A73E8;text-transform:uppercase;margin-bottom:12px;" data-i18n="lbl_billing">Billing</div>
-            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="field_policy_gop_ref">Policy / GOP Reference</span><span class="info-value">GOP-2024-77821</span></div>
-            <div class="info-row" style="padding:13px 0;"><span class="info-label" data-i18n="lbl_payment_status">Payment Status</span><span class="pill pill-completed" data-i18n="lbl_covered">Covered</span></div>
-          </div>
-        </div>
 
         <div id="track-pane-docs" class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:none;flex-direction:column;">
           <div class="doc-row" onclick="toast('Downloading Medical Report…')" style="cursor:pointer;margin-bottom:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;" data-i18n="doc_medical_report">Medical Report</div><div style="font-size:11.5px;color:#97A4B8;">PDF · 320 KB</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></div>
@@ -1656,11 +1638,11 @@
       filter_service_type_label: 'Service Type', filter_sort_label: 'Sort By', filter_svc_all: 'All Services', filter_svc_corporate: 'Corporate Medical',
       filter_svc_escort: 'Medical Escort', filter_svc_homecare: 'Home Healthcare', filter_svc_hospital: 'Hospitalization', filter_svc_mortal: 'Mortal Remains',
       forgot_pwd_btn: 'Send Reset Code', forgot_pwd_remember_q: 'Remembered it?', forgot_pwd_sub: 'Enter the mobile number or email on your account and we\'ll send you a code to reset your password.', forgot_pwd_title: 'Forgot Password?',
-      lbl_active: 'Active', lbl_age_gender: 'Age / Gender', lbl_aircraft: 'Aircraft', lbl_attending_physician: 'Attending Physician',
-      lbl_care_team: 'Care Team', lbl_case_coordinator: 'Case Coordinator', lbl_contact: 'Contact', lbl_documents: 'Documents',
-      lbl_done: 'Done', lbl_expected_date: 'Expected Date', lbl_extra_info: 'Extra Info', lbl_facility: 'Facility',
+      lbl_active: 'Active', lbl_age_gender: 'Age / Gender', lbl_aircraft: 'Aircraft',
+      lbl_documents: 'Documents',
+      lbl_done: 'Done', lbl_expected_date: 'Expected Date', lbl_extra_info: 'Extra Info',
      
-      lbl_billing: 'Billing', lbl_payment_status: 'Payment Status', lbl_covered: 'Covered', lbl_mobile: 'Mobile', lbl_email: 'Email',
+      lbl_mobile: 'Mobile', lbl_email: 'Email',
      
      
       mr_empty_title: 'No requests match your filters', mr_empty_sub: 'Try changing or resetting the filters.',
@@ -1688,7 +1670,7 @@
       sort_newest: 'Newest First', sort_oldest: 'Oldest First', status_cancelled: 'Cancelled', status_completed: 'Completed',
       status_confirmed: 'Confirmed', status_progress: 'In Progress', status_scheduled: 'Scheduled', status_submitted: 'Submitted',
       step1_heading: 'Patient Details', step2_heading: 'Request Details', step3_heading: 'Additional Information', submit_request_btn: 'Submit Request',
-      submitting_under_prefix: 'Submitting under', tab_documents: 'Documents', tab_information: 'Information',
+      submitting_under_prefix: 'Submitting under', tab_documents: 'Documents', 
       tab_overview: 'Overview', tab_timeline: 'Timeline', terms_title: 'Terms & Conditions', thank_you_title: 'Thank You!',
       timeline_completed: 'Service Completed', timeline_confirmed: 'Request Confirmed', timeline_pending: 'Pending', timeline_submitted: 'Request Submitted',
       timeline_submitted_detail: 'Your request was received and logged into our system for review.', timeline_confirmed_detail: 'Care coordinator assigned and case verified with the receiving hospital.', timeline_progress_detail: 'Aircraft assigned and departed from Dubai with the full medical crew on board.',
@@ -1748,11 +1730,11 @@
       filter_service_type_label: 'सेवा प्रकार', filter_sort_label: 'इसके अनुसार क्रमबद्ध करें', filter_svc_all: 'सभी सेवाएं', filter_svc_corporate: 'कॉर्पोरेट मेडिकल',
       filter_svc_escort: 'मेडिकल एस्कॉर्ट', filter_svc_homecare: 'होम हेल्थकेयर', filter_svc_hospital: 'अस्पताल में भर्ती', filter_svc_mortal: 'शव अवशेष',
       forgot_pwd_btn: 'रीसेट कोड भेजें', forgot_pwd_remember_q: 'याद आ गया?', forgot_pwd_sub: 'अपने खाते का मोबाइल नंबर या ईमेल दर्ज करें और हम आपको पासवर्ड रीसेट करने के लिए एक कोड भेजेंगे।', forgot_pwd_title: 'पासवर्ड भूल गए?',
-      lbl_active: 'सक्रिय', lbl_age_gender: 'आयु / लिंग', lbl_aircraft: 'विमान', lbl_attending_physician: 'उपस्थित चिकित्सक',
-      lbl_care_team: 'केयर टीम', lbl_case_coordinator: 'केस समन्वयक', lbl_contact: 'संपर्क', lbl_documents: 'दस्तावेज़',
-      lbl_done: 'पूर्ण', lbl_expected_date: 'अपेक्षित तारीख', lbl_extra_info: 'अतिरिक्त जानकारी', lbl_facility: 'सुविधा',
+      lbl_active: 'सक्रिय', lbl_age_gender: 'आयु / लिंग', lbl_aircraft: 'विमान',
+      lbl_documents: 'दस्तावेज़',
+      lbl_done: 'पूर्ण', lbl_expected_date: 'अपेक्षित तारीख', lbl_extra_info: 'अतिरिक्त जानकारी',
      
-      lbl_billing: 'बिलिंग', lbl_payment_status: 'भुगतान स्थिति', lbl_covered: 'कवर किया गया', lbl_mobile: 'मोबाइल', lbl_email: 'ईमेल',
+      lbl_mobile: 'मोबाइल', lbl_email: 'ईमेल',
      
      
       mr_empty_title: 'आपके फ़िल्टर से कोई अनुरोध मेल नहीं खाता', mr_empty_sub: 'फ़िल्टर बदलें या रीसेट करके देखें।',
@@ -1780,7 +1762,7 @@
       sort_newest: 'सबसे नया पहले', sort_oldest: 'सबसे पुराना पहले', status_cancelled: 'रद्द', status_completed: 'पूर्ण',
       status_confirmed: 'पुष्ट', status_progress: 'प्रगति पर', status_scheduled: 'शेड्यूल किया गया', status_submitted: 'सबमिट किया गया',
       step1_heading: 'मरीज़ का विवरण', step2_heading: 'अनुरोध विवरण', step3_heading: 'अतिरिक्त जानकारी', submit_request_btn: 'अनुरोध सबमिट करें',
-      submitting_under_prefix: 'इसके तहत सबमिट कर रहे हैं', tab_documents: 'दस्तावेज़', tab_information: 'जानकारी',
+      submitting_under_prefix: 'इसके तहत सबमिट कर रहे हैं', tab_documents: 'दस्तावेज़', 
       tab_overview: 'अवलोकन', tab_timeline: 'टाइमलाइन', terms_title: 'नियम और शर्तें', thank_you_title: 'धन्यवाद!',
       timeline_completed: 'सेवा पूर्ण', timeline_confirmed: 'अनुरोध की पुष्टि हुई', timeline_pending: 'लंबित', timeline_submitted: 'अनुरोध सबमिट किया गया',
       timeline_submitted_detail: 'आपका अनुरोध प्राप्त हो गया है और समीक्षा के लिए हमारे सिस्टम में दर्ज कर लिया गया है।', timeline_confirmed_detail: 'केयर समन्वयक नियुक्त किया गया और मामला प्राप्तकर्ता अस्पताल के साथ सत्यापित किया गया।', timeline_progress_detail: 'विमान नियुक्त किया गया और पूरी मेडिकल टीम के साथ दुबई से रवाना हो गया।',
@@ -1840,11 +1822,11 @@
       filter_service_type_label: 'सेवा प्रकार', filter_sort_label: 'यानुसार क्रमवारी लावा', filter_svc_all: 'सर्व सेवा', filter_svc_corporate: 'कॉर्पोरेट मेडिकल',
       filter_svc_escort: 'मेडिकल एस्कॉर्ट', filter_svc_homecare: 'होम हेल्थकेअर', filter_svc_hospital: 'रुग्णालयात दाखल', filter_svc_mortal: 'शव अवशेष',
       forgot_pwd_btn: 'रीसेट कोड पाठवा', forgot_pwd_remember_q: 'आठवला का?', forgot_pwd_sub: 'तुमच्या खात्याचा मोबाइल क्रमांक किंवा ईमेल टाका आणि आम्ही तुम्हाला पासवर्ड रीसेट करण्यासाठी एक कोड पाठवू.', forgot_pwd_title: 'पासवर्ड विसरलात?',
-      lbl_active: 'सक्रिय', lbl_age_gender: 'वय / लिंग', lbl_aircraft: 'विमान', lbl_attending_physician: 'उपस्थित डॉक्टर',
-      lbl_care_team: 'केअर टीम', lbl_case_coordinator: 'केस समन्वयक', lbl_contact: 'संपर्क', lbl_documents: 'कागदपत्रे',
-      lbl_done: 'पूर्ण', lbl_expected_date: 'अपेक्षित तारीख', lbl_extra_info: 'अतिरिक्त माहिती', lbl_facility: 'सुविधा',
+      lbl_active: 'सक्रिय', lbl_age_gender: 'वय / लिंग', lbl_aircraft: 'विमान',
+      lbl_documents: 'कागदपत्रे',
+      lbl_done: 'पूर्ण', lbl_expected_date: 'अपेक्षित तारीख', lbl_extra_info: 'अतिरिक्त माहिती',
      
-      lbl_billing: 'बिलिंग', lbl_payment_status: 'पेमेंट स्थिती', lbl_covered: 'कव्हर केले', lbl_mobile: 'मोबाइल', lbl_email: 'ईमेल',
+      lbl_mobile: 'मोबाइल', lbl_email: 'ईमेल',
      
      
       mr_empty_title: 'तुमच्या फिल्टरशी जुळणारी कोणतीही विनंती नाही', mr_empty_sub: 'फिल्टर बदलून किंवा रीसेट करून पहा.',
@@ -1872,7 +1854,7 @@
       sort_newest: 'सर्वात नवीन आधी', sort_oldest: 'सर्वात जुने आधी', status_cancelled: 'रद्द', status_completed: 'पूर्ण',
       status_confirmed: 'पुष्ट', status_progress: 'प्रगतीपथावर', status_scheduled: 'शेड्यूल झाले', status_submitted: 'सबमिट केले',
       step1_heading: 'रुग्णाचा तपशील', step2_heading: 'विनंती तपशील', step3_heading: 'अतिरिक्त माहिती', submit_request_btn: 'विनंती सबमिट करा',
-      submitting_under_prefix: 'याअंतर्गत सबमिट करत आहात', tab_documents: 'कागदपत्रे', tab_information: 'माहिती',
+      submitting_under_prefix: 'याअंतर्गत सबमिट करत आहात', tab_documents: 'कागदपत्रे', 
       tab_overview: 'आढावा', tab_timeline: 'टाइमलाइन', terms_title: 'नियम आणि अटी', thank_you_title: 'धन्यवाद!',
       timeline_completed: 'सेवा पूर्ण', timeline_confirmed: 'विनंतीची पुष्टी झाली', timeline_pending: 'प्रलंबित', timeline_submitted: 'विनंती सबमिट केली',
       timeline_submitted_detail: 'तुमची विनंती प्राप्त झाली असून पुनरावलोकनासाठी आमच्या सिस्टीममध्ये नोंदवली गेली आहे.', timeline_confirmed_detail: 'केअर समन्वयक नियुक्त करण्यात आला असून प्रकरण प्राप्तकर्ता रुग्णालयासोबत सत्यापित करण्यात आले आहे.', timeline_progress_detail: 'विमान नियुक्त करण्यात आले असून संपूर्ण वैद्यकीय टीमसह दुबईहून रवाना झाले आहे.',
@@ -1932,11 +1914,11 @@
       filter_service_type_label: 'સેવાનો પ્રકાર', filter_sort_label: 'આ મુજબ ક્રમમાં ગોઠવો', filter_svc_all: 'બધી સેવાઓ', filter_svc_corporate: 'કોર્પોરેટ મેડિકલ',
       filter_svc_escort: 'મેડિકલ એસ્કોર્ટ', filter_svc_homecare: 'હોમ હેલ્થકેર', filter_svc_hospital: 'હોસ્પિટલ એડમિશન', filter_svc_mortal: 'મૃતદેહ અવશેષ',
       forgot_pwd_btn: 'રીસેટ કોડ મોકલો', forgot_pwd_remember_q: 'યાદ આવ્યો?', forgot_pwd_sub: 'તમારા ખાતાનો મોબાઇલ નંબર અથવા ઈમેલ દાખલ કરો અને અમે તમને પાસવર્ડ રીસેટ કરવા માટે એક કોડ મોકલીશું.', forgot_pwd_title: 'પાસવર્ડ ભૂલી ગયા?',
-      lbl_active: 'સક્રિય', lbl_age_gender: 'ઉંમર / લિંગ', lbl_aircraft: 'વિમાન', lbl_attending_physician: 'હાજર ડૉક્ટર',
-      lbl_care_team: 'કેર ટીમ', lbl_case_coordinator: 'કેસ કોઓર્ડિનેટર', lbl_contact: 'સંપર્ક', lbl_documents: 'દસ્તાવેજો',
-      lbl_done: 'પૂર્ણ', lbl_expected_date: 'અપેક્ષિત તારીખ', lbl_extra_info: 'વધારાની માહિતી', lbl_facility: 'સુવિધા',
+      lbl_active: 'સક્રિય', lbl_age_gender: 'ઉંમર / લિંગ', lbl_aircraft: 'વિમાન',
+      lbl_documents: 'દસ્તાવેજો',
+      lbl_done: 'પૂર્ણ', lbl_expected_date: 'અપેક્ષિત તારીખ', lbl_extra_info: 'વધારાની માહિતી',
 
-      lbl_billing: 'બિલિંગ', lbl_payment_status: 'પેમેન્ટ સ્થિતિ', lbl_covered: 'કવર કર્યું', lbl_mobile: 'મોબાઇલ', lbl_email: 'ઈમેલ',
+      lbl_mobile: 'મોબાઇલ', lbl_email: 'ઈમેલ',
      
      
       mr_empty_title: 'તમારા ફિલ્ટર સાથે કોઈ વિનંતી મેળ ખાતી નથી', mr_empty_sub: 'ફિલ્ટર બદલીને અથવા રીસેટ કરીને જુઓ.',
@@ -1964,7 +1946,7 @@
       sort_newest: 'સૌથી નવું પહેલાં', sort_oldest: 'સૌથી જૂનું પહેલાં', status_cancelled: 'રદ', status_completed: 'પૂર્ણ',
       status_confirmed: 'પુષ્ટ', status_progress: 'પ્રગતિમાં', status_scheduled: 'શેડ્યૂલ થયું', status_submitted: 'સબમિટ થયું',
       step1_heading: 'દર્દીની વિગતો', step2_heading: 'વિનંતીની વિગતો', step3_heading: 'વધારાની માહિતી', submit_request_btn: 'વિનંતી સબમિટ કરો',
-      submitting_under_prefix: 'આ અંતર્ગત સબમિટ કરી રહ્યા છો', tab_documents: 'દસ્તાવેજો', tab_information: 'માહિતી',
+      submitting_under_prefix: 'આ અંતર્ગત સબમિટ કરી રહ્યા છો', tab_documents: 'દસ્તાવેજો', 
       tab_overview: 'ઝાંખી', tab_timeline: 'ટાઇમલાઇન', terms_title: 'નિયમો અને શરતો', thank_you_title: 'આભાર!',
       timeline_completed: 'સેવા પૂર્ણ', timeline_confirmed: 'વિનંતીની પુષ્ટિ થઈ', timeline_pending: 'બાકી', timeline_submitted: 'વિનંતી સબમિટ થઈ',
       timeline_submitted_detail: 'તમારી વિનંતી પ્રાપ્ત થઈ ગઈ છે અને સમીક્ષા માટે અમારી સિસ્ટમમાં નોંધવામાં આવી છે.', timeline_confirmed_detail: 'કેર કોઓર્ડિનેટરની નિમણૂક કરવામાં આવી છે અને કેસ પ્રાપ્તકર્તા હોસ્પિટલ સાથે વેરિફાય કરવામાં આવ્યો છે.', timeline_progress_detail: 'વિમાન સોંપવામાં આવ્યું છે અને સંપૂર્ણ મેડિકલ ટીમ સાથે દુબઈથી રવાના થયું છે.',
@@ -2024,11 +2006,11 @@
       filter_service_type_label: 'సేవా రకం', filter_sort_label: 'దీని ఆధారంగా క్రమబద్ధీకరించండి', filter_svc_all: 'అన్ని సేవలు', filter_svc_corporate: 'కార్పొరేట్ మెడికల్',
       filter_svc_escort: 'మెడికల్ ఎస్కార్ట్', filter_svc_homecare: 'హోమ్ హెల్త్‌కేర్', filter_svc_hospital: 'హాస్పిటలైజేషన్', filter_svc_mortal: 'మృతదేహం',
       forgot_pwd_btn: 'రీసెట్ కోడ్ పంపండి', forgot_pwd_remember_q: 'గుర్తుకు వచ్చిందా?', forgot_pwd_sub: 'మీ ఖాతాకు సంబంధించిన మొబైల్ నంబర్ లేదా ఇమెయిల్‌ను నమోదు చేయండి, మేము మీ పాస్‌వర్డ్‌ను రీసెట్ చేయడానికి ఒక కోడ్‌ను పంపుతాము.', forgot_pwd_title: 'పాస్‌వర్డ్ మర్చిపోయారా?',
-      lbl_active: 'యాక్టివ్', lbl_age_gender: 'వయస్సు / లింగం', lbl_aircraft: 'విమానం', lbl_attending_physician: 'అటెండింగ్ ఫిజిషియన్',
-      lbl_care_team: 'కేర్ టీమ్', lbl_case_coordinator: 'కేస్ కోఆర్డినేటర్', lbl_contact: 'సంప్రదింపు', lbl_documents: 'డాక్యుమెంట్లు',
-      lbl_done: 'పూర్తయింది', lbl_expected_date: 'ఆశించిన తేదీ', lbl_extra_info: 'అదనపు సమాచారం', lbl_facility: 'సదుపాయం',
+      lbl_active: 'యాక్టివ్', lbl_age_gender: 'వయస్సు / లింగం', lbl_aircraft: 'విమానం',
+      lbl_documents: 'డాక్యుమెంట్లు',
+      lbl_done: 'పూర్తయింది', lbl_expected_date: 'ఆశించిన తేదీ', lbl_extra_info: 'అదనపు సమాచారం',
      
-      lbl_billing: 'బిల్లింగ్', lbl_payment_status: 'చెల్లింపు స్థితి', lbl_covered: 'కవర్ చేయబడింది', lbl_mobile: 'మొబైల్', lbl_email: 'ఇమెయిల్',
+      lbl_mobile: 'మొబైల్', lbl_email: 'ఇమెయిల్',
      
      
       mr_empty_title: 'మీ ఫిల్టర్‌లకు సరిపోలే రిక్వెస్ట్‌లు లేవు', mr_empty_sub: 'ఫిల్టర్‌లను మార్చి లేదా రీసెట్ చేసి ప్రయత్నించండి.',
@@ -2056,7 +2038,7 @@
       sort_newest: 'కొత్తవి మొదట', sort_oldest: 'పాతవి మొదట', status_cancelled: 'రద్దు చేయబడింది', status_completed: 'పూర్తయింది',
       status_confirmed: 'నిర్ధారించబడింది', status_progress: 'పురోగతిలో', status_scheduled: 'షెడ్యూల్ చేయబడింది', status_submitted: 'సమర్పించబడింది',
       step1_heading: 'పేషెంట్ వివరాలు', step2_heading: 'అభ్యర్థన వివరాలు', step3_heading: 'అదనపు సమాచారం', submit_request_btn: 'అభ్యర్థనను సమర్పించండి',
-      submitting_under_prefix: 'దీని కింద సమర్పిస్తున్నారు', tab_documents: 'డాక్యుమెంట్లు', tab_information: 'సమాచారం',
+      submitting_under_prefix: 'దీని కింద సమర్పిస్తున్నారు', tab_documents: 'డాక్యుమెంట్లు', 
       tab_overview: 'అవలోకనం', tab_timeline: 'టైమ్‌లైన్', terms_title: 'నిబంధనలు & షరతులు', thank_you_title: 'ధన్యవాదాలు!',
       timeline_completed: 'సేవ పూర్తయింది', timeline_confirmed: 'అభ్యర్థన నిర్ధారించబడింది', timeline_pending: 'పెండింగ్‌లో ఉంది', timeline_submitted: 'అభ్యర్థన సమర్పించబడింది',
       timeline_submitted_detail: 'మీ అభ్యర్థన స్వీకరించబడింది మరియు సమీక్ష కోసం మా సిస్టమ్‌లో నమోదు చేయబడింది.', timeline_confirmed_detail: 'కేర్ కోఆర్డినేటర్ కేటాయించబడింది మరియు కేసు స్వీకరించే హాస్పిటల్‌తో ధృవీకరించబడింది.', timeline_progress_detail: 'విమానం కేటాయించబడింది మరియు పూర్తి మెడికల్ సిబ్బందితో దుబాయ్ నుండి బయలుదేరింది.',
@@ -2116,11 +2098,11 @@
       filter_service_type_label: 'نوع الخدمة', filter_sort_label: 'الترتيب حسب', filter_svc_all: 'جميع الخدمات', filter_svc_corporate: 'طبي للشركات',
       filter_svc_escort: 'مرافقة طبية', filter_svc_homecare: 'الرعاية الصحية المنزلية', filter_svc_hospital: 'الاستشفاء', filter_svc_mortal: 'نقل الرفات',
       forgot_pwd_btn: 'إرسال رمز إعادة التعيين', forgot_pwd_remember_q: 'هل تذكرتها؟', forgot_pwd_sub: 'أدخل رقم الجوال أو البريد الإلكتروني المسجل في حسابك وسنرسل لك رمزاً لإعادة تعيين كلمة المرور.', forgot_pwd_title: 'هل نسيت كلمة المرور؟',
-      lbl_active: 'نشط', lbl_age_gender: 'العمر / الجنس', lbl_aircraft: 'الطائرة', lbl_attending_physician: 'الطبيب المعالج',
-      lbl_care_team: 'فريق الرعاية', lbl_case_coordinator: 'منسق الحالة', lbl_contact: 'جهة الاتصال', lbl_documents: 'المستندات',
-      lbl_done: 'تم', lbl_expected_date: 'التاريخ المتوقع', lbl_extra_info: 'معلومات إضافية', lbl_facility: 'المنشأة',
+      lbl_active: 'نشط', lbl_age_gender: 'العمر / الجنس', lbl_aircraft: 'الطائرة',
+      lbl_documents: 'المستندات',
+      lbl_done: 'تم', lbl_expected_date: 'التاريخ المتوقع', lbl_extra_info: 'معلومات إضافية',
      
-      lbl_billing: 'الفواتير', lbl_payment_status: 'حالة الدفع', lbl_covered: 'مغطى', lbl_mobile: 'الجوال', lbl_email: 'البريد الإلكتروني',
+      lbl_mobile: 'الجوال', lbl_email: 'البريد الإلكتروني',
      
      
       mr_empty_title: 'لا توجد طلبات مطابقة لعوامل التصفية الخاصة بك', mr_empty_sub: 'جرّب تغيير عوامل التصفية أو إعادة ضبطها.',
@@ -2148,7 +2130,7 @@
       sort_newest: 'الأحدث أولاً', sort_oldest: 'الأقدم أولاً', status_cancelled: 'ملغى', status_completed: 'مكتمل',
       status_confirmed: 'مؤكد', status_progress: 'قيد التنفيذ', status_scheduled: 'مجدول', status_submitted: 'تم الإرسال',
       step1_heading: 'بيانات المريض', step2_heading: 'تفاصيل الطلب', step3_heading: 'معلومات إضافية', submit_request_btn: 'إرسال الطلب',
-      submitting_under_prefix: 'الإرسال تحت', tab_documents: 'المستندات', tab_information: 'المعلومات',
+      submitting_under_prefix: 'الإرسال تحت', tab_documents: 'المستندات', 
       tab_overview: 'نظرة عامة', tab_timeline: 'الجدول الزمني', terms_title: 'الشروط والأحكام', thank_you_title: 'شكراً لك!',
       timeline_completed: 'اكتملت الخدمة', timeline_confirmed: 'تم تأكيد الطلب', timeline_pending: 'قيد الانتظار', timeline_submitted: 'تم إرسال الطلب',
       timeline_submitted_detail: 'تم استلام طلبك وتسجيله في نظامنا للمراجعة.', timeline_confirmed_detail: 'تم تعيين منسق الرعاية والتحقق من الحالة مع المستشفى المستقبل.', timeline_progress_detail: 'تم تعيين الطائرة وغادرت من دبي مع الطاقم الطبي الكامل.',
@@ -2468,7 +2450,7 @@
   }
 
   function switchTrackTab(tab) {
-    ['overview', 'timeline', 'info', 'docs'].forEach(function (t) {
+    ['overview', 'timeline', 'docs'].forEach(function (t) {
       document.getElementById('track-pane-' + t).style.display = t === tab ? 'flex' : 'none';
       document.getElementById('tt-' + t).classList.toggle('on', t === tab);
     });
