@@ -1067,7 +1067,7 @@
           <div style="flex:1;min-height:16px;"></div>
           <button class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;" onclick="nav('vendor-new-case')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><span data-i18n="btn_initiate_new_case">Initiate New Corporate Case</span></button>
         </div>
-        <div class="bottom-nav-v2" data-tabbar="none"></div>
+        <div class="bottom-nav-v2" data-tabbar="my-requests"></div>
       </section>
 
       <!-- VENDOR NEW CASE -->
@@ -1255,6 +1255,7 @@
   ];
   function renderNavBars(activeId) {
     var dict = I18N[currentLang] || I18N.EN;
+    var isVendor = currentSession === 'vendor';
     document.querySelectorAll('.bottom-nav-v2').forEach(function (bar) {
       if (bar.getAttribute('data-tabbar') === 'none') {
         bar.style.display = 'none';
@@ -1263,9 +1264,10 @@
       }
       bar.style.display = 'flex';
       bar.innerHTML = TABS.map(function (t) {
-        var on = t.id === activeId ? ' on' : '';
-        var label = dict[t.labelKey] || t.label;
-        return '<button class="nav-item-v2' + on + '" onclick="navReplace(\'' + t.id + '\')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + t.icon + '</svg><span>' + label + '</span></button>';
+        var targetId = (t.id === 'my-requests' && isVendor) ? 'vendor-dashboard' : t.id;
+        var on = targetId === activeId ? ' on' : '';
+        var label = (t.id === 'my-requests' && isVendor) ? (dict.nav_cases || 'Cases') : (dict[t.labelKey] || t.label);
+        return '<button class="nav-item-v2' + on + '" onclick="navReplace(\'' + targetId + '\')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + t.icon + '</svg><span>' + label + '</span></button>';
       }).join('');
     });
   }
@@ -1329,7 +1331,7 @@
       svc_homecare: 'Home Healthcare Services', svc_homecare_sub: 'Nursing & Post-Surgery Care', svc_tele: 'Teleconsultation', svc_tele_sub: '& House-Call',
       svc_corporate: 'Corporate Medical Solutions', svc_corporate_sub: 'Workplace Health Programs',
       sos_title: 'SOS · Emergency Assistance', sos_sub: 'One tap connects you to our 24/7 team', sos_btn: 'SOS',
-      nav_home: 'Home', nav_requests: 'Requests', nav_profile: 'Profile', lbl_overview: 'Overview', lbl_total_requests: 'Total Requests', lbl_active: 'Active',
+      nav_home: 'Home', nav_requests: 'Requests', nav_cases: 'Cases', nav_profile: 'Profile', lbl_overview: 'Overview', lbl_total_requests: 'Total Requests', lbl_active: 'Active',
       edit_profile_title: 'Edit Profile', edit_profile_sub: 'Update your personal details', btn_save_changes: 'Save Changes',
       profile_title: 'My Profile', my_documents: 'My Documents', emergency_contact: 'Emergency Contact', help_support: 'Help & Support', language: 'Language',
       dark_mode: 'Dark Mode', sign_out: 'Sign Out', choose_language: 'Choose Language',
@@ -1407,7 +1409,7 @@
       svc_homecare: 'होम हेल्थकेयर सेवाएं', svc_homecare_sub: 'नर्सिंग और पोस्ट-सर्जरी देखभाल', svc_tele: 'टेलीकंसल्टेशन', svc_tele_sub: 'और हाउस-कॉल',
       svc_corporate: 'कॉर्पोरेट मेडिकल समाधान', svc_corporate_sub: 'कार्यस्थल स्वास्थ्य कार्यक्रम',
       sos_title: 'SOS · आपातकालीन सहायता', sos_sub: 'एक टैप में हमारी 24/7 टीम से जुड़ें', sos_btn: 'SOS',
-      nav_home: 'होम', nav_requests: 'रिक्वेस्ट', nav_profile: 'प्रोफाइल', lbl_overview: 'विवरण', lbl_total_requests: 'कुल अनुरोध', lbl_active: 'सक्रिय',
+      nav_home: 'होम', nav_requests: 'रिक्वेस्ट', nav_cases: 'केस', nav_profile: 'प्रोफाइल', lbl_overview: 'विवरण', lbl_total_requests: 'कुल अनुरोध', lbl_active: 'सक्रिय',
       edit_profile_title: 'प्रोफाइल संपादित करें', edit_profile_sub: 'अपना व्यक्तिगत विवरण अपडेट करें', btn_save_changes: 'बदलाव सहेजें',
       profile_title: 'मेरी प्रोफाइल', my_documents: 'मेरे दस्तावेज़', emergency_contact: 'आपातकालीन संपर्क', help_support: 'सहायता और समर्थन', language: 'भाषा',
       dark_mode: 'डार्क मोड', sign_out: 'साइन आउट', choose_language: 'भाषा चुनें',
@@ -1485,7 +1487,7 @@
       svc_homecare: 'होम हेल्थकेअर सेवा', svc_homecare_sub: 'नर्सिंग आणि पोस्ट-सर्जरी काळजी', svc_tele: 'टेलिकन्सल्टेशन', svc_tele_sub: 'आणि हाऊस-कॉल',
       svc_corporate: 'कॉर्पोरेट मेडिकल सोल्यूशन्स', svc_corporate_sub: 'कामाच्या ठिकाणी आरोग्य कार्यक्रम',
       sos_title: 'SOS · आपत्कालीन मदत', sos_sub: 'एका टॅपमध्ये आमच्या 24/7 टीमशी संपर्क साधा', sos_btn: 'SOS',
-      nav_home: 'होम', nav_requests: 'रिक्वेस्ट', nav_profile: 'प्रोफाइल', lbl_overview: 'तपशील', lbl_total_requests: 'एकूण विनंत्या', lbl_active: 'सक्रिय',
+      nav_home: 'होम', nav_requests: 'रिक्वेस्ट', nav_cases: 'केस', nav_profile: 'प्रोफाइल', lbl_overview: 'तपशील', lbl_total_requests: 'एकूण विनंत्या', lbl_active: 'सक्रिय',
       edit_profile_title: 'प्रोफाइल संपादित करा', edit_profile_sub: 'तुमचा वैयक्तिक तपशील अपडेट करा', btn_save_changes: 'बदल जतन करा',
       profile_title: 'माझी प्रोफाइल', my_documents: 'माझी कागदपत्रे', emergency_contact: 'आपत्कालीन संपर्क', help_support: 'मदत आणि सहाय्य', language: 'भाषा',
       dark_mode: 'डार्क मोड', sign_out: 'साइन आउट', choose_language: 'भाषा निवडा',
@@ -1563,7 +1565,7 @@
       svc_homecare: 'હોમ હેલ્થકેર સેવાઓ', svc_homecare_sub: 'નર્સિંગ અને પોસ્ટ-સર્જરી કેર', svc_tele: 'ટેલિકન્સલ્ટેશન', svc_tele_sub: 'અને હાઉસ-કૉલ',
       svc_corporate: 'કોર્પોરેટ મેડિકલ સોલ્યુશન્સ', svc_corporate_sub: 'કાર્યસ્થળ આરોગ્ય કાર્યક્રમો',
       sos_title: 'SOS · ઇમરજન્સી સહાય', sos_sub: 'એક ટૅપમાં અમારી 24/7 ટીમનો સંપર્ક કરો', sos_btn: 'SOS',
-      nav_home: 'હોમ', nav_requests: 'રિક્વેસ્ટ', nav_profile: 'પ્રોફાઇલ', lbl_overview: 'વિગતો', lbl_total_requests: 'કુલ વિનંતીઓ', lbl_active: 'સક્રિય',
+      nav_home: 'હોમ', nav_requests: 'રિક્વેસ્ટ', nav_cases: 'કેસ', nav_profile: 'પ્રોફાઇલ', lbl_overview: 'વિગતો', lbl_total_requests: 'કુલ વિનંતીઓ', lbl_active: 'સક્રિય',
       edit_profile_title: 'પ્રોફાઇલ એડિટ કરો', edit_profile_sub: 'તમારી વ્યક્તિગત વિગતો અપડેટ કરો', btn_save_changes: 'ફેરફારો સેવ કરો',
       profile_title: 'મારી પ્રોફાઇલ', my_documents: 'મારા દસ્તાવેજો', emergency_contact: 'ઇમરજન્સી કોન્ટેક્ટ', help_support: 'મદદ અને સહાય', language: 'ભાષા',
       dark_mode: 'ડાર્ક મોડ', sign_out: 'સાઇન આઉટ', choose_language: 'ભાષા પસંદ કરો',
@@ -1641,7 +1643,7 @@
       svc_homecare: 'హోమ్ హెల్త్‌కేర్ సేవలు', svc_homecare_sub: 'నర్సింగ్ & పోస్ట్-సర్జరీ కేర్', svc_tele: 'టెలీకన్సల్టేషన్', svc_tele_sub: '& హౌస్-కాల్',
       svc_corporate: 'కార్పొరేట్ మెడికల్ సొల్యూషన్స్', svc_corporate_sub: 'వర్క్‌ప్లేస్ హెల్త్ ప్రోగ్రామ్స్',
       sos_title: 'SOS · అత్యవసర సహాయం', sos_sub: 'ఒక్క టాప్‌తో మా 24/7 టీమ్‌ని సంప్రదించండి', sos_btn: 'SOS',
-      nav_home: 'హోమ్', nav_requests: 'రిక్వెస్ట్‌లు', nav_profile: 'ప్రొఫైల్', lbl_overview: 'అవలోకనం', lbl_total_requests: 'మొత్తం రిక్వెస్ట్‌లు', lbl_active: 'యాక్టివ్',
+      nav_home: 'హోమ్', nav_requests: 'రిక్వెస్ట్‌లు', nav_cases: 'కేసులు', nav_profile: 'ప్రొఫైల్', lbl_overview: 'అవలోకనం', lbl_total_requests: 'మొత్తం రిక్వెస్ట్‌లు', lbl_active: 'యాక్టివ్',
       edit_profile_title: 'ప్రొఫైల్ సవరించండి', edit_profile_sub: 'మీ వ్యక్తిగత వివరాలను అప్‌డేట్ చేయండి', btn_save_changes: 'మార్పులను సేవ్ చేయండి',
       profile_title: 'నా ప్రొఫైల్', my_documents: 'నా డాక్యుమెంట్లు', emergency_contact: 'ఎమర్జెన్సీ కాంటాక్ట్', help_support: 'సహాయం & మద్దతు', language: 'భాష',
       dark_mode: 'డార్క్ మోడ్', sign_out: 'సైన్ అవుట్', choose_language: 'భాష ఎంచుకోండి',
@@ -1719,7 +1721,7 @@
       svc_homecare: 'خدمات الرعاية المنزلية', svc_homecare_sub: 'التمريض ورعاية ما بعد الجراحة', svc_tele: 'استشارة عن بعد', svc_tele_sub: 'وزيارة منزلية',
       svc_corporate: 'حلول طبية للشركات', svc_corporate_sub: 'برامج الصحة في مكان العمل',
       sos_title: 'SOS · مساعدة طارئة', sos_sub: 'اتصال فوري بفريقنا على مدار الساعة', sos_btn: 'SOS',
-      nav_home: 'الرئيسية', nav_requests: 'الطلبات', nav_profile: 'الملف الشخصي', lbl_overview: 'نظرة عامة', lbl_total_requests: 'إجمالي الطلبات', lbl_active: 'نشط',
+      nav_home: 'الرئيسية', nav_requests: 'الطلبات', nav_cases: 'الحالات', nav_profile: 'الملف الشخصي', lbl_overview: 'نظرة عامة', lbl_total_requests: 'إجمالي الطلبات', lbl_active: 'نشط',
       edit_profile_title: 'تعديل الملف الشخصي', edit_profile_sub: 'قم بتحديث بياناتك الشخصية', btn_save_changes: 'حفظ التغييرات',
       profile_title: 'ملفي الشخصي', my_documents: 'مستنداتي', emergency_contact: 'جهة اتصال الطوارئ', help_support: 'المساعدة والدعم', language: 'اللغة',
       dark_mode: 'الوضع الداكن', sign_out: 'تسجيل الخروج', choose_language: 'اختر اللغة',
