@@ -1082,7 +1082,7 @@
       <section id="screen-vendor-new-case" class="screen hidden">
         <div class="topbar">
           <div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-          <span class="topbar-title" data-i18n="new_corporate_case_title">New Corporate Case</span>
+          <span class="topbar-title" id="nc-title" data-i18n="new_corporate_case_title">New Corporate Case</span>
           <span style="width:32px;"></span>
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;">
@@ -1151,7 +1151,7 @@
             <div id="profile-row-emergency" class="info-row" onclick="nav('help-support')" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="emergency_contact">Emergency Contact</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div id="profile-row-employees" class="info-row" onclick="nav('vendor-employees')" style="display:none;cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="manage_employees">Manage Employees</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div id="profile-row-eligibility" class="info-row" onclick="nav('vendor-eligibility')" style="display:none;cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="policy_eligibility">Policy &amp; Eligibility</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
-            <div id="profile-row-referrals" class="info-row" onclick="nav('vendor-referrals')" style="display:none;cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="incoming_referrals">Incoming Referrals</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
+            <div id="profile-row-submit-case" class="info-row" onclick="nav('vendor-new-case')" style="display:none;cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="submit_patient_case">Submit Patient Case</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div class="info-row" onclick="nav('help-support')" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="help_support">Help &amp; Support</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#97A4B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
             <div class="info-row" onclick="openLanguageSheet()" style="cursor:pointer;padding:15px 0;"><span class="info-label" data-i18n="language">Language</span><span class="info-value" id="profile-lang-value" style="color:#1A73E8;">English (EN) &gt;</span></div>
           </div>
@@ -1342,92 +1342,6 @@
         </div>
       </section>
 
-      <!-- VENDOR INCOMING REFERRALS (Hospital) -->
-      <section id="screen-vendor-referrals" class="screen hidden">
-        <div class="topbar">
-          <div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-          <span class="topbar-title" data-i18n="incoming_referrals">Incoming Referrals</span>
-          <span style="width:32px;"></span>
-        </div>
-        <div class="noscroll" style="flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;">
-          <div class="card" style="margin-bottom:20px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-              <span style="font-size:12.5px;font-weight:800;color:#97A4B8;text-transform:uppercase;letter-spacing:0.03em;" data-i18n="lbl_bed_availability">Bed Availability</span>
-              <span onclick="openBedSheet()" style="cursor:pointer;font-size:12.5px;font-weight:700;color:#1A73E8;" data-i18n="btn_update">Update</span>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div style="text-align:center;padding:12px 6px;border-radius:12px;background:#E7F0FE;">
-                <div id="bed-icu-num" style="font-size:22px;font-weight:800;color:#1A5FC4;">3</div>
-                <div style="font-size:11px;color:#1A5FC4;margin-top:2px;" data-i18n="lbl_icu_beds">ICU Beds</div>
-              </div>
-              <div style="text-align:center;padding:12px 6px;border-radius:12px;background:#E4F7EA;">
-                <div id="bed-general-num" style="font-size:22px;font-weight:800;color:#1E8E4A;">12</div>
-                <div style="font-size:11px;color:#1E8E4A;margin-top:2px;" data-i18n="lbl_general_beds">General Beds</div>
-              </div>
-            </div>
-          </div>
-
-          <div style="font-size:12.5px;font-weight:800;color:#5B6B84;text-transform:uppercase;margin-bottom:12px;" data-i18n="lbl_pending_referrals">Pending Referrals</div>
-          <div id="referral-list" style="display:flex;flex-direction:column;gap:10px;">
-            <div class="card referral-row">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                <div>
-                  <div style="font-weight:700;font-size:14px;">Robert Evans</div>
-                  <div style="font-size:12px;color:#97A4B8;margin-top:2px;">#HC-2026-089 &middot; <span data-i18n="lbl_air_ambulance_from">Air Ambulance from</span> Bangkok</div>
-                  <div style="font-size:12.5px;color:#5B6B84;margin-top:4px;" data-i18n="ref_icu_admission">ICU Admission Required</div>
-                </div>
-                <span class="pill pill-submitted referral-status" data-i18n="lbl_pending">Pending</span>
-              </div>
-              <div style="display:flex;gap:8px;margin-top:12px;">
-                <button class="btn-outline referral-btn" style="flex:1;padding:10px;font-size:13px;" onclick="declineReferral(this)" data-i18n="btn_decline">Decline</button>
-                <button class="btn-primary referral-btn" style="flex:1;padding:10px;font-size:13px;" onclick="acceptReferral(this)" data-i18n="btn_accept">Accept</button>
-              </div>
-            </div>
-            <div class="card referral-row">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                <div>
-                  <div style="font-weight:700;font-size:14px;">Elena Rostova</div>
-                  <div style="font-size:12px;color:#97A4B8;margin-top:2px;">#HC-2026-102 &middot; <span data-i18n="lbl_air_ambulance_from">Air Ambulance from</span> Doha</div>
-                  <div style="font-size:12.5px;color:#5B6B84;margin-top:4px;" data-i18n="ref_post_op_care">Post-Op Care Required</div>
-                </div>
-                <span class="pill pill-submitted referral-status" data-i18n="lbl_pending">Pending</span>
-              </div>
-              <div style="display:flex;gap:8px;margin-top:12px;">
-                <button class="btn-outline referral-btn" style="flex:1;padding:10px;font-size:13px;" onclick="declineReferral(this)" data-i18n="btn_decline">Decline</button>
-                <button class="btn-primary referral-btn" style="flex:1;padding:10px;font-size:13px;" onclick="acceptReferral(this)" data-i18n="btn_accept">Accept</button>
-              </div>
-            </div>
-            <div class="card referral-row">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                <div>
-                  <div style="font-weight:700;font-size:14px;">Klaus Weber</div>
-                  <div style="font-size:12px;color:#97A4B8;margin-top:2px;">#HC-2026-107 &middot; <span data-i18n="svc_ground">Ground Ambulance</span></div>
-                  <div style="font-size:12.5px;color:#5B6B84;margin-top:4px;" data-i18n="ref_general_ward">General Ward Admission</div>
-                </div>
-                <span class="pill pill-submitted referral-status" data-i18n="lbl_pending">Pending</span>
-              </div>
-              <div style="display:flex;gap:8px;margin-top:12px;">
-                <button class="btn-outline referral-btn" style="flex:1;padding:10px;font-size:13px;" onclick="declineReferral(this)" data-i18n="btn_decline">Decline</button>
-                <button class="btn-primary referral-btn" style="flex:1;padding:10px;font-size:13px;" onclick="acceptReferral(this)" data-i18n="btn_accept">Accept</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="bed-backdrop" onclick="closeBedSheet()" style="position:absolute;inset:0;background:rgba(13,35,64,0.45);opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:40;"></div>
-        <div id="bed-sheet" style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;padding:20px 20px 24px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(.32,.72,0,1);z-index:41;box-shadow:0 -10px 30px rgba(13,35,64,0.15);">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-            <span style="font-size:16px;font-weight:800;color:#0D2340;" data-i18n="lbl_bed_availability">Bed Availability</span>
-            <div class="icon-btn" style="width:30px;height:30px;" onclick="closeBedSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:16px;">
-            <div><span class="field-label" data-i18n="lbl_icu_beds">ICU Beds</span><input id="bed-icu-input" type="number" min="0" class="field-input" value="3"/></div>
-            <div><span class="field-label" data-i18n="lbl_general_beds">General Beds</span><input id="bed-general-input" type="number" min="0" class="field-input" value="12"/></div>
-          </div>
-          <button class="btn-primary" style="margin-top:20px;" onclick="saveBedAvailability()" data-i18n="btn_update">Update</button>
-        </div>
-      </section>
-
       <!-- EDIT PROFILE -->
       <section id="screen-edit-profile" class="screen hidden" style="background:#FFFFFF;">
         <div style="flex-shrink:0;padding:26px 26px 0;"><div class="back-btn" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div></div>
@@ -1541,8 +1455,13 @@
     if (employeesRow) employeesRow.style.display = (isVendor && vendorType === 'corporate') ? 'flex' : 'none';
     var eligibilityRow = document.getElementById('profile-row-eligibility');
     if (eligibilityRow) eligibilityRow.style.display = (isVendor && vendorType === 'insurance') ? 'flex' : 'none';
-    var referralsRow = document.getElementById('profile-row-referrals');
-    if (referralsRow) referralsRow.style.display = (isVendor && vendorType === 'hospital') ? 'flex' : 'none';
+    var submitCaseRow = document.getElementById('profile-row-submit-case');
+    if (submitCaseRow) submitCaseRow.style.display = (isVendor && vendorType === 'hospital') ? 'flex' : 'none';
+
+    var ncTitle = document.getElementById('nc-title');
+    var ncSubmitBtn = document.getElementById('nc-submit');
+    if (ncTitle) ncTitle.textContent = vendorType === 'hospital' ? dict.submit_patient_case : dict.new_corporate_case_title;
+    if (ncSubmitBtn) ncSubmitBtn.textContent = vendorType === 'hospital' ? dict.btn_submit_case : dict.btn_create_case;
 
     var homeName = document.getElementById('home-greeting-name');
     if (homeName) homeName.textContent = isVendor ? vi.name : 'Rakesh';
@@ -1611,10 +1530,7 @@
       lbl_pending_authorizations: 'Pending Authorizations', lbl_requested: 'Requested', lbl_pending: 'Pending', btn_review: 'Review',
       lbl_review_authorization: 'Review Authorization', lbl_member: 'Member', lbl_gold_international: 'Gold International',
       btn_reject: 'Reject', btn_approve_gop: 'Approve & Issue GOP', lbl_approved: 'Approved', lbl_gop_issued: 'GOP Issued', lbl_rejected: 'Rejected',
-      incoming_referrals: 'Incoming Referrals', lbl_bed_availability: 'Bed Availability', btn_update: 'Update',
-      lbl_icu_beds: 'ICU Beds', lbl_general_beds: 'General Beds', lbl_pending_referrals: 'Pending Referrals',
-      lbl_air_ambulance_from: 'Air Ambulance from', ref_icu_admission: 'ICU Admission Required', ref_post_op_care: 'Post-Op Care Required',
-      ref_general_ward: 'General Ward Admission', btn_decline: 'Decline', btn_accept: 'Accept', lbl_accepted: 'Accepted', lbl_declined: 'Declined',
+      submit_patient_case: 'Submit Patient Case', btn_submit_case: 'Submit Case',
       doc_medical_report: 'Medical Report',
       btn_download_report: 'Download Report',
       btn_next: 'Next', btn_reset: 'Reset', btn_return_home: 'Return to Home',
@@ -1703,10 +1619,7 @@
       lbl_pending_authorizations: 'लंबित प्राधिकरण', lbl_requested: 'अनुरोधित', lbl_pending: 'लंबित', btn_review: 'समीक्षा करें',
       lbl_review_authorization: 'प्राधिकरण की समीक्षा करें', lbl_member: 'सदस्य', lbl_gold_international: 'गोल्ड इंटरनेशनल',
       btn_reject: 'अस्वीकार करें', btn_approve_gop: 'स्वीकृत करें और GOP जारी करें', lbl_approved: 'स्वीकृत', lbl_gop_issued: 'GOP जारी हुआ', lbl_rejected: 'अस्वीकृत',
-      incoming_referrals: 'आने वाले रेफरल', lbl_bed_availability: 'बेड उपलब्धता', btn_update: 'अपडेट करें',
-      lbl_icu_beds: 'आईसीयू बेड', lbl_general_beds: 'सामान्य बेड', lbl_pending_referrals: 'लंबित रेफरल',
-      lbl_air_ambulance_from: 'से एयर एम्बुलेंस', ref_icu_admission: 'आईसीयू में भर्ती आवश्यक', ref_post_op_care: 'सर्जरी के बाद देखभाल आवश्यक',
-      ref_general_ward: 'सामान्य वार्ड में भर्ती', btn_decline: 'अस्वीकार करें', btn_accept: 'स्वीकार करें', lbl_accepted: 'स्वीकृत', lbl_declined: 'अस्वीकृत',
+      submit_patient_case: 'मरीज़ का केस सबमिट करें', btn_submit_case: 'केस सबमिट करें',
       doc_medical_report: 'मेडिकल रिपोर्ट',
       btn_download_report: 'रिपोर्ट डाउनलोड करें',
       btn_next: 'आगे', btn_reset: 'रीसेट करें', btn_return_home: 'होम पर वापस जाएं',
@@ -1795,10 +1708,7 @@
       lbl_pending_authorizations: 'प्रलंबित अधिकृतता', lbl_requested: 'विनंती केलेली', lbl_pending: 'प्रलंबित', btn_review: 'पुनरावलोकन करा',
       lbl_review_authorization: 'अधिकृततेचे पुनरावलोकन करा', lbl_member: 'सदस्य', lbl_gold_international: 'गोल्ड इंटरनॅशनल',
       btn_reject: 'नाकारा', btn_approve_gop: 'मंजूर करा आणि GOP जारी करा', lbl_approved: 'मंजूर', lbl_gop_issued: 'GOP जारी झाले', lbl_rejected: 'नाकारले',
-      incoming_referrals: 'येणारे रेफरल', lbl_bed_availability: 'बेड उपलब्धता', btn_update: 'अपडेट करा',
-      lbl_icu_beds: 'आयसीयू बेड', lbl_general_beds: 'सामान्य बेड', lbl_pending_referrals: 'प्रलंबित रेफरल',
-      lbl_air_ambulance_from: 'येथून एअर अ‍ॅम्ब्युलन्स', ref_icu_admission: 'आयसीयूमध्ये दाखल करणे आवश्यक', ref_post_op_care: 'शस्त्रक्रियेनंतरची काळजी आवश्यक',
-      ref_general_ward: 'सामान्य वॉर्डमध्ये दाखल', btn_decline: 'नाकारा', btn_accept: 'स्वीकारा', lbl_accepted: 'स्वीकारले', lbl_declined: 'नाकारले',
+      submit_patient_case: 'रुग्णाचा केस सबमिट करा', btn_submit_case: 'केस सबमिट करा',
       doc_medical_report: 'वैद्यकीय अहवाल',
       btn_download_report: 'अहवाल डाउनलोड करा',
       btn_next: 'पुढे', btn_reset: 'रीसेट करा', btn_return_home: 'होमवर परत जा',
@@ -1887,10 +1797,7 @@
       lbl_pending_authorizations: 'બાકી અધિકૃતતાઓ', lbl_requested: 'વિનંતી કરેલ', lbl_pending: 'બાકી', btn_review: 'સમીક્ષા કરો',
       lbl_review_authorization: 'અધિકૃતતાની સમીક્ષા કરો', lbl_member: 'સભ્ય', lbl_gold_international: 'ગોલ્ડ ઈન્ટરનેશનલ',
       btn_reject: 'નકારો', btn_approve_gop: 'મંજૂર કરો અને GOP જારી કરો', lbl_approved: 'મંજૂર', lbl_gop_issued: 'GOP જારી થયું', lbl_rejected: 'નકારેલ',
-      incoming_referrals: 'આવનારા રેફરલ', lbl_bed_availability: 'બેડ ઉપલબ્ધતા', btn_update: 'અપડેટ કરો',
-      lbl_icu_beds: 'ICU બેડ', lbl_general_beds: 'સામાન્ય બેડ', lbl_pending_referrals: 'બાકી રેફરલ',
-      lbl_air_ambulance_from: 'થી એર એમ્બ્યુલન્સ', ref_icu_admission: 'ICU માં દાખલ કરવું જરૂરી', ref_post_op_care: 'સર્જરી પછીની સંભાળ જરૂરી',
-      ref_general_ward: 'સામાન્ય વોર્ડમાં દાખલ', btn_decline: 'નકારો', btn_accept: 'સ્વીકારો', lbl_accepted: 'સ્વીકૃત', lbl_declined: 'નકારેલ',
+      submit_patient_case: 'દર્દીનો કેસ સબમિટ કરો', btn_submit_case: 'કેસ સબમિટ કરો',
       doc_medical_report: 'મેડિકલ રિપોર્ટ',
       btn_download_report: 'રિપોર્ટ ડાઉનલોડ કરો',
       btn_next: 'આગળ', btn_reset: 'રીસેટ કરો', btn_return_home: 'હોમ પર પાછા જાઓ',
@@ -1979,10 +1886,7 @@
       lbl_pending_authorizations: 'పెండింగ్ అథరైజేషన్‌లు', lbl_requested: 'అభ్యర్థించినది', lbl_pending: 'పెండింగ్', btn_review: 'సమీక్షించండి',
       lbl_review_authorization: 'అథరైజేషన్‌ను సమీక్షించండి', lbl_member: 'సభ్యుడు', lbl_gold_international: 'గోల్డ్ ఇంటర్నేషనల్',
       btn_reject: 'తిరస్కరించండి', btn_approve_gop: 'ఆమోదించి GOP జారీ చేయండి', lbl_approved: 'ఆమోదించబడింది', lbl_gop_issued: 'GOP జారీ చేయబడింది', lbl_rejected: 'తిరస్కరించబడింది',
-      incoming_referrals: 'వస్తున్న రిఫరల్స్', lbl_bed_availability: 'బెడ్ లభ్యత', btn_update: 'అప్‌డేట్ చేయండి',
-      lbl_icu_beds: 'ICU బెడ్‌లు', lbl_general_beds: 'జనరల్ బెడ్‌లు', lbl_pending_referrals: 'పెండింగ్ రిఫరల్స్',
-      lbl_air_ambulance_from: 'నుండి ఎయిర్ అంబులెన్స్', ref_icu_admission: 'ICU అడ్మిషన్ అవసరం', ref_post_op_care: 'పోస్ట్-ఆప్ కేర్ అవసరం',
-      ref_general_ward: 'జనరల్ వార్డ్ అడ్మిషన్', btn_decline: 'తిరస్కరించండి', btn_accept: 'ఆమోదించండి', lbl_accepted: 'ఆమోదించబడింది', lbl_declined: 'తిరస్కరించబడింది',
+      submit_patient_case: 'రోగి కేస్ సమర్పించండి', btn_submit_case: 'కేస్ సమర్పించండి',
       doc_medical_report: 'మెడికల్ రిపోర్ట్',
       btn_download_report: 'రిపోర్ట్ డౌన్‌లోడ్ చేయండి',
       btn_next: 'తదుపరి', btn_reset: 'రీసెట్ చేయండి', btn_return_home: 'హోమ్‌కు తిరిగి వెళ్లండి',
@@ -2071,10 +1975,7 @@
       lbl_pending_authorizations: 'التفويضات المعلقة', lbl_requested: 'المبلغ المطلوب', lbl_pending: 'معلق', btn_review: 'مراجعة',
       lbl_review_authorization: 'مراجعة التفويض', lbl_member: 'العضو', lbl_gold_international: 'الذهبية الدولية',
       btn_reject: 'رفض', btn_approve_gop: 'الموافقة وإصدار GOP', lbl_approved: 'تمت الموافقة', lbl_gop_issued: 'تم إصدار GOP', lbl_rejected: 'مرفوض',
-      incoming_referrals: 'الإحالات الواردة', lbl_bed_availability: 'توفر الأسرّة', btn_update: 'تحديث',
-      lbl_icu_beds: 'أسرّة العناية المركزة', lbl_general_beds: 'الأسرّة العامة', lbl_pending_referrals: 'الإحالات المعلقة',
-      lbl_air_ambulance_from: 'إسعاف جوي من', ref_icu_admission: 'مطلوب دخول العناية المركزة', ref_post_op_care: 'مطلوب رعاية ما بعد الجراحة',
-      ref_general_ward: 'دخول الجناح العام', btn_decline: 'رفض', btn_accept: 'قبول', lbl_accepted: 'مقبول', lbl_declined: 'مرفوض',
+      submit_patient_case: 'إرسال حالة المريض', btn_submit_case: 'إرسال الحالة',
       doc_medical_report: 'التقرير الطبي',
       btn_download_report: 'تنزيل التقرير',
       btn_next: 'التالي', btn_reset: 'إعادة تعيين', btn_return_home: 'العودة إلى الرئيسية',
@@ -2677,46 +2578,6 @@
     if (reviewBtn) reviewBtn.style.display = 'none';
     toast('Authorization rejected');
     closeAuthSheet();
-  }
-
-  // ---- vendor incoming referrals (hospital) ----
-  function acceptReferral(btn) {
-    var dict = I18N[currentLang] || I18N.EN;
-    var row = btn.closest('.referral-row');
-    var pill = row.querySelector('.referral-status');
-    pill.textContent = dict.lbl_accepted;
-    pill.className = 'pill pill-completed referral-status';
-    row.querySelectorAll('.referral-btn').forEach(function (b) { b.style.display = 'none'; });
-    toast('Referral accepted');
-  }
-  function declineReferral(btn) {
-    var dict = I18N[currentLang] || I18N.EN;
-    var row = btn.closest('.referral-row');
-    var pill = row.querySelector('.referral-status');
-    pill.textContent = dict.lbl_declined;
-    pill.className = 'pill pill-cancelled referral-status';
-    row.querySelectorAll('.referral-btn').forEach(function (b) { b.style.display = 'none'; });
-    toast('Referral declined');
-  }
-  function openBedSheet() {
-    document.getElementById('bed-icu-input').value = document.getElementById('bed-icu-num').textContent;
-    document.getElementById('bed-general-input').value = document.getElementById('bed-general-num').textContent;
-    document.getElementById('bed-backdrop').style.opacity = '1';
-    document.getElementById('bed-backdrop').style.pointerEvents = 'auto';
-    document.getElementById('bed-sheet').style.transform = 'translateY(0)';
-  }
-  function closeBedSheet() {
-    document.getElementById('bed-backdrop').style.opacity = '0';
-    document.getElementById('bed-backdrop').style.pointerEvents = 'none';
-    document.getElementById('bed-sheet').style.transform = 'translateY(100%)';
-  }
-  function saveBedAvailability() {
-    var icu = document.getElementById('bed-icu-input').value || '0';
-    var general = document.getElementById('bed-general-input').value || '0';
-    document.getElementById('bed-icu-num').textContent = icu;
-    document.getElementById('bed-general-num').textContent = general;
-    toast('Bed availability updated');
-    closeBedSheet();
   }
 
   // ---- notifications / faq ----
