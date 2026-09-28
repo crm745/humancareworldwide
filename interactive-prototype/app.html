@@ -109,7 +109,6 @@
   .tl-row { display: flex; gap: 14px; position: relative; padding-bottom: 32px; }
   .tl-row:last-child { padding-bottom: 0; }
   .tl-row:not(:last-child)::after { content: ''; position: absolute; left: 13px; top: 26px; bottom: 4px; width: 2px; background: #E4E9F2; }
-  .phone.dark-mode .tl-row:not(:last-child)::after { background: #3C4C64; }
   @media (max-width: 460px) {
     .device-shell { transform: scale(0.92); transform-origin: top center; margin-bottom: -70px; }
   }
@@ -126,48 +125,6 @@
   .hs-shake { animation: hs-enter 0.6s cubic-bezier(.34,1.56,.64,1) both, hs-shake 0.7s ease-in-out 0.6s both; transform-origin: center; }
   .hs-pulse { position: absolute; inset: 0; border-radius: 999px; background: #1A73E8; animation: hs-pulse-ring 1s ease-out 0.55s both; }
   .hs-check { position: absolute; right: 2px; bottom: 4px; width: 30px; height: 30px; border-radius: 999px; background: #1E8E4A; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; z-index: 3; animation: hs-pop 0.5s cubic-bezier(.34,1.56,.64,1) 1.1s both; }
-
-  /* ---- dark mode (scoped to .phone content only) ---- */
-  .phone.dark-mode { background: #1A2331; }
-  .phone.dark-mode .screen { background: #1E2836; color: #F0F4FA; }
-  .phone.dark-mode .topbar { background: #263244; border-bottom-color: #3C4C64; }
-  .phone.dark-mode .topbar-title { color: #F5F8FC; }
-  .phone.dark-mode .back-btn, .phone.dark-mode .icon-btn { background: #313F55; color: #DAE2EF; }
-  .phone.dark-mode .card { background: #263244; border-color: #3C4C64; }
-  .phone.dark-mode .field-input { background: #313F55; border-color: #46597A; color: #F0F4FA; }
-  .phone.dark-mode .field-input::placeholder { color: #93A2BC; }
-  .phone.dark-mode .otp-box { background: #313F55; border-color: #46597A; color: #F0F4FA; }
-  .phone.dark-mode .bottom-nav-v2 { background: #263244; border-top-color: #3C4C64; }
-  .phone.dark-mode .nav-item-v2 { color: #93A2BC; }
-  .phone.dark-mode .tab-chip { background: #313F55; border-color: #46597A; color: #B6C2D8; }
-  .phone.dark-mode .tab-chip.on { background: #1A73E8; border-color: #1A73E8; color: #fff; }
-  .phone.dark-mode .info-row { border-bottom-color: #3C4C64; }
-  .phone.dark-mode .info-label { color: #93A2BC; }
-  .phone.dark-mode .info-value { color: #F0F4FA; }
-  .phone.dark-mode .doc-row { background: #263244; border-color: #3C4C64; }
-  .phone.dark-mode .svc-tile { background: #263244; border-color: #3C4C64; }
-  .phone.dark-mode .step-dot { background: #3C4C64; color: #B6C2D8; }
-  .phone.dark-mode .step-tabs { background: #263244; border-bottom-color: #3C4C64; }
-  .phone.dark-mode .step-tab-btn { color: #93A2BC; }
-  .phone.dark-mode .btn-outline { background: #263244; }
-  .phone.dark-mode .btn-danger-outline { background: #263244; border-color: #5C3838; }
-  .phone.dark-mode .lang-opt { background: #313F55 !important; border-color: #46597A !important; }
-  .phone.dark-mode .lang-opt.on { background: rgba(26,115,232,0.22) !important; border-color: #1A73E8 !important; }
-  .phone.dark-mode #lang-sheet, .phone.dark-mode #filter-sheet, .phone.dark-mode #case-filter-sheet, .phone.dark-mode #sos-modal { background: #263244 !important; }
-  .phone.dark-mode #lang-sheet [style*="color:#0D2340"], .phone.dark-mode #filter-sheet [style*="color:#0D2340"], .phone.dark-mode #case-filter-sheet [style*="color:#0D2340"] { color: #F5F8FC !important; }
-  .phone.dark-mode #filter-sheet .field-label, .phone.dark-mode #case-filter-sheet .field-label, .phone.dark-mode #lang-sheet [style*="color:#97A4B8"] { color: #93A2BC !important; }
-  .phone.dark-mode #filter-sheet [style*="background:#fff"], .phone.dark-mode #case-filter-sheet [style*="background:#fff"] { background-color: #313F55 !important; }
-  .phone.dark-mode [style*="color:#0D2340"], .phone.dark-mode [style*="color:#17233D"] { color: #F5F8FC !important; }
-  .phone.dark-mode [style*="color:#5B6B84"] { color: #B6C2D8 !important; }
-  .phone.dark-mode [style*="color:#97A4B8"] { color: #93A2BC !important; }
-  .phone.dark-mode [style*="background:#FFFFFF"], .phone.dark-mode [style*="background: #fff"], .phone.dark-mode [style*="background:#fff"] { background-color: #263244 !important; }
-  .phone.dark-mode [style*="background:#F2F6FC"], .phone.dark-mode [style*="background:#F7F9FC"], .phone.dark-mode [style*="background:#EEF2F8"], .phone.dark-mode [style*="background:#EEF1F6"] { background-color: #313F55 !important; }
-  .phone.dark-mode [style*="border-color:#E4E9F2"], .phone.dark-mode [style*="border:1px solid #E4E9F2"], .phone.dark-mode [style*="border: 1px solid #E4E9F2"] { border-color: #46597A !important; }
-  .phone.dark-mode [style*="border-top:1px solid #EEF1F6"] { border-top-color: #3C4C64 !important; }
-  .phone.dark-mode [style*="background:#E7F0FE"] { background-color: rgba(26,115,232,0.24) !important; }
-  .phone.dark-mode [style*="background:#E4F7EA"] { background-color: rgba(30,142,74,0.26) !important; }
-  .phone.dark-mode [style*="background:#FBEDED"] { background-color: rgba(214,69,69,0.2) !important; }
-  .phone.dark-mode [style*="background:#EEF3FB"] { background-color: rgba(90,105,132,0.4) !important; }
 
   .phone.rtl { direction: rtl; }
   .phone.rtl svg:has(path[d="m15 18-6-6 6-6"]), .phone.rtl svg:has(path[d="m9 18 6-6-6-6"]) { transform: scaleX(-1); }
