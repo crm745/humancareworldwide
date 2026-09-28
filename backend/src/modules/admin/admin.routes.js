@@ -8,6 +8,7 @@ const {
   getCases,
   patchCaseAssign,
   getPatients,
+  patchCaseStage,
 } = require('./admin.controller');
 const {
   listServices,
@@ -29,6 +30,7 @@ adminRouter.post('/vendors/:id/users', postVendorUser);
 
 adminRouter.get('/cases', getCases);
 adminRouter.patch('/cases/:id/assign', patchCaseAssign);
+adminRouter.patch('/cases/:id/stage', patchCaseStage);
 
 adminRouter.get('/patients', getPatients);
 

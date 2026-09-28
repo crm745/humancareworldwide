@@ -73,8 +73,9 @@ async function createCaseByVendor(vendorId, data) {
   return caseRecord;
 }
 
-// Not exposed to vendors directly — reserved for the future Bitrix24 webhook, which
-// will call this whenever Operations moves a lead's stage in Bitrix24.
+// Not exposed to vendors directly. Reachable today via PATCH /admin/cases/:id/stage
+// as a manual stand-in for Operations; once the Bitrix24 webhook exists, that will
+// call this too whenever a lead's stage moves in Bitrix24.
 async function updateCaseStage(caseId, stage, note) {
   if (!VALID_CASE_STATUSES.includes(stage)) {
     const err = new Error(`Invalid stage. Use one of: ${VALID_CASE_STATUSES.join(', ')}`);

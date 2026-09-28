@@ -7,6 +7,7 @@ const {
   reassignCase,
   searchPatients,
 } = require('./admin.service');
+const { updateCaseStage, VALID_CASE_STATUSES } = require('../cases/cases.service');
 
 async function login(req, res, next) {
   try {
@@ -81,4 +82,17 @@ async function getPatients(req, res, next) {
   }
 }
 
-module.exports = { login, getVendors, postVendor, postVendorUser, getCases, patchCaseAssign, getPatients };
+// Manual stand-in for the Bitrix24 stage-change webhook until that's wired up —
+// lets admin/ops move a case's stage from here in the meantime. See cases.service.js.
+async function patchCaseStage(req, res, next) {
+  try {
+    const { stage, note } = req.body;
+    if (!stage) return res.status(400).json({ error: `stage is required. Use one of: ${VALID_CASE_STATUSES.join(', ')}` });
+    const caseRecord = await updateCaseStage(req.params.id, stage, note);
+    res.json({ case: caseRecord });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { login, getVendors, postVendor, postVendorUser, getCases, patchCaseAssign, getPatients, patchCaseStage };
