@@ -99,7 +99,7 @@
   .panel[hidden] { display: none; }
 
   /* ---- shared bits ---- */
-  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin-bottom: 28px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; box-shadow: var(--shadow); }
   .stat-card .v { font-size: 30px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
   .stat-card .l { font-size: 13.5px; color: var(--muted); margin-top: 5px; }
@@ -262,10 +262,13 @@
       <!-- DASHBOARD -->
       <section id="panel-dashboard" class="panel">
         <div class="stat-row">
-          <div class="stat-card"><div class="v">24</div><div class="l">Total Cases</div></div>
-          <div class="stat-card"><div class="v">7</div><div class="l">Active Vendors</div></div>
-          <div class="stat-card"><div class="v">312</div><div class="l">Registered Patients</div></div>
-          <div class="stat-card"><div class="v">6</div><div class="l">Cases This Week</div></div>
+          <div class="stat-card"><div class="v" id="st-total">—</div><div class="l">Total Cases</div></div>
+          <div class="stat-card"><div class="v" id="st-vendors">—</div><div class="l">Active Vendors</div></div>
+          <div class="stat-card"><div class="v" id="st-patients">—</div><div class="l">Registered Patients</div></div>
+          <div class="stat-card"><div class="v" id="st-week">—</div><div class="l">Cases This Week</div></div>
+          <div class="stat-card" style="border-color:var(--warning);background:var(--warning-soft);"><div class="v" style="color:var(--warning);" id="st-unassigned">—</div><div class="l" style="color:var(--warning);">Unassigned Cases</div></div>
+          <div class="stat-card"><div class="v" id="st-pending">—</div><div class="l">Pending Review</div></div>
+          <div class="stat-card"><div class="v" id="st-completion">—</div><div class="l">Completion Rate</div></div>
         </div>
         <div class="card">
           <div class="card-head"><h2>Recent Cases</h2><button class="btn-sm" onclick="goPanel('cases')">View All</button></div>
@@ -624,6 +627,21 @@
 
   // ---- dashboard ----
   function renderDashboard() {
+    // Mock cases are anchored around 12 May 2026 (the latest case), so that date
+    // stands in for "today" for the This Week stat.
+    var today = new Date('2026-05-12');
+    var weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - 6);
+
+    document.getElementById('st-total').textContent = CASES.length;
+    document.getElementById('st-vendors').textContent = VENDORS.length;
+    document.getElementById('st-patients').textContent = PATIENTS.length;
+    document.getElementById('st-week').textContent = CASES.filter(function (c) { var d = new Date(c.updated); return d >= weekStart && d <= today; }).length;
+    document.getElementById('st-unassigned').textContent = CASES.filter(function (c) { return !c.vendorId; }).length;
+    document.getElementById('st-pending').textContent = CASES.filter(function (c) { return c.stage === 'submitted'; }).length;
+    var completed = CASES.filter(function (c) { return c.stage === 'completed'; }).length;
+    document.getElementById('st-completion').textContent = CASES.length ? Math.round(completed / CASES.length * 100) + '%' : '—';
+
     var rows = CASES.slice().sort(function (a, b) { return b.updated.localeCompare(a.updated); }).slice(0, 5);
     document.getElementById('dash-recent-cases').innerHTML = rows.map(function (c) {
       return '<tr class="clickable" onclick="openCaseDrawer(' + c.id + ')"><td class="cell-mono">#' + c.ref + '</td><td class="cell-strong">' + c.patient + '</td><td>' + c.service + '</td><td>' + sourceTag(c.source) + '</td><td>' + vendorName(c.vendorId) + '</td><td>' + stagePillHtml(c.stage) + '</td><td>' + c.updated + '</td></tr>';
