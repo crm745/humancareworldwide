@@ -167,6 +167,9 @@
   .doc-row .n { font-size: 14.5px; font-weight: 700; color: var(--ink); }
   .doc-row .s { font-size: 12.5px; color: var(--muted); margin-top: 1px; }
 
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: #fff; padding: 13px 22px; border-radius: 11px; font-size: 14px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.25); opacity: 0; pointer-events: none; transition: all .22s ease; z-index: 60; display: flex; align-items: center; gap: 9px; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
   .menu-btn { display: none; }
   .sidebar-backdrop { display: none; }
   @media (max-width: 760px) {
@@ -389,6 +392,66 @@
   </div>
 </div>
 
+<!-- VENDOR DETAIL DRAWER -->
+<div id="vendor-drawer-backdrop" class="backdrop" onclick="closeVendorDrawer()"></div>
+<div id="vendor-drawer" class="drawer">
+  <div class="drawer-head">
+    <div>
+      <div style="font-size:13px;color:var(--muted);font-weight:700;" id="vd-type">Corporate</div>
+      <h2 id="vd-name" style="font-size:21px;margin-top:4px;">—</h2>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:4px;" id="vd-created">Onboarded —</div>
+    </div>
+    <button class="icon-btn" onclick="closeVendorDrawer()" style="width:34px;height:34px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-section-label" style="margin-bottom:14px;">Users</div>
+    <div id="vd-users" style="margin-bottom:26px;"></div>
+
+    <div class="drawer-section-label" style="margin-bottom:14px;">Add User</div>
+    <div class="field-group">
+      <span class="field-label">Email Address</span>
+      <input id="vu-email" class="field-input" placeholder="name@company.com" oninput="checkAddVendorUser()"/>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Role</span>
+      <select id="vu-role" class="field-input">
+        <option value="viewer">Viewer</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <button id="vu-add-btn" class="btn-sm accent" style="width:100%;padding:13px;font-size:14.5px;opacity:0.5;" onclick="addVendorUser()">Add User</button>
+  </div>
+</div>
+
+<!-- PATIENT DETAIL DRAWER -->
+<div id="patient-drawer-backdrop" class="backdrop" onclick="closePatientDrawer()"></div>
+<div id="patient-drawer" class="drawer">
+  <div class="drawer-head">
+    <div class="row-flex" style="gap:14px;">
+      <span class="avatar-sm" id="pd-avatar" style="width:44px;height:44px;font-size:15px;margin-right:0;">—</span>
+      <div>
+        <h2 id="pd-name" style="font-size:19px;">—</h2>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:2px;" id="pd-joined">Joined —</div>
+      </div>
+    </div>
+    <button class="icon-btn" onclick="closePatientDrawer()" style="width:34px;height:34px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-section-label" style="margin-bottom:12px;">Contact</div>
+    <div class="card" style="padding:16px 18px;margin-bottom:26px;">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--muted);font-size:13.5px;">Email</span><span id="pd-email" style="font-weight:600;">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--muted);font-size:13.5px;">Mobile</span><span id="pd-mobile" style="font-weight:600;">—</span></div>
+    </div>
+    <div class="drawer-section-label" style="margin-bottom:12px;">Cases</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Reference</th><th>Service</th><th>Stage</th><th>Updated</th></tr></thead>
+        <tbody id="pd-cases"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- ADD VENDOR MODAL -->
 <div id="vendor-modal-backdrop" class="backdrop" onclick="closeAddVendor()"></div>
 <div id="vendor-modal" class="modal-center">
@@ -434,16 +497,33 @@
   </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
+  var toastTimer = null;
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2600);
+  }
   // ---- mock data, shaped like the real backend models ----
   var VENDORS = [
-    { id: 1, companyName: 'Bupa Global Assistance', type: 'corporate', users: 2, createdAt: '2025-11-02' },
-    { id: 2, companyName: 'Meridian Global Assistance', type: 'insurance', users: 3, createdAt: '2025-09-14' },
-    { id: 3, companyName: 'AXA Partners MEA', type: 'insurance', users: 1, createdAt: '2026-01-08' },
-    { id: 4, companyName: 'Dubai Health Authority', type: 'government', users: 4, createdAt: '2025-07-22' },
-    { id: 5, companyName: 'International SOS TPA Desk', type: 'tpa', users: 2, createdAt: '2026-02-19' },
-    { id: 6, companyName: 'Emirates Group HR', type: 'corporate', users: 1, createdAt: '2026-03-05' },
-    { id: 7, companyName: 'Allianz Partners Gulf', type: 'insurance', users: 2, createdAt: '2025-12-11' },
+    { id: 1, companyName: 'Bupa Global Assistance', type: 'corporate', createdAt: '2025-11-02',
+      userList: [{ email: 'ops@bupaglobal.com', role: 'admin' }, { email: 'claims@bupaglobal.com', role: 'viewer' }] },
+    { id: 2, companyName: 'Meridian Global Assistance', type: 'insurance', createdAt: '2025-09-14',
+      userList: [{ email: 'admin@meridianga.com', role: 'admin' }, { email: 'desk1@meridianga.com', role: 'viewer' }, { email: 'desk2@meridianga.com', role: 'viewer' }] },
+    { id: 3, companyName: 'AXA Partners MEA', type: 'insurance', createdAt: '2026-01-08',
+      userList: [{ email: 'mea.ops@axapartners.com', role: 'admin' }] },
+    { id: 4, companyName: 'Dubai Health Authority', type: 'government', createdAt: '2025-07-22',
+      userList: [{ email: 'coordinator@dha.gov.ae', role: 'admin' }, { email: 'reviewer1@dha.gov.ae', role: 'viewer' }, { email: 'reviewer2@dha.gov.ae', role: 'viewer' }, { email: 'audit@dha.gov.ae', role: 'viewer' }] },
+    { id: 5, companyName: 'International SOS TPA Desk', type: 'tpa', createdAt: '2026-02-19',
+      userList: [{ email: 'tpa.desk@internationalsos.com', role: 'admin' }, { email: 'tpa.support@internationalsos.com', role: 'viewer' }] },
+    { id: 6, companyName: 'Emirates Group HR', type: 'corporate', createdAt: '2026-03-05',
+      userList: [{ email: 'hr.medical@emiratesgroup.ae', role: 'admin' }] },
+    { id: 7, companyName: 'Allianz Partners Gulf', type: 'insurance', createdAt: '2025-12-11',
+      userList: [{ email: 'gulf.ops@allianz-partners.com', role: 'admin' }, { email: 'gulf.claims@allianz-partners.com', role: 'viewer' }] },
   ];
 
   var CASES = [
@@ -621,6 +701,7 @@
     openCaseDrawer(id);
     renderCases();
     renderDashboard();
+    toast('#' + c.ref + ' moved to ' + STAGE_LABEL[stage]);
   }
   function reassignCurrentCase() {
     var c = CASES.find(function (x) { return x.id === currentCaseId; });
@@ -630,6 +711,7 @@
     c.timeline.push({ stage: c.stage, note: 'Reassigned to ' + vendorName(newVendorId) + ' by admin.', at: new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 5) });
     openCaseDrawer(currentCaseId);
     renderCases();
+    toast('#' + c.ref + ' reassigned to ' + vendorName(newVendorId));
   }
 
   // ---- vendors ----
@@ -638,18 +720,55 @@
     var q = (document.getElementById('vendor-search').value || '').toLowerCase();
     var rows = VENDORS.filter(function (v) { return !q || v.companyName.toLowerCase().indexOf(q) !== -1; });
     document.getElementById('vendors-tbody').innerHTML = rows.length ? rows.map(function (v) {
-      return '<tr><td><span class="avatar-sm">' + initials(v.companyName) + '</span><span class="cell-strong">' + v.companyName + '</span></td><td>' + (VENDOR_TYPE_LABEL[v.type] || v.type) + '</td><td>' + v.users + '</td><td>' + v.createdAt + '</td></tr>';
+      return '<tr class="clickable" onclick="openVendorDrawer(' + v.id + ')"><td><span class="avatar-sm">' + initials(v.companyName) + '</span><span class="cell-strong">' + v.companyName + '</span></td><td>' + (VENDOR_TYPE_LABEL[v.type] || v.type) + '</td><td>' + v.userList.length + '</td><td>' + v.createdAt + '</td></tr>';
     }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px;">No vendors match your search.</td></tr>';
+  }
+  var currentVendorId = null;
+  function openVendorDrawer(id) {
+    currentVendorId = id;
+    var v = VENDORS.find(function (x) { return x.id === id; });
+    document.getElementById('vd-name').textContent = v.companyName;
+    document.getElementById('vd-type').textContent = VENDOR_TYPE_LABEL[v.type] || v.type;
+    document.getElementById('vd-created').textContent = 'Onboarded ' + v.createdAt;
+    renderVendorUsers();
+    document.getElementById('vendor-drawer-backdrop').classList.add('show');
+    document.getElementById('vendor-drawer').classList.add('show');
+  }
+  function closeVendorDrawer() {
+    document.getElementById('vendor-drawer-backdrop').classList.remove('show');
+    document.getElementById('vendor-drawer').classList.remove('show');
+  }
+  function renderVendorUsers() {
+    var v = VENDORS.find(function (x) { return x.id === currentVendorId; });
+    document.getElementById('vd-users').innerHTML = v.userList.map(function (u) {
+      return '<div class="doc-row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div style="flex:1;"><div class="n">' + u.email + '</div></div><span class="pill" style="background:' + (u.role === 'admin' ? 'var(--info-soft);color:var(--info)' : 'var(--border);color:var(--body)') + ';text-transform:capitalize;">' + u.role + '</span></div>';
+    }).join('');
+  }
+  function checkAddVendorUser() {
+    var ok = document.getElementById('vu-email').value.trim();
+    document.getElementById('vu-add-btn').style.opacity = ok ? '1' : '0.5';
+  }
+  function addVendorUser() {
+    var email = document.getElementById('vu-email').value.trim();
+    if (!email) return;
+    var v = VENDORS.find(function (x) { return x.id === currentVendorId; });
+    v.userList.push({ email: email, role: document.getElementById('vu-role').value });
+    document.getElementById('vu-email').value = '';
+    checkAddVendorUser();
+    renderVendorUsers();
+    renderVendors();
+    toast('Added ' + email + ' to ' + v.companyName);
   }
   function openAddVendor() { document.getElementById('vendor-modal-backdrop').classList.add('show'); document.getElementById('vendor-modal').classList.add('show'); }
   function closeAddVendor() { document.getElementById('vendor-modal-backdrop').classList.remove('show'); document.getElementById('vendor-modal').classList.remove('show'); }
   function addVendor() {
     var name = document.getElementById('av-name').value.trim();
     if (!name) return;
-    VENDORS.push({ id: VENDORS.length + 1, companyName: name, type: document.getElementById('av-type').value, users: 0, createdAt: new Date().toISOString().slice(0, 10) });
+    VENDORS.push({ id: VENDORS.length + 1, companyName: name, type: document.getElementById('av-type').value, userList: [], createdAt: new Date().toISOString().slice(0, 10) });
     document.getElementById('av-name').value = '';
     closeAddVendor();
     renderVendors();
+    toast(name + ' added as a vendor');
   }
 
   // ---- patients ----
@@ -657,8 +776,26 @@
     var q = (document.getElementById('patient-search').value || '').toLowerCase();
     var rows = PATIENTS.filter(function (p) { return !q || (p.name + p.email + p.mobile).toLowerCase().indexOf(q) !== -1; });
     document.getElementById('patients-tbody').innerHTML = rows.length ? rows.map(function (p) {
-      return '<tr><td><span class="avatar-sm">' + initials(p.name) + '</span><span class="cell-strong">' + p.name + '</span></td><td>' + p.email + '</td><td>' + p.mobile + '</td><td>' + p.joined + '</td></tr>';
+      return '<tr class="clickable" onclick="openPatientDrawer(' + p.id + ')"><td><span class="avatar-sm">' + initials(p.name) + '</span><span class="cell-strong">' + p.name + '</span></td><td>' + p.email + '</td><td>' + p.mobile + '</td><td>' + p.joined + '</td></tr>';
     }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px;">No patients match your search.</td></tr>';
+  }
+  function openPatientDrawer(id) {
+    var p = PATIENTS.find(function (x) { return x.id === id; });
+    document.getElementById('pd-avatar').textContent = initials(p.name);
+    document.getElementById('pd-name').textContent = p.name;
+    document.getElementById('pd-email').textContent = p.email;
+    document.getElementById('pd-mobile').textContent = p.mobile;
+    document.getElementById('pd-joined').textContent = 'Joined ' + p.joined;
+    var patientCases = CASES.filter(function (c) { return c.patient === p.name; });
+    document.getElementById('pd-cases').innerHTML = patientCases.length ? patientCases.map(function (c) {
+      return '<tr class="clickable" onclick="closePatientDrawer(); openCaseDrawer(' + c.id + ')"><td class="cell-mono">#' + c.ref + '</td><td>' + c.service + '</td><td>' + stagePillHtml(c.stage) + '</td><td>' + c.updated + '</td></tr>';
+    }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px;">No cases yet.</td></tr>';
+    document.getElementById('patient-drawer-backdrop').classList.add('show');
+    document.getElementById('patient-drawer').classList.add('show');
+  }
+  function closePatientDrawer() {
+    document.getElementById('patient-drawer-backdrop').classList.remove('show');
+    document.getElementById('patient-drawer').classList.remove('show');
   }
 
   // ---- services ----
@@ -695,6 +832,7 @@
     var name = document.getElementById('as-name').value.trim();
     if (!name) return;
     var sub = document.getElementById('as-sub').value.trim() || '—';
+    var wasEditing = !!editingServiceSlug;
     if (editingServiceSlug) {
       var s = SERVICES.find(function (x) { return x.slug === editingServiceSlug; });
       s.name = name;
@@ -704,10 +842,13 @@
     }
     closeAddService();
     renderServices();
+    toast(wasEditing ? name + ' updated' : name + ' added to the catalog');
   }
   function deleteService(slug) {
-    SERVICES = SERVICES.filter(function (s) { return s.slug !== slug; });
+    var s = SERVICES.find(function (x) { return x.slug === slug; });
+    SERVICES = SERVICES.filter(function (x) { return x.slug !== slug; });
     renderServices();
+    if (s) toast(s.name + ' removed from the catalog');
   }
 
   function renderAll() {
