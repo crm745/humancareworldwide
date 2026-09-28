@@ -7,7 +7,7 @@ const {
   reassignCase,
   searchPatients,
 } = require('./admin.service');
-const { updateCaseStage, VALID_CASE_STATUSES } = require('../cases/cases.service');
+const { updateCaseStage, getCaseById, VALID_CASE_STATUSES } = require('../cases/cases.service');
 
 async function login(req, res, next) {
   try {
@@ -62,6 +62,17 @@ async function getCases(req, res, next) {
   }
 }
 
+// Unlike the vendor-facing getCase, admin can view any case regardless of which
+// vendor it belongs to — no ownership check.
+async function getCase(req, res, next) {
+  try {
+    const caseRecord = await getCaseById(req.params.id);
+    res.json({ case: caseRecord });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function patchCaseAssign(req, res, next) {
   try {
     const { vendorId } = req.body;
@@ -95,4 +106,4 @@ async function patchCaseStage(req, res, next) {
   }
 }
 
-module.exports = { login, getVendors, postVendor, postVendorUser, getCases, patchCaseAssign, getPatients, patchCaseStage };
+module.exports = { login, getVendors, postVendor, postVendorUser, getCases, getCase, patchCaseAssign, getPatients, patchCaseStage };

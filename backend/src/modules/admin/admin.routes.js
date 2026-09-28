@@ -6,6 +6,7 @@ const {
   postVendor,
   postVendorUser,
   getCases,
+  getCase,
   patchCaseAssign,
   getPatients,
   patchCaseStage,
@@ -29,6 +30,7 @@ adminRouter.post('/vendors', postVendor);
 adminRouter.post('/vendors/:id/users', postVendorUser);
 
 adminRouter.get('/cases', getCases);
+adminRouter.get('/cases/:id', getCase);
 adminRouter.patch('/cases/:id/assign', patchCaseAssign);
 adminRouter.patch('/cases/:id/stage', patchCaseStage);
 
