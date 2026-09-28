@@ -100,7 +100,8 @@
 
   /* ---- shared bits ---- */
   .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin-bottom: 28px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; box-shadow: var(--shadow); }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; box-shadow: var(--shadow); cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(13,35,64,0.14); }
   .stat-card .v { font-size: 30px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
   .stat-card .l { font-size: 13.5px; color: var(--muted); margin-top: 5px; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
@@ -262,13 +263,13 @@
       <!-- DASHBOARD -->
       <section id="panel-dashboard" class="panel">
         <div class="stat-row">
-          <div class="stat-card"><div class="v" id="st-total">—</div><div class="l">Total Cases</div></div>
-          <div class="stat-card"><div class="v" id="st-vendors">—</div><div class="l">Active Vendors</div></div>
-          <div class="stat-card"><div class="v" id="st-patients">—</div><div class="l">Registered Patients</div></div>
-          <div class="stat-card"><div class="v" id="st-week">—</div><div class="l">Cases This Week</div></div>
-          <div class="stat-card" style="border-color:var(--warning);background:var(--warning-soft);"><div class="v" style="color:var(--warning);" id="st-unassigned">—</div><div class="l" style="color:var(--warning);">Unassigned Cases</div></div>
-          <div class="stat-card"><div class="v" id="st-pending">—</div><div class="l">Pending Review</div></div>
-          <div class="stat-card"><div class="v" id="st-completion">—</div><div class="l">Completion Rate</div></div>
+          <div class="stat-card" onclick="goToCases('all', 'all')"><div class="v" id="st-total">—</div><div class="l">Total Cases</div></div>
+          <div class="stat-card" onclick="goPanel('vendors')"><div class="v" id="st-vendors">—</div><div class="l">Active Vendors</div></div>
+          <div class="stat-card" onclick="goPanel('patients')"><div class="v" id="st-patients">—</div><div class="l">Registered Patients</div></div>
+          <div class="stat-card" onclick="goToCases('all', 'all')"><div class="v" id="st-week">—</div><div class="l">Cases This Week</div></div>
+          <div class="stat-card" style="border-color:var(--warning);background:var(--warning-soft);" onclick="goToCases('all', 'unassigned')"><div class="v" style="color:var(--warning);" id="st-unassigned">—</div><div class="l" style="color:var(--warning);">Unassigned Cases</div></div>
+          <div class="stat-card" onclick="goToCases('submitted', 'all')"><div class="v" id="st-pending">—</div><div class="l">Pending Review</div></div>
+          <div class="stat-card" onclick="goToCases('completed', 'all')"><div class="v" id="st-completion">—</div><div class="l">Completion Rate</div></div>
         </div>
         <div class="card">
           <div class="card-head"><h2>Recent Cases</h2><button class="btn-sm" onclick="goPanel('cases')">View All</button></div>
@@ -605,6 +606,18 @@
     document.getElementById('sidebar').classList.remove('show');
     document.getElementById('sidebar-backdrop').classList.remove('show');
   }
+  function goToCases(stage, vendorFilter) {
+    caseStatusFilter = stage || 'all';
+    goPanel('cases');
+    var vSel = document.getElementById('case-vendor-filter');
+    if (!vSel.dataset.filled) {
+      vSel.innerHTML = '<option value="all">All Vendors</option><option value="unassigned">Unassigned</option>' + VENDORS.map(function (v) { return '<option value="' + v.id + '">' + v.companyName + '</option>'; }).join('');
+      vSel.dataset.filled = '1';
+    }
+    vSel.value = vendorFilter || 'all';
+    document.getElementById('case-search').value = '';
+    renderCases();
+  }
   function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('show');
     document.getElementById('sidebar-backdrop').classList.toggle('show');
@@ -658,7 +671,7 @@
     }).join('');
     var vSel = document.getElementById('case-vendor-filter');
     if (!vSel.dataset.filled) {
-      vSel.innerHTML = '<option value="all">All Vendors</option>' + VENDORS.map(function (v) { return '<option value="' + v.id + '">' + v.companyName + '</option>'; }).join('');
+      vSel.innerHTML = '<option value="all">All Vendors</option><option value="unassigned">Unassigned</option>' + VENDORS.map(function (v) { return '<option value="' + v.id + '">' + v.companyName + '</option>'; }).join('');
       vSel.dataset.filled = '1';
     }
   }
@@ -669,7 +682,7 @@
     var vf = document.getElementById('case-vendor-filter').value;
     var rows = CASES.filter(function (c) {
       var stageOk = caseStatusFilter === 'all' || c.stage === caseStatusFilter;
-      var vendorOk = vf === 'all' || String(c.vendorId) === vf;
+      var vendorOk = vf === 'all' || (vf === 'unassigned' ? !c.vendorId : String(c.vendorId) === vf);
       var searchOk = !q || (c.ref + c.patient + vendorName(c.vendorId)).toLowerCase().indexOf(q) !== -1;
       return stageOk && vendorOk && searchOk;
     }).sort(function (a, b) { return b.updated.localeCompare(a.updated); });
