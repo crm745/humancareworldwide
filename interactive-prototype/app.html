@@ -84,10 +84,11 @@
   .nav-item-v2 { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: #97A4B8; background: none; border: none; font-family: 'Inter', sans-serif; }
   .nav-item-v2.on { color: #1A73E8; }
   .nav-item-v2 span { font-size: 11px; font-weight: 700; }
-  .svc-tile { position: relative; cursor: pointer; height: 140px; border-radius: 16px; overflow: hidden; background: #C9D6EA; background-size: cover; background-position: center; box-shadow: 0 6px 16px rgba(13,35,64,0.12); }
-  .svc-tile-overlay { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 12px 12px; background: linear-gradient(180deg, rgba(8,20,38,0) 0%, rgba(8,20,38,0.55) 40%, rgba(8,20,38,0.95) 100%); text-align: left; }
-  .svc-tile-title { color: #fff; font-size: 13.5px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.9); line-height: 1.25; }
-  .svc-tile-sub { color: rgba(255,255,255,0.95); font-size: 11px; margin-top: 3px; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+  .svc-tile { cursor: pointer; border-radius: 16px; overflow: hidden; background: #FFFFFF; box-shadow: 0 6px 16px rgba(13,35,64,0.12); text-align: left; }
+  .svc-tile-img { width: 100%; height: 104px; background: #C9D6EA; background-size: cover; background-position: center; }
+  .svc-tile-body { padding: 12px 12px 14px; }
+  .svc-tile-title { color: #0D2340; font-size: 13.5px; font-weight: 800; line-height: 1.25; }
+  .svc-tile-sub { color: #97A4B8; font-size: 11px; margin-top: 3px; }
   .req-row { cursor: pointer; padding: 12px 0; border-bottom: 1px solid #EEF1F6; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .req-row:last-child { border-bottom: none; }
   .tab-row { display: flex; gap: 6px; overflow-x: auto; }
@@ -397,13 +398,13 @@
             <span style="font-size:13.5px;font-weight:800;color:#0D2340;text-transform:uppercase;letter-spacing:0.03em;" data-i18n="ourServices">Our Services</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-            <div class="svc-tile" data-bg="IMG_AIR" onclick="nav('air-ambulance-options')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_air">Air Ambulance</div><div class="svc-tile-sub" data-i18n="svc_air_sub">Domestic / International</div></div></div>
-            <div class="svc-tile" data-bg="IMG_GROUND" onclick="openService('ground')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_ground">Ground Ambulance</div><div class="svc-tile-sub" data-i18n="svc_ground_sub">Basic &amp; Advanced Care</div></div></div>
-            <div class="svc-tile" data-bg="IMG_HOSPITAL" onclick="openService('hospital')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_hospital">Hospitalization Assistance</div><div class="svc-tile-sub" data-i18n="svc_hospital_sub">Domestic &amp; International</div></div></div>
-            <div class="svc-tile" data-bg="IMG_MORTAL" onclick="openService('mortal')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_mortal">Mortal Remains Transportation</div><div class="svc-tile-sub" data-i18n="svc_mortal_sub">Transportation &amp; Rituals</div></div></div>
-            <div class="svc-tile" data-bg="IMG_HOMECARE" onclick="openService('homecare')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_homecare">Home Healthcare Services</div><div class="svc-tile-sub" data-i18n="svc_homecare_sub">Nursing &amp; Post-Surgery Care</div></div></div>
-            <div class="svc-tile" data-bg="IMG_TELE" onclick="openService('tele')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_tele">Teleconsultation</div><div class="svc-tile-sub" data-i18n="svc_tele_sub">&amp; House-Call</div></div></div>
-            <div class="svc-tile" style="grid-column:1 / -1;" data-bg="IMG_CORPORATE" onclick="openService('corporate')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_corporate">Corporate Medical Solutions</div><div class="svc-tile-sub" data-i18n="svc_corporate_sub">Workplace Health Programs</div></div></div>
+            <div class="svc-tile" onclick="nav('air-ambulance-options')"><div class="svc-tile-img" data-bg="IMG_AIR"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_air">Air Ambulance</div><div class="svc-tile-sub" data-i18n="svc_air_sub">Domestic / International</div></div></div>
+            <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-img" data-bg="IMG_GROUND"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_ground">Ground Ambulance</div><div class="svc-tile-sub" data-i18n="svc_ground_sub">Basic &amp; Advanced Care</div></div></div>
+            <div class="svc-tile" onclick="openService('hospital')"><div class="svc-tile-img" data-bg="IMG_HOSPITAL"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_hospital">Hospitalization Assistance</div><div class="svc-tile-sub" data-i18n="svc_hospital_sub">Domestic &amp; International</div></div></div>
+            <div class="svc-tile" onclick="openService('mortal')"><div class="svc-tile-img" data-bg="IMG_MORTAL"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_mortal">Mortal Remains Transportation</div><div class="svc-tile-sub" data-i18n="svc_mortal_sub">Transportation &amp; Rituals</div></div></div>
+            <div class="svc-tile" onclick="openService('homecare')"><div class="svc-tile-img" data-bg="IMG_HOMECARE"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_homecare">Home Healthcare Services</div><div class="svc-tile-sub" data-i18n="svc_homecare_sub">Nursing &amp; Post-Surgery Care</div></div></div>
+            <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-img" data-bg="IMG_TELE"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_tele">Teleconsultation</div><div class="svc-tile-sub" data-i18n="svc_tele_sub">&amp; House-Call</div></div></div>
+            <div class="svc-tile" style="grid-column:1 / -1;" onclick="openService('corporate')"><div class="svc-tile-img" data-bg="IMG_CORPORATE"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_corporate">Corporate Medical Solutions</div><div class="svc-tile-sub" data-i18n="svc_corporate_sub">Workplace Health Programs</div></div></div>
           </div>
 
           <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FBEDED;border-color:#F3C6C6;">
@@ -441,13 +442,13 @@
         </div>
         <div class="noscroll" style="flex:1;overflow-y:auto;padding:0 18px 18px;display:flex;flex-direction:column;">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div class="svc-tile" data-bg="IMG_AIR" onclick="nav('air-ambulance-options')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_air">Air Ambulance</div><div class="svc-tile-sub" data-i18n="svc_air_sub">Domestic / International</div></div></div>
-            <div class="svc-tile" data-bg="IMG_GROUND" onclick="openService('ground')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_ground">Ground Ambulance</div><div class="svc-tile-sub" data-i18n="svc_ground_sub">Basic &amp; Advanced Care</div></div></div>
-            <div class="svc-tile" data-bg="IMG_HOSPITAL" onclick="openService('hospital')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_hospital">Hospitalization Assistance</div><div class="svc-tile-sub" data-i18n="svc_hospital_sub">Domestic &amp; International</div></div></div>
-            <div class="svc-tile" data-bg="IMG_MORTAL" onclick="openService('mortal')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_mortal">Mortal Remains Transportation</div><div class="svc-tile-sub" data-i18n="svc_mortal_sub">Transportation &amp; Rituals</div></div></div>
-            <div class="svc-tile" data-bg="IMG_HOMECARE" onclick="openService('homecare')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_homecare">Home Healthcare Services</div><div class="svc-tile-sub" data-i18n="svc_homecare_sub">Nursing &amp; Post-Surgery Care</div></div></div>
-            <div class="svc-tile" data-bg="IMG_TELE" onclick="openService('tele')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_tele">Teleconsultation</div><div class="svc-tile-sub" data-i18n="svc_tele_sub">&amp; House-Call</div></div></div>
-            <div class="svc-tile" style="grid-column:1 / -1;" data-bg="IMG_CORPORATE" onclick="openService('corporate')"><div class="svc-tile-overlay"><div class="svc-tile-title" data-i18n="svc_corporate">Corporate Medical Solutions</div><div class="svc-tile-sub" data-i18n="svc_corporate_sub">Workplace Health Programs</div></div></div>
+            <div class="svc-tile" onclick="nav('air-ambulance-options')"><div class="svc-tile-img" data-bg="IMG_AIR"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_air">Air Ambulance</div><div class="svc-tile-sub" data-i18n="svc_air_sub">Domestic / International</div></div></div>
+            <div class="svc-tile" onclick="openService('ground')"><div class="svc-tile-img" data-bg="IMG_GROUND"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_ground">Ground Ambulance</div><div class="svc-tile-sub" data-i18n="svc_ground_sub">Basic &amp; Advanced Care</div></div></div>
+            <div class="svc-tile" onclick="openService('hospital')"><div class="svc-tile-img" data-bg="IMG_HOSPITAL"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_hospital">Hospitalization Assistance</div><div class="svc-tile-sub" data-i18n="svc_hospital_sub">Domestic &amp; International</div></div></div>
+            <div class="svc-tile" onclick="openService('mortal')"><div class="svc-tile-img" data-bg="IMG_MORTAL"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_mortal">Mortal Remains Transportation</div><div class="svc-tile-sub" data-i18n="svc_mortal_sub">Transportation &amp; Rituals</div></div></div>
+            <div class="svc-tile" onclick="openService('homecare')"><div class="svc-tile-img" data-bg="IMG_HOMECARE"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_homecare">Home Healthcare Services</div><div class="svc-tile-sub" data-i18n="svc_homecare_sub">Nursing &amp; Post-Surgery Care</div></div></div>
+            <div class="svc-tile" onclick="openService('tele')"><div class="svc-tile-img" data-bg="IMG_TELE"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_tele">Teleconsultation</div><div class="svc-tile-sub" data-i18n="svc_tele_sub">&amp; House-Call</div></div></div>
+            <div class="svc-tile" style="grid-column:1 / -1;" onclick="openService('corporate')"><div class="svc-tile-img" data-bg="IMG_CORPORATE"></div><div class="svc-tile-body"><div class="svc-tile-title" data-i18n="svc_corporate">Corporate Medical Solutions</div><div class="svc-tile-sub" data-i18n="svc_corporate_sub">Workplace Health Programs</div></div></div>
           </div>
           <div id="ss-care-banner" onclick="nav('help-support')" style="cursor:pointer;border-radius:16px;overflow:hidden;background-size:cover;background-position:center;padding:16px;color:#fff;margin-top:16px;flex:0 0 auto;height:130px;display:flex;flex-direction:column;justify-content:flex-end;">
             <div style="font-size:12px;opacity:0.95;text-shadow:0 1px 5px rgba(0,0,0,0.5);" data-i18n="care_banner_line1">Your care,</div>
@@ -2339,7 +2340,7 @@
       card.style.backgroundImage = 'linear-gradient(180deg, rgba(13,35,64,0.1) 0%, rgba(13,35,64,0.3) 50%, rgba(13,35,64,0.85) 100%), url(' + SERVICE_IMAGES[imgKey] + ')';
     }
   });
-  document.querySelectorAll('.svc-tile[data-bg]').forEach(function (tile) {
+  document.querySelectorAll('.svc-tile-img[data-bg]').forEach(function (tile) {
     var imgKey = tile.getAttribute('data-bg');
     if (imgKey && SERVICE_IMAGES[imgKey]) {
       tile.style.backgroundImage = 'url(' + SERVICE_IMAGES[imgKey] + ')';
