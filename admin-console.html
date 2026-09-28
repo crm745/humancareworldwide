@@ -110,10 +110,10 @@
   .search-input { position: relative; flex: 1; min-width: 200px; }
   .search-input svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); }
   .search-input input { width: 100%; padding: 9px 12px 9px 32px; border-radius: 9px; border: 1.5px solid var(--border); background: var(--bg); color: var(--ink); outline: none; }
-  .chip-row { display: flex; gap: 7px; flex-wrap: wrap; }
-  .chip { padding: 7px 13px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--surface); color: var(--body); font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .chip-row { display: flex; gap: 9px; flex-wrap: wrap; }
+  .chip { padding: 9px 16px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--surface); color: var(--body); font-size: 13.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
   .chip.on { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .btn-sm { padding: 8px 14px; border-radius: 9px; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 12.5px; }
+  .btn-sm { padding: 10px 16px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13.5px; }
   .btn-sm.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn-sm:hover { filter: brightness(0.97); }
 
@@ -127,7 +127,7 @@
   .cell-mono { font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 700; }
   .table-wrap { overflow-x: auto; }
 
-  .pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; white-space: nowrap; }
+  .pill { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; white-space: nowrap; }
   .pill-submitted { background: var(--warning-soft); color: var(--warning); }
   .pill-progress { background: var(--info-soft); color: var(--info); }
   .pill-scheduled { background: var(--accent-soft); color: var(--accent); }
@@ -142,29 +142,30 @@
   /* ---- modal / drawer ---- */
   .backdrop { position: fixed; inset: 0; background: rgba(13,35,64,0.45); opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 40; }
   .backdrop.show { opacity: 1; pointer-events: auto; }
-  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 92vw; background: var(--surface); box-shadow: -10px 0 30px rgba(13,35,64,0.18); transform: translateX(100%); transition: transform .25s cubic-bezier(.32,.72,0,1); z-index: 41; display: flex; flex-direction: column; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 520px; max-width: 92vw; background: var(--surface); box-shadow: -10px 0 30px rgba(13,35,64,0.18); transform: translateX(100%); transition: transform .25s cubic-bezier(.32,.72,0,1); z-index: 41; display: flex; flex-direction: column; }
   .drawer.show { transform: translateX(0); }
-  .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-  .drawer-body { padding: 20px; overflow-y: auto; flex: 1; }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .drawer-body { padding: 28px; overflow-y: auto; flex: 1; }
+  .drawer-section-label { font-size: 12.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .icon-btn { width: 30px; height: 30px; border-radius: 9px; background: var(--bg); border: none; color: var(--body); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
   .modal-center { position: fixed; inset: 0; z-index: 42; display: flex; align-items: center; justify-content: center; padding: 20px; pointer-events: none; }
   .modal-card { width: 100%; max-width: 420px; background: var(--surface); border-radius: 16px; box-shadow: 0 20px 50px rgba(13,35,64,0.3); padding: 22px; transform: scale(0.94); opacity: 0; transition: all .18s ease; pointer-events: none; }
   .modal-center.show .modal-card { transform: scale(1); opacity: 1; pointer-events: auto; }
 
-  .tl-row { display: flex; gap: 12px; position: relative; padding-bottom: 22px; }
+  .tl-row { display: flex; gap: 14px; position: relative; padding-bottom: 26px; }
   .tl-row:last-child { padding-bottom: 0; }
-  .tl-row:not(:last-child)::after { content: ''; position: absolute; left: 8px; top: 20px; bottom: 2px; width: 2px; background: var(--border); }
-  .tl-dot { width: 17px; height: 17px; border-radius: 999px; background: var(--accent); flex-shrink: 0; margin-top: 1px; border: 3px solid var(--accent-soft); }
+  .tl-row:not(:last-child)::after { content: ''; position: absolute; left: 9px; top: 24px; bottom: 2px; width: 2px; background: var(--border); }
+  .tl-dot { width: 20px; height: 20px; border-radius: 999px; background: var(--accent); flex-shrink: 0; margin-top: 1px; border: 3px solid var(--accent-soft); }
   .tl-row.pending .tl-dot { background: var(--border); border-color: var(--bg); }
-  .tl-stage { font-weight: 700; color: var(--ink); font-size: 13px; text-transform: capitalize; }
-  .tl-note { font-size: 12.5px; color: var(--body); margin-top: 2px; }
-  .tl-time { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .tl-stage { font-weight: 700; color: var(--ink); font-size: 15px; text-transform: capitalize; }
+  .tl-note { font-size: 14px; color: var(--body); margin-top: 3px; }
+  .tl-time { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
 
-  .doc-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 11px; border: 1px solid var(--border); margin-bottom: 8px; }
-  .doc-row svg { color: var(--accent); flex-shrink: 0; }
-  .doc-row .n { font-size: 12.5px; font-weight: 700; color: var(--ink); }
-  .doc-row .s { font-size: 11px; color: var(--muted); }
+  .doc-row { display: flex; align-items: center; gap: 12px; padding: 13px 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; }
+  .doc-row svg { color: var(--accent); flex-shrink: 0; width: 20px; height: 20px; }
+  .doc-row .n { font-size: 14.5px; font-weight: 700; color: var(--ink); }
+  .doc-row .s { font-size: 12.5px; color: var(--muted); margin-top: 1px; }
 
   .menu-btn { display: none; }
   .sidebar-backdrop { display: none; }
@@ -361,30 +362,30 @@
 <div id="case-drawer" class="drawer">
   <div class="drawer-head">
     <div>
-      <div style="font-size:11px;color:var(--muted);font-weight:700;" id="cd-ref">#HC-2026-000</div>
-      <h2 id="cd-patient" style="font-size:16px;margin-top:2px;">—</h2>
+      <div style="font-size:13px;color:var(--muted);font-weight:700;" id="cd-ref">#HC-2026-000</div>
+      <h2 id="cd-patient" style="font-size:21px;margin-top:4px;">—</h2>
     </div>
-    <button class="icon-btn" onclick="closeCaseDrawer()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    <button class="icon-btn" onclick="closeCaseDrawer()" style="width:34px;height:34px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
   </div>
   <div class="drawer-body">
-    <div class="row-flex" style="gap:8px;margin-bottom:18px;flex-wrap:wrap;">
+    <div class="row-flex" style="gap:10px;margin-bottom:24px;flex-wrap:wrap;">
       <span class="pill" id="cd-stage-pill">Submitted</span>
       <span id="cd-source-tag"></span>
-      <span style="font-size:12px;color:var(--muted);" id="cd-service">—</span>
+      <span style="font-size:14px;color:var(--muted);" id="cd-service">—</span>
     </div>
 
-    <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Update Stage</div>
-    <div class="chip-row" id="cd-stage-options" style="margin-bottom:22px;"></div>
+    <div class="drawer-section-label" style="margin-bottom:12px;">Update Stage</div>
+    <div class="chip-row" id="cd-stage-options" style="margin-bottom:28px;"></div>
 
-    <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">Timeline</div>
-    <div id="cd-timeline" style="margin-bottom:24px;"></div>
+    <div class="drawer-section-label" style="margin-bottom:14px;">Timeline</div>
+    <div id="cd-timeline" style="margin-bottom:28px;"></div>
 
-    <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">Documents</div>
+    <div class="drawer-section-label" style="margin-bottom:14px;">Documents</div>
     <div id="cd-documents"></div>
 
-    <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin:22px 0 10px;">Reassign Vendor</div>
-    <select id="cd-reassign" class="field-input" style="margin-bottom:10px;"></select>
-    <button class="btn-sm accent" style="width:100%;" onclick="reassignCurrentCase()">Reassign Case</button>
+    <div class="drawer-section-label" style="margin:26px 0 12px;">Reassign Vendor</div>
+    <select id="cd-reassign" class="field-input" style="margin-bottom:12px;"></select>
+    <button class="btn-sm accent" style="width:100%;padding:13px;font-size:14.5px;" onclick="reassignCurrentCase()">Reassign Case</button>
   </div>
 </div>
 
