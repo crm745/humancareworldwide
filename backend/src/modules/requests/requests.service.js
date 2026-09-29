@@ -1,4 +1,5 @@
 const { prisma } = require('../../db/prisma');
+const { createLead } = require('../bitrix/bitrix.service');
 
 const VALID_STATUSES = ['submitted', 'in_progress', 'completed', 'cancelled'];
 
@@ -68,6 +69,24 @@ async function createRequest(userId, data) {
   await prisma.caseStageEvent.create({
     data: { caseId: newCase.id, stage: 'submitted', note: 'Request received from patient app.' },
   });
+
+  // Bitrix24 is best-effort: a CRM hiccup must never fail the patient's submission,
+  // which has already been saved above by this point.
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const leadId = await createLead({
+      name: request.patientName,
+      mobile: request.patientContact || user?.mobile,
+      email: user?.email,
+      serviceType: request.serviceType,
+      origin: request.origin,
+      destination: request.destination,
+      referenceNumber: request.referenceNumber,
+    });
+    await prisma.serviceRequest.update({ where: { id: request.id }, data: { bitrixLeadId: leadId } });
+  } catch (err) {
+    console.error(`Bitrix24 lead creation failed for ${request.referenceNumber}:`, err.message);
+  }
 
   return request;
 }

@@ -105,6 +105,7 @@ model ServiceRequest {
   documentUrl       String?   @map("document_url")
   referenceNumber   String    @unique @map("reference_number")
   status            String    @default("submitted")
+  bitrixLeadId      Int?      @map("bitrix_lead_id")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
   case              Case?
