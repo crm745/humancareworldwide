@@ -1,0 +1,227 @@
+{
+  "air": {
+    "title": "Air Ambulance",
+    "desc": "Air medical repatriation by private charter, helicopter, or commercial airline stretcher, with ICU doctors, flight nurses, and critical care paramedics on every transfer.",
+    "stats": [
+      {
+        "value": "20+",
+        "label": "Years Experience"
+      },
+      {
+        "value": "3,500+",
+        "label": "Critical Transfers"
+      },
+      {
+        "value": "24/7",
+        "label": "Control Rooms"
+      }
+    ],
+    "features": [
+      "Private Charter, Helicopter & Commercial Stretcher",
+      "ICU Doctors & Flight Nurses On Board",
+      "Bed-to-Bed Transfer with Full Handover",
+      "Visa, Permit & Ground Ambulance Coordination"
+    ],
+    "img": "IMG_AIR"
+  },
+  "ground": {
+    "title": "Ground Ambulance",
+    "desc": "Emergency and stationed ambulance coverage across 75+ countries, staffed by certified paramedics with real-time GPS tracking and 24/7 multilingual dispatch.",
+    "stats": [
+      {
+        "value": "75+",
+        "label": "Countries Covered"
+      },
+      {
+        "value": "45 min",
+        "label": "Avg Response Time"
+      },
+      {
+        "value": "500+",
+        "label": "Active Deployments"
+      }
+    ],
+    "features": [
+      "BLS, ACLS & Critical Care Fleet",
+      "Certified Paramedics, Nurses & Doctors",
+      "Real-Time GPS Tracking",
+      "WHO, JCI & NAEMT Compliant"
+    ],
+    "img": "IMG_GROUND"
+  },
+  "hospital": {
+    "title": "Hospitalization Assistance",
+    "desc": "A single-point solution for domestic and international hospital care, backed by 11,000+ medical facilities and support from pre-departure through post-treatment.",
+    "stats": [
+      {
+        "value": "11,000+",
+        "label": "Medical Facilities"
+      },
+      {
+        "value": "21+",
+        "label": "Years Experience"
+      },
+      {
+        "value": "24/7",
+        "label": "Hospital Coordination"
+      }
+    ],
+    "features": [
+      "GOP Coordination & Bill Settlement",
+      "Airport Pickup & Local Support",
+      "24/7 Interpreter Support",
+      "Discharge & Repatriation Follow-Up"
+    ],
+    "img": "IMG_HOSPITAL"
+  },
+  "commercialair": {
+    "title": "Medical Escort (Commercial Airlines)",
+    "desc": "ICU-grade stretcher and business-class wheelchair transfers on scheduled commercial flights — a cost-effective alternative to private air ambulances.",
+    "stats": [
+      {
+        "value": "2,000+",
+        "label": "Transfers Completed"
+      },
+      {
+        "value": "Up to 60%",
+        "label": "Cost Savings"
+      },
+      {
+        "value": "20+",
+        "label": "Years Experience"
+      }
+    ],
+    "features": [
+      "Stretcher & Business-Class Wheelchair",
+      "ICU-Grade In-Flight Monitoring",
+      "Trained Doctor or Nurse Escort",
+      "Approvals within 72–96 Hours"
+    ],
+    "img": "IMG_COMMERCIALAIR"
+  },
+  "privatecharter": {
+    "title": "Private Charter Air Ambulance",
+    "desc": "24/7 private chartered air ambulance from India, UAE, GCC, the UK, Canada and the US — airborne with a full ICU team in under 4 hours.",
+    "stats": [
+      {
+        "value": "<4 hrs",
+        "label": "Airborne Response"
+      },
+      {
+        "value": "90+",
+        "label": "Countries Covered"
+      },
+      {
+        "value": "21+",
+        "label": "Years Experience"
+      }
+    ],
+    "features": [
+      "ECMO, IABP & Ventilator Support Onboard",
+      "Bedside-to-Bedside Coordination",
+      "Pediatric & Neonatal Incubator Transfers",
+      "Customs, Immigration & Permit Handling"
+    ],
+    "img": "IMG_COMMERCIALAIR"
+  },
+  "mortal": {
+    "title": "Mortal Remains Transportation",
+    "desc": "Compassionate, dignified mortal remains repatriation, cremation and burial assistance, available 24/7 with multilingual documentation support.",
+    "stats": [
+      {
+        "value": "4,000+",
+        "label": "Repatriations Handled"
+      },
+      {
+        "value": "<72 hrs",
+        "label": "Typical Turnaround"
+      },
+      {
+        "value": "9",
+        "label": "Branches Worldwide"
+      }
+    ],
+    "features": [
+      "International & Domestic Repatriation",
+      "Embalming & Documentation Handled",
+      "Religious Rites Across Faiths",
+      "Grief Counseling Support"
+    ],
+    "img": "IMG_MORTAL"
+  },
+  "homecare": {
+    "title": "Home Healthcare Services",
+    "desc": "Home ICU setup, private nursing, and remote patient monitoring — bringing critical care infrastructure into the home across 120+ cities.",
+    "stats": [
+      {
+        "value": "120+",
+        "label": "Cities Covered"
+      },
+      {
+        "value": "27,000+",
+        "label": "Patients Supported"
+      },
+      {
+        "value": "4–6 hrs",
+        "label": "ICU Setup Time"
+      }
+    ],
+    "features": [
+      "Home ICU & Ventilator Setup",
+      "12- & 24-Hour Nursing Shifts",
+      "Remote Vital Sign Monitoring",
+      "Physiotherapy & Specialist Visits"
+    ],
+    "img": "IMG_HOMECARE"
+  },
+  "tele": {
+    "title": "Tele Consultation & House Call",
+    "desc": "On-demand video consultations and optional in-home doctor visits, connecting you to licensed physicians in under 30 minutes, in 90+ countries.",
+    "stats": [
+      {
+        "value": "90+",
+        "label": "Countries Covered"
+      },
+      {
+        "value": "30 min",
+        "label": "Doctor Access"
+      },
+      {
+        "value": "21+",
+        "label": "Years Experience"
+      }
+    ],
+    "features": [
+      "Talk to a Doctor Within 30 Minutes",
+      "Matched With the Right Doctor Automatically",
+      "Get Your Prescription Instantly",
+      "Doctor Can Visit You at Home, If Needed"
+    ],
+    "img": "IMG_TELE"
+  },
+  "corporate": {
+    "title": "Corporate Medical Solutions",
+    "desc": "Tailored workplace healthcare — onsite clinics, medical staffing, and wellness programs — supporting 50,000+ employees under annual health monitoring.",
+    "stats": [
+      {
+        "value": "50,000+",
+        "label": "Employees Monitored"
+      },
+      {
+        "value": "21+",
+        "label": "Years Experience"
+      },
+      {
+        "value": "4",
+        "label": "Continents Served"
+      }
+    ],
+    "features": [
+      "Onsite Medical Room Management",
+      "Occupational Health Staffing",
+      "Employee Wellness Programs",
+      "Health & Safety Audits"
+    ],
+    "img": "IMG_CORPORATE"
+  }
+}

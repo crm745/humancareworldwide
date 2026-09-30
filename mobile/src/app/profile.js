@@ -1,0 +1,111 @@
+import { useState } from 'react';
+import { Pressable, View } from 'react-native';
+import { router } from 'expo-router';
+import { Check, ChevronRight, Mail, Pencil, Smartphone } from 'lucide-react-native';
+import { initialsOf, useApp } from '../state/AppContext';
+import { LANGUAGES, VENDOR_IDENTITY } from '../data/mock';
+import { navReplace } from '../lib/nav';
+import { Body, BottomNav, IconButton, Screen, TopBar } from '../components/layout';
+import { Button, Card, InfoRow, Text } from '../components/ui';
+import { Sheet } from '../components/widgets';
+
+function Stat({ value, label, color, onPress, middle }) {
+  return (
+    <Pressable onPress={onPress} className={`flex-1 items-center ${middle ? 'border-x border-line' : ''}`}>
+      <Text className={`font-inter-black text-[22px] ${color}`}>{value}</Text>
+      <Text className="mt-1 text-[11px] text-faint">{label}</Text>
+    </Pressable>
+  );
+}
+
+function Chevron() {
+  const { isRTL } = useApp();
+  return <View style={isRTL ? { transform: [{ scaleX: -1 }] } : null}><ChevronRight size={16} color="#97A4B8" /></View>;
+}
+
+function LanguageSheet({ visible, onClose }) {
+  const { t, lang, setLang, toast } = useApp();
+  const choose = (l) => {
+    setLang(l.code);
+    toast('Language set to ' + l.name);
+    setTimeout(onClose, 350);
+  };
+  return (
+    <Sheet visible={visible} onClose={onClose} title={t('choose_language')}>
+      <View className="mb-1.5 gap-2">
+        {LANGUAGES.map((l) => {
+          const on = l.code === lang;
+          return (
+            <Pressable key={l.code} onPress={() => choose(l)} className={`flex-row items-center justify-between rounded-xl border-[1.5px] px-3.5 py-[13px] ${on ? 'border-primary bg-primary-soft' : 'border-line bg-white'}`}>
+              <Text className="font-inter-bold text-[14px] text-navy">{l.name}</Text>
+              {on && <Check size={18} color="#1A73E8" strokeWidth={2.5} />}
+            </Pressable>
+          );
+        })}
+      </View>
+    </Sheet>
+  );
+}
+
+export default function Profile() {
+  const { t, isVendor, profile, lang } = useApp();
+  const [langSheet, setLangSheet] = useState(false);
+  const stats = isVendor
+    ? { total: '24', active: '4', done: '20', totalLbl: t('lbl_total'), doneLbl: t('lbl_done') }
+    : { total: '5', active: '2', done: '3', totalLbl: t('lbl_total_requests'), doneLbl: t('status_completed') };
+  const openStat = (status) => (isVendor ? navReplace('/vendor-dashboard') : navReplace(`/my-requests?status=${status}`));
+  const langLabel = LANGUAGES.find((l) => l.code === lang).label;
+
+  return (
+    <Screen>
+      <TopBar title={t('profile_title')} />
+      <Body withNav contentClassName="px-[18px] pb-10 pt-[22px]">
+        <Card className="mb-5 flex-row items-center gap-3.5 p-[18px]">
+          <View className="h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft">
+            <Text className="font-inter-black text-[18.5px] text-primary">{isVendor ? VENDOR_IDENTITY.avatar : initialsOf(profile.name)}</Text>
+          </View>
+          <View className="min-w-0 flex-1">
+            <Text className="font-inter-black text-[16.5px]">{isVendor ? VENDOR_IDENTITY.name : profile.name}</Text>
+            {isVendor ? (
+              <Text className="mt-[5px] text-[12px] text-primary">{VENDOR_IDENTITY.partner}</Text>
+            ) : (
+              <>
+                <View className="mt-[7px] flex-row items-center gap-[5px]">
+                  <Smartphone size={12} color="#97A4B8" />
+                  <Text className="font-inter-bold text-[11px] uppercase text-faint">{t('lbl_mobile')}</Text>
+                  <Text className="text-[12.5px] text-muted">{profile.cc} {profile.phone}</Text>
+                </View>
+                <View className="mt-1.5 flex-row items-center gap-[5px]">
+                  <Mail size={12} color="#97A4B8" />
+                  <Text className="font-inter-bold text-[11px] uppercase text-faint">{t('lbl_email')}</Text>
+                  <Text className="flex-1 text-[12px] text-muted" numberOfLines={1}>{profile.email}</Text>
+                </View>
+              </>
+            )}
+          </View>
+          {!isVendor && <IconButton onPress={() => router.push('/edit-profile')}><Pencil size={15} color="#45526B" /></IconButton>}
+        </Card>
+
+        <Card className="mb-5 px-[18px] py-5">
+          <Text className="mb-4 font-inter-black text-[12px] uppercase tracking-wide text-faint">{t('lbl_overview')}</Text>
+          <View className="flex-row">
+            <Stat value={stats.total} label={stats.totalLbl} color="text-navy" onPress={() => openStat('all')} />
+            <Stat middle value={stats.active} label={t('lbl_active')} color="text-primary" onPress={() => openStat('active')} />
+            <Stat value={stats.done} label={stats.doneLbl} color="text-success" onPress={() => openStat('completed')} />
+          </View>
+        </Card>
+
+        <Card className="mb-5 px-[18px] py-1.5">
+          <InfoRow className="py-[15px]" label={t('my_documents')} valueNode={<Chevron />} onPress={() => router.push('/my-documents')} />
+          <InfoRow className="py-[15px]" label={t('emergency_contact')} valueNode={<Chevron />} onPress={() => router.push('/help-support')} />
+          <InfoRow className="py-[15px]" label={t('help_support')} valueNode={<Chevron />} onPress={() => router.push('/help-support')} />
+          <InfoRow className="py-[15px]" last label={t('language')} value={`${langLabel} >`} valueClassName="text-primary" onPress={() => setLangSheet(true)} />
+        </Card>
+
+        <Button variant="danger" title={t('sign_out')} onPress={() => navReplace('/welcome')} className="py-[15px]" />
+      </Body>
+      <BottomNav />
+      <LanguageSheet visible={langSheet} onClose={() => setLangSheet(false)} />
+    </Screen>
+  );
+}

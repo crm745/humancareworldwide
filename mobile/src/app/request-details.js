@@ -1,0 +1,84 @@
+import { Linking, Pressable, View } from 'react-native';
+import { router } from 'expo-router';
+import { Check, Download, Phone, Share2 } from 'lucide-react-native';
+import { useApp } from '../state/AppContext';
+import { Body, Screen, TopBar } from '../components/layout';
+import { Button, Card, InfoRow, Pill, Spacer, Text } from '../components/ui';
+
+function Action({ Icon, label, onPress }) {
+  return (
+    <Pressable onPress={onPress} className="flex-1 items-center gap-1.5 rounded-xl border border-line bg-white px-1.5 py-3.5 active:opacity-80">
+      <Icon size={18} color="#1A73E8" />
+      <Text className="text-center font-inter-bold text-[11px]">{label}</Text>
+    </Pressable>
+  );
+}
+
+// Horizontal Submitted → Confirmed → In Progress → Completed tracker.
+const STEPS = [
+  { key: 'status_submitted', state: 'done' },
+  { key: 'status_confirmed', state: 'done' },
+  { key: 'status_progress', state: 'current' },
+  { key: 'status_completed', state: 'todo' },
+];
+
+function StatusTracker() {
+  const { t } = useApp();
+  return (
+    <View className="flex-row items-start">
+      {STEPS.map((s, i) => (
+        <View key={s.key} className={`flex-row items-start ${i < STEPS.length - 1 ? 'flex-1' : ''}`}>
+          <View className="w-[26px] items-center">
+            <View className={`h-[26px] w-[26px] items-center justify-center rounded-full ${s.state === 'done' ? 'bg-success' : s.state === 'current' ? 'bg-primary' : 'border-2 border-line bg-white'}`}>
+              {s.state === 'done' && <Check size={13} color="#fff" strokeWidth={3} />}
+              {s.state === 'current' && <View className="h-2 w-2 rounded-full bg-white" />}
+            </View>
+            <Text numberOfLines={1} style={{ width: 90 }} className={`mt-1.5 text-center font-inter-bold text-[10.5px] ${s.state === 'current' ? 'text-primary' : s.state === 'todo' ? 'text-faint' : 'text-ink'}`}>
+              {t(s.key)}
+            </Text>
+          </View>
+          {i < STEPS.length - 1 && (
+            <View className={`mt-[13px] h-0.5 flex-1 ${STEPS[i + 1].state === 'todo' ? 'bg-line' : STEPS[i + 1].state === 'current' ? 'bg-primary' : 'bg-success'}`} />
+          )}
+        </View>
+      ))}
+    </View>
+  );
+}
+
+export default function RequestDetails() {
+  const { t, toast } = useApp();
+  return (
+    <Screen>
+      <TopBar title={t('request_details_title')} />
+      <Body contentClassName="px-5 py-6">
+        <Text className="mb-[5px] text-[12.5px] text-faint">REQ-1005</Text>
+        <View className="mb-6 flex-row items-center justify-between">
+          <Text className="font-inter-black text-[20px] text-navy">{t('svc_air')}</Text>
+          <Pill status="progress" />
+        </View>
+        <View className="mb-6 flex-row gap-2.5">
+          <Action Icon={Download} label={t('btn_download_summary')} onPress={() => toast('Downloading request summary…')} />
+          <Action Icon={Share2} label={t('btn_share')} onPress={() => toast('Share link copied.')} />
+          <Action Icon={Phone} label={t('btn_contact_team')} onPress={() => Linking.openURL('tel:+919699999065')} />
+        </View>
+        <Card>
+          <InfoRow label={t('lbl_request_date')} value="10 May 2024, 10:30 AM" />
+          <InfoRow label={t('lbl_patient_name')} value="Rakesh Sharma" />
+          <InfoRow label={t('field_care_level')} value="Stable / Monitored" />
+          <InfoRow label={t('lbl_service')} value="Air Ambulance" />
+          <InfoRow label={t('lbl_from')} value="Dubai, UAE" />
+          <InfoRow label={t('lbl_to')} value="Mumbai, India" />
+          <InfoRow label={t('lbl_expected_date')} value="11 May 2024" />
+          <InfoRow last label={t('lbl_documents')} value="medical_report.pdf >" valueClassName="text-primary" onPress={() => router.push({ pathname: '/tracking', params: { tab: 'docs' } })} />
+        </Card>
+        <Card className="mt-5">
+          <Text className="mb-[22px] font-inter-black text-[14.5px] text-navy">{t('lbl_tracking_status')}</Text>
+          <StatusTracker />
+        </Card>
+        <Spacer />
+        <Button title={t('btn_track_details')} onPress={() => router.push('/tracking')} />
+      </Body>
+    </Screen>
+  );
+}

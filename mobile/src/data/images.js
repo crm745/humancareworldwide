@@ -1,0 +1,17 @@
+// Service photos extracted from the prototype's embedded SERVICE_IMAGES
+// (mortal.jpg is a Pexels coffin photo).
+export const IMAGES = {
+  IMG_AIR: require('../../assets/images/air.webp'),
+  IMG_GROUND: require('../../assets/images/ground.webp'),
+  IMG_HOSPITAL: require('../../assets/images/hospital.jpg'),
+  IMG_TELE: require('../../assets/images/tele.webp'),
+  IMG_HOMECARE: require('../../assets/images/homecare.jpg'),
+  IMG_CORPORATE: require('../../assets/images/corporate.jpg'),
+  IMG_CARE_BANNER: require('../../assets/images/care_banner.jpg'),
+  IMG_MORTAL: require('../../assets/images/mortal.jpg'),
+  IMG_COMMERCIALAIR: require('../../assets/images/commercialair.webp'),
+};
+
+export const LOGO = require('../../assets/images/logo-full.png');
+export const SPLASH_BG = require('../../assets/images/splash-bg.png');
+export const WELCOME_BG = require('../../assets/images/welcome-bg.png');
