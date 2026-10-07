@@ -117,6 +117,17 @@ async function getRequestForUser(userId, id) {
   return request;
 }
 
+// Every document the app collects is a medical record of some kind — there's no
+// separate "identity/insurance" category to split out, so this is just one flat list
+// across every case the patient's requests have opened.
+async function listDocumentsForUser(userId) {
+  return prisma.document.findMany({
+    where: { case: { serviceRequest: { userId } } },
+    include: { case: { select: { referenceNumber: true } } },
+    orderBy: { uploadedAt: 'desc' },
+  });
+}
+
 async function getRequestByReferenceForGuest(referenceNumber, mobile) {
   const request = await prisma.serviceRequest.findUnique({
     where: { referenceNumber },
@@ -139,5 +150,6 @@ module.exports = {
   createRequest,
   listRequestsForUser,
   getRequestForUser,
+  listDocumentsForUser,
   getRequestByReferenceForGuest,
 };

@@ -1,7 +1,7 @@
 const { prisma } = require('../../db/prisma');
 
 async function listAllServices() {
-  return prisma.service.findMany({ orderBy: { sortOrder: 'asc' } });
+  return prisma.service.findMany({ orderBy: { createdAt: 'desc' } });
 }
 
 async function getServiceBySlug(slug) {

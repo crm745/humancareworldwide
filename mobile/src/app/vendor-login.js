@@ -6,19 +6,26 @@ import { OPS_EMAIL } from '../data/mock';
 import { BackButton, Body, Screen } from '../components/layout';
 import { Button, Card, Consent, Field, Heading, Text } from '../components/ui';
 import { PasswordField } from '../components/widgets';
+import { apiPost } from '../lib/api';
+import { isValidEmail } from '../lib/validators';
 
 export default function VendorLogin() {
-  const { t } = useApp();
+  const { t, toast } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [consents, setConsents] = useState([true, true]);
-  const ready = email && password;
+  const ready = isValidEmail(email) && password.length >= 8;
   const toggle = (i) => setConsents((c) => c.map((v, j) => (j === i ? !v : v)));
 
-  // The prototype signs vendors straight in; ROADMAP.md §3 has vendor login trigger an OTP, so we go there.
-  const submit = () => {
-    if (!ready) return;
-    router.push({ pathname: '/vendor-otp', params: { identifier: email } });
+  // Password checks out -> backend sends an OTP -> vendor-otp.js does the actual verify+token step.
+  const submit = async () => {
+    if (!ready) { toast('Enter a valid email and password.'); return; }
+    try {
+      await apiPost('/auth/vendor/login', { email, password });
+      router.push({ pathname: '/vendor-otp', params: { identifier: email } });
+    } catch (err) {
+      toast(err.message);
+    }
   };
 
   const link = (label, path) => <Text className="font-inter-bold text-primary" onPress={() => router.push(path)}>{label}</Text>;
@@ -30,8 +37,14 @@ export default function VendorLogin() {
         <Heading className="text-[23.5px]">{t('vendor_login_title')}</Heading>
         <Text className="mb-7 mt-2.5 text-[15.5px] text-muted">{t('vendor_login_sub')}</Text>
         <View className="gap-[18px]">
-          <Field large label={t('field_email_address')} placeholder="corporate@company.com" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-          <PasswordField label={t('field_password')} placeholder="Password issued by HumanCare" value={password} onChangeText={setPassword} />
+          <Field
+            large required label={t('field_email_address')} placeholder="corporate@company.com" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail}
+            error={email && !isValidEmail(email) ? 'Enter a valid email address.' : undefined}
+          />
+          <PasswordField
+            required label={t('field_password')} placeholder="Password issued by HumanCare" value={password} onChangeText={setPassword}
+            error={password && password.length < 8 ? 'Password must be at least 8 characters.' : undefined}
+          />
         </View>
         <View className="mt-2.5 items-end">
           <Text className="font-inter-bold text-[14.5px] text-primary" onPress={() => router.push({ pathname: '/forgot-password', params: { origin: '/vendor-login' } })}>

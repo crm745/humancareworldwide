@@ -3,6 +3,8 @@ import { View } from 'react-native';
 import { useApp } from '../state/AppContext';
 import { VENDOR_IDENTITY } from '../data/mock';
 import { navReplace } from '../lib/nav';
+import { apiPost } from '../lib/api';
+import { isValidName, isValidPhone } from '../lib/validators';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Button, CareLevelGrid, Field, FieldLabel, Spacer, Text } from '../components/ui';
 import { Select } from '../components/widgets';
@@ -14,13 +16,32 @@ const CARE_LEVEL_TYPES = ['Air Ambulance', 'Ground Ambulance'];
 export default function VendorNewCase() {
   const { t, toast } = useApp();
   const [form, setForm] = useState({ name: '', phone: '', service: SERVICE_TYPES[0], origin: '', dest: '', policy: '', care: ['care_stable'], notes: '' });
+  const [busy, setBusy] = useState(false);
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
-  const ready = form.name && form.phone;
+  const ready = isValidName(form.name) && isValidPhone(form.phone);
 
-  const submit = () => {
-    if (!ready) return;
-    toast('Case created and synced to Bitrix24.');
-    navReplace('/vendor-dashboard');
+  const submit = async () => {
+    if (!ready) { toast('Enter a valid patient name and contact number.'); return; }
+    setBusy(true);
+    try {
+      const careNote = CARE_LEVEL_TYPES.includes(form.service) && form.care.length ? `Care level: ${form.care.map(t).join(', ')}` : '';
+      const notes = [careNote, form.notes].filter(Boolean).join('\n');
+      await apiPost('/vendor/cases', {
+        patientName: form.name,
+        patientContact: form.phone,
+        serviceType: form.service,
+        origin: form.origin,
+        destination: form.dest,
+        policyReference: form.policy || undefined,
+        notes: notes || undefined,
+      });
+      toast('Case created.');
+      navReplace('/vendor-dashboard');
+    } catch (err) {
+      toast(err.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -31,8 +52,14 @@ export default function VendorNewCase() {
           {t('submitting_under_prefix')} <Text className="font-inter-bold text-primary">{VENDOR_IDENTITY.name}</Text>
         </Text>
         <View className="gap-3.5">
-          <Field label={t('field_patient_name')} placeholder="Full legal name" value={form.name} onChangeText={(name) => set({ name })} />
-          <Field label={t('field_patient_contact_number')} placeholder="+91 98765 43210" keyboardType="phone-pad" value={form.phone} onChangeText={(phone) => set({ phone })} />
+          <Field
+            required label={t('field_patient_name')} placeholder="Full legal name" value={form.name} onChangeText={(name) => set({ name })}
+            error={form.name && !isValidName(form.name) ? 'Enter a valid name.' : undefined}
+          />
+          <Field
+            required label={t('field_patient_contact_number')} placeholder="98765 43210" keyboardType="phone-pad" value={form.phone} onChangeText={(phone) => set({ phone })}
+            error={form.phone && !isValidPhone(form.phone) ? 'Enter a valid 10-digit contact number.' : undefined}
+          />
           <View>
             <FieldLabel>{t('field_service_type')}</FieldLabel>
             <Select value={form.service} options={SERVICE_TYPES} onChange={(service) => set({ service })} title={t('field_service_type')} />
@@ -52,7 +79,7 @@ export default function VendorNewCase() {
           <Field multiline label={t('field_case_notes')} placeholder="Clinical summary, special requirements..." value={form.notes} onChangeText={(notes) => set({ notes })} />
         </View>
         <Spacer />
-        <Button title={t('btn_create_case')} dimmed={!ready} onPress={submit} className="mt-6" />
+        <Button title={t('btn_create_case')} dimmed={!ready || busy} onPress={submit} className="mt-6" />
       </Body>
     </Screen>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Linking, Modal, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,6 +7,8 @@ import { useApp } from '../state/AppContext';
 import { LOGO } from '../data/images';
 import { EMERGENCY_DISPLAY, EMERGENCY_TEL, VENDOR_IDENTITY } from '../data/mock';
 import { navReplace } from '../lib/nav';
+import { apiGet } from '../lib/api';
+import { clearTokens } from '../lib/session';
 import { Body, BottomNav, IconButton, Screen } from '../components/layout';
 import { Button, Text } from '../components/ui';
 import { ServiceGrid } from '../components/ServiceGrid';
@@ -33,8 +35,22 @@ function SosModal({ visible, onClose }) {
 }
 
 export default function Home() {
-  const { t, isVendor } = useApp();
+  const { t, isVendor, profile } = useApp();
   const [sos, setSos] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
+  const firstName = (profile.name || '').split(' ')[0] || profile.name;
+
+  useEffect(() => {
+    if (isVendor) return;
+    apiGet('/notifications?unreadOnly=true')
+      .then(({ notifications }) => setHasUnread(notifications.length > 0))
+      .catch(() => {});
+  }, [isVendor]);
+
+  const signOut = async () => {
+    await clearTokens();
+    navReplace('/welcome');
+  };
 
   return (
     <Screen>
@@ -43,15 +59,15 @@ export default function Home() {
         <View className="flex-row items-center gap-2">
           <IconButton onPress={() => router.push('/notifications')}>
             <Bell size={16} color="#45526B" />
-            <View className="absolute right-[7px] top-1.5 h-[7px] w-[7px] rounded-full bg-[#E5484D]" />
+            {hasUnread && <View className="absolute right-[7px] top-1.5 h-[7px] w-[7px] rounded-full bg-[#E5484D]" />}
           </IconButton>
-          <Text className="text-[12px] text-faint" onPress={() => navReplace('/welcome')}>{t('sign_out')}</Text>
+          <Text className="text-[12px] text-faint" onPress={signOut}>{t('sign_out')}</Text>
         </View>
       </View>
 
       <Body withNav contentClassName="px-[18px] pt-5">
         <View className="mb-5">
-          <Text className="font-inter-black text-[20.5px] text-navy">{t('greeting')} {isVendor ? VENDOR_IDENTITY.name : 'Rakesh'} 👋</Text>
+          <Text className="font-inter-black text-[20.5px] text-navy">{t('greeting')} {isVendor ? VENDOR_IDENTITY.name : firstName} 👋</Text>
           <Text className="mt-[3px] text-[14px] text-muted">{t('greetingSub')}</Text>
         </View>
 

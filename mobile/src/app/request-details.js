@@ -1,7 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Linking, Pressable, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Check, Download, Phone, Share2 } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
+import { apiGet } from '../lib/api';
+import { downloadAndShare } from '../lib/download';
+import { toUiStatus, formatDisplayDate } from '../lib/requestShape';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Button, Card, InfoRow, Pill, Spacer, Text } from '../components/ui';
 
@@ -14,20 +18,24 @@ function Action({ Icon, label, onPress }) {
   );
 }
 
-// Horizontal Submitted → Confirmed → In Progress → Completed tracker.
-const STEPS = [
-  { key: 'status_submitted', state: 'done' },
-  { key: 'status_confirmed', state: 'done' },
-  { key: 'status_progress', state: 'current' },
-  { key: 'status_completed', state: 'todo' },
-];
+const STATUS_ORDER = ['submitted', 'in_progress', 'completed'];
+const STATUS_STEP_KEY = { submitted: 'status_submitted', in_progress: 'status_progress', completed: 'status_completed' };
 
-function StatusTracker() {
+function stepsFor(status) {
+  const idx = STATUS_ORDER.indexOf(status);
+  return STATUS_ORDER.map((s, i) => ({
+    key: STATUS_STEP_KEY[s],
+    state: status === 'cancelled' ? 'todo' : i < idx ? 'done' : i === idx ? 'current' : 'todo',
+  }));
+}
+
+function StatusTracker({ status }) {
   const { t } = useApp();
+  const steps = stepsFor(status);
   return (
     <View className="flex-row items-start">
-      {STEPS.map((s, i) => (
-        <View key={s.key} className={`flex-row items-start ${i < STEPS.length - 1 ? 'flex-1' : ''}`}>
+      {steps.map((s, i) => (
+        <View key={s.key} className={`flex-row items-start ${i < steps.length - 1 ? 'flex-1' : ''}`}>
           <View className="w-[26px] items-center">
             <View className={`h-[26px] w-[26px] items-center justify-center rounded-full ${s.state === 'done' ? 'bg-success' : s.state === 'current' ? 'bg-primary' : 'border-2 border-line bg-white'}`}>
               {s.state === 'done' && <Check size={13} color="#fff" strokeWidth={3} />}
@@ -37,8 +45,8 @@ function StatusTracker() {
               {t(s.key)}
             </Text>
           </View>
-          {i < STEPS.length - 1 && (
-            <View className={`mt-[13px] h-0.5 flex-1 ${STEPS[i + 1].state === 'todo' ? 'bg-line' : STEPS[i + 1].state === 'current' ? 'bg-primary' : 'bg-success'}`} />
+          {i < steps.length - 1 && (
+            <View className={`mt-[13px] h-0.5 flex-1 ${steps[i + 1].state === 'todo' ? 'bg-line' : steps[i + 1].state === 'current' ? 'bg-primary' : 'bg-success'}`} />
           )}
         </View>
       ))}
@@ -48,36 +56,61 @@ function StatusTracker() {
 
 export default function RequestDetails() {
   const { t, toast } = useApp();
+  const { id } = useLocalSearchParams();
+  const [request, setRequest] = useState(null);
+
+  useEffect(() => {
+    if (!id) return;
+    apiGet(`/requests/me/${id}`)
+      .then(({ request: r }) => setRequest(r))
+      .catch((err) => toast(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once per id
+  }, [id]);
+
+  if (!request) return <Screen><TopBar title={t('request_details_title')} /></Screen>;
+
+  const docs = request.case?.documents || [];
+  const docsLabel = docs.length ? `${docs[0].name}${docs.length > 1 ? ` +${docs.length - 1}` : ''} >` : 'No documents yet';
+
+  const downloadSummary = async () => {
+    try {
+      toast('Downloading request summary…');
+      await downloadAndShare(`/requests/me/${request.id}/summary`, `${request.referenceNumber}-summary.pdf`);
+    } catch (err) {
+      toast(err.message);
+    }
+  };
+
   return (
     <Screen>
       <TopBar title={t('request_details_title')} />
       <Body contentClassName="px-5 py-6">
-        <Text className="mb-[5px] text-[12.5px] text-faint">REQ-1005</Text>
+        <Text className="mb-[5px] text-[12.5px] text-faint">{request.referenceNumber}</Text>
         <View className="mb-6 flex-row items-center justify-between">
-          <Text className="font-inter-black text-[20px] text-navy">{t('svc_air')}</Text>
-          <Pill status="progress" />
+          <Text className="font-inter-black text-[20px] text-navy">{request.serviceType}</Text>
+          <Pill status={toUiStatus(request.status)} />
         </View>
         <View className="mb-6 flex-row gap-2.5">
-          <Action Icon={Download} label={t('btn_download_summary')} onPress={() => toast('Downloading request summary…')} />
+          <Action Icon={Download} label={t('btn_download_summary')} onPress={downloadSummary} />
           <Action Icon={Share2} label={t('btn_share')} onPress={() => toast('Share link copied.')} />
           <Action Icon={Phone} label={t('btn_contact_team')} onPress={() => Linking.openURL('tel:+919699999065')} />
         </View>
         <Card>
-          <InfoRow label={t('lbl_request_date')} value="10 May 2024, 10:30 AM" />
-          <InfoRow label={t('lbl_patient_name')} value="Rakesh Sharma" />
-          <InfoRow label={t('field_care_level')} value="Stable / Monitored" />
-          <InfoRow label={t('lbl_service')} value="Air Ambulance" />
-          <InfoRow label={t('lbl_from')} value="Dubai, UAE" />
-          <InfoRow label={t('lbl_to')} value="Mumbai, India" />
-          <InfoRow label={t('lbl_expected_date')} value="11 May 2024" />
-          <InfoRow last label={t('lbl_documents')} value="medical_report.pdf >" valueClassName="text-primary" onPress={() => router.push({ pathname: '/tracking', params: { tab: 'docs' } })} />
+          <InfoRow label={t('lbl_request_date')} value={formatDisplayDate(request.createdAt)} />
+          <InfoRow label={t('lbl_patient_name')} value={request.patientName} />
+          <InfoRow label={t('field_care_level')} value={request.careLevel || '—'} />
+          <InfoRow label={t('lbl_service')} value={request.serviceType} />
+          <InfoRow label={t('lbl_from')} value={request.origin} />
+          <InfoRow label={t('lbl_to')} value={request.destination} />
+          <InfoRow label={t('lbl_expected_date')} value={request.preferredDate ? formatDisplayDate(request.preferredDate) : '—'} />
+          <InfoRow last label={t('lbl_documents')} value={docsLabel} valueClassName="text-primary" onPress={() => router.push({ pathname: '/tracking', params: { id: request.id, tab: 'docs' } })} />
         </Card>
         <Card className="mt-5">
           <Text className="mb-[22px] font-inter-black text-[14.5px] text-navy">{t('lbl_tracking_status')}</Text>
-          <StatusTracker />
+          <StatusTracker status={request.status} />
         </Card>
         <Spacer />
-        <Button title={t('btn_track_details')} onPress={() => router.push('/tracking')} />
+        <Button title={t('btn_track_details')} onPress={() => router.push({ pathname: '/tracking', params: { id: request.id } })} />
       </Body>
     </Screen>
   );

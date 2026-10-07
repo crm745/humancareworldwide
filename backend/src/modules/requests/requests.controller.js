@@ -2,6 +2,7 @@ const {
   createRequest,
   listRequestsForUser,
   getRequestForUser,
+  listDocumentsForUser,
   getRequestByReferenceForGuest,
 } = require('./requests.service');
 const { addDocumentToCase } = require('../documents/documents.service');
@@ -35,6 +36,15 @@ async function getMyRequestById(req, res, next) {
   try {
     const request = await getRequestForUser(req.user.id, req.params.id);
     res.json({ request });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function listMyDocuments(req, res, next) {
+  try {
+    const documents = await listDocumentsForUser(req.user.id);
+    res.json({ documents });
   } catch (err) {
     next(err);
   }
@@ -80,6 +90,7 @@ module.exports = {
   submitRequest,
   listMyRequests,
   getMyRequestById,
+  listMyDocuments,
   trackByReference,
   uploadRequestDocument,
   downloadRequestSummary,

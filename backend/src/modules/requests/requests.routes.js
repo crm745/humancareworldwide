@@ -5,6 +5,7 @@ const {
   submitRequest,
   listMyRequests,
   getMyRequestById,
+  listMyDocuments,
   trackByReference,
   uploadRequestDocument,
   downloadRequestSummary,
@@ -14,6 +15,8 @@ const requestsRouter = Router();
 
 requestsRouter.post('/', requireAuth(['patient']), submitRequest);
 requestsRouter.get('/me', requireAuth(['patient']), listMyRequests);
+// Must come before /me/:id, or Express would try to parse "documents" as an id.
+requestsRouter.get('/me/documents', requireAuth(['patient']), listMyDocuments);
 requestsRouter.get('/me/:id', requireAuth(['patient']), getMyRequestById);
 requestsRouter.get('/me/:id/summary', requireAuth(['patient']), downloadRequestSummary);
 requestsRouter.post('/me/:id/documents', requireAuth(['patient']), upload.single('file'), uploadRequestDocument);

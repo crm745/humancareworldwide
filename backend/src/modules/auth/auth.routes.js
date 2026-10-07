@@ -5,7 +5,10 @@ const {
   registerVerifyOtp,
   loginRequestOtp,
   loginVerifyOtp,
+  googleLogin,
+  appleLogin,
   vendorLogin,
+  vendorVerifyOtp,
   refreshAccessToken,
   getMe,
   updateMe,
@@ -15,14 +18,18 @@ const {
 
 const authRouter = Router();
 
-// Patients authenticate via OTP only — no password.
+// Patients authenticate via OTP, Google, or Apple — no password.
 authRouter.post('/register/request-otp', registerRequestOtp);
 authRouter.post('/register/verify-otp', registerVerifyOtp);
 authRouter.post('/login/request-otp', loginRequestOtp);
 authRouter.post('/login/verify-otp', loginVerifyOtp);
+authRouter.post('/google', googleLogin);
+authRouter.post('/apple', appleLogin);
 
-// Vendors still authenticate with a password.
+// Vendors authenticate with password + OTP (two factors, since these accounts
+// can see patient case/medical data).
 authRouter.post('/vendor/login', vendorLogin);
+authRouter.post('/vendor/otp/verify', vendorVerifyOtp);
 authRouter.post('/forgot-password', requestPasswordReset);
 authRouter.post('/reset-password', resetPassword);
 

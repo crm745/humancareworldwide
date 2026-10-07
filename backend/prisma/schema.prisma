@@ -14,9 +14,11 @@ model User {
   id           Int      @id @default(autoincrement())
   name         String
   email        String   @unique
-  mobile       String   @unique
+  mobile       String?  @unique
   passwordHash String?  @map("password_hash")
   countryCode  String   @default("+91") @map("country_code")
+  googleId     String?  @unique @map("google_id")
+  appleId      String?  @unique @map("apple_id")
   createdAt    DateTime @default(now()) @map("created_at")
   requests     ServiceRequest[]
 
@@ -30,6 +32,7 @@ model OtpCode {
   purpose    String    // "patient_register" | "patient_login" | "vendor_password_reset"
   expiresAt  DateTime  @map("expires_at")
   consumedAt DateTime? @map("consumed_at")
+  attempts   Int       @default(0)
   createdAt  DateTime  @default(now()) @map("created_at")
 
   @@index([identifier, purpose])

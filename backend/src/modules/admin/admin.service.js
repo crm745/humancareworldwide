@@ -14,11 +14,31 @@ async function loginAdmin(email, password) {
   return { token, refreshToken, admin: safeAdmin };
 }
 
+// Vendor logins don't have a password-value history (never store old passwords —
+// that's a security anti-pattern). This is just an event log of when a reset was
+// requested/completed, read straight off the OTP records already created for that flow.
 async function listVendors() {
-  return prisma.vendor.findMany({
+  const vendors = await prisma.vendor.findMany({
     include: { users: { select: { id: true, email: true, role: true, createdAt: true } } },
     orderBy: { createdAt: 'desc' },
   });
+
+  const emails = vendors.flatMap((v) => v.users.map((u) => u.email));
+  const resets = emails.length
+    ? await prisma.otpCode.findMany({
+        where: { identifier: { in: emails }, purpose: 'vendor_password_reset' },
+        orderBy: { createdAt: 'desc' },
+        select: { identifier: true, createdAt: true, consumedAt: true },
+      })
+    : [];
+
+  return vendors.map((v) => ({
+    ...v,
+    users: v.users.map((u) => ({
+      ...u,
+      passwordResetHistory: resets.filter((r) => r.identifier === u.email),
+    })),
+  }));
 }
 
 async function createVendor({ companyName, type }) {
@@ -85,19 +105,25 @@ async function reassignCase(caseId, vendorId) {
   return updated;
 }
 
+// No login-activity tracking exists for patients (OTP auth doesn't stamp a "last seen").
+// "Active" is a stand-in signal instead: have they actually submitted a request recently.
+const ACTIVE_WINDOW_DAYS = 90;
+
 async function searchPatients(search) {
-  if (!search) return prisma.user.findMany({ orderBy: { createdAt: 'desc' }, take: 50 });
-  return prisma.user.findMany({
-    where: {
-      OR: [
-        { name: { contains: search } },
-        { email: { contains: search } },
-        { mobile: { contains: search } },
-      ],
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
+  const where = search
+    ? { OR: [{ name: { contains: search } }, { email: { contains: search } }, { mobile: { contains: search } }] }
+    : undefined;
+  const patients = await prisma.user.findMany({ where, orderBy: { createdAt: 'desc' }, take: 50 });
+
+  const since = new Date(Date.now() - ACTIVE_WINDOW_DAYS * 24 * 60 * 60 * 1000);
+  const recentRequests = await prisma.serviceRequest.findMany({
+    where: { userId: { in: patients.map((p) => p.id) }, createdAt: { gte: since } },
+    select: { userId: true },
+    distinct: ['userId'],
   });
+  const activeIds = new Set(recentRequests.map((r) => r.userId));
+
+  return patients.map((p) => ({ ...p, isActive: activeIds.has(p.id) }));
 }
 
 module.exports = {

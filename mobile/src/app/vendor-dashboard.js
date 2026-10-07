@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
-import { CASES_TODAY, VENDOR_CASES } from '../data/mock';
 import { DEFAULT_FILTERS, applyFilters } from '../lib/filters';
+import { apiGet } from '../lib/api';
+import { toUiStatus, serviceKeyFromTitle } from '../lib/requestShape';
 import { Body, BottomNav, Screen, TopBar } from '../components/layout';
 import { Button, Card, Pill, Spacer, Text } from '../components/ui';
 import { FilterSheet } from '../components/FilterSheet';
@@ -28,16 +29,37 @@ function Stat({ value, label, tone }) {
   );
 }
 
+function toListItem(c) {
+  return {
+    id: c.referenceNumber,
+    rawId: c.id,
+    patient: c.patientName,
+    route: `${c.origin} → ${c.destination}`,
+    stage: toUiStatus(c.status),
+    service: serviceKeyFromTitle(c.serviceType),
+    date: (c.createdAt || '').slice(0, 10),
+  };
+}
+
 export default function VendorDashboard() {
-  const { t } = useApp();
+  const { t, toast } = useApp();
   const [stage, setStage] = useState('all');
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [sheet, setSheet] = useState(false);
+  const [rawCases, setRawCases] = useState([]);
 
-  const count = (s) => VENDOR_CASES.filter((c) => s === 'all' || c.stage === s).length;
+  useEffect(() => {
+    apiGet('/vendor/cases')
+      .then(({ cases: rows }) => setRawCases(rows.map(toListItem)))
+      .catch((err) => toast(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
+  }, []);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const count = (s) => rawCases.filter((c) => s === 'all' || c.stage === s).length;
   const q = query.trim().toLowerCase();
-  const cases = applyFilters(VENDOR_CASES, filters, CASES_TODAY).filter(
+  const cases = applyFilters(rawCases, filters, today).filter(
     (c) => (stage === 'all' || c.stage === stage) && (!q || `${c.id} ${c.patient} ${c.route}`.toLowerCase().includes(q))
   );
 
@@ -55,13 +77,13 @@ export default function VendorDashboard() {
       />
       <Body withNav contentClassName="px-[18px] pt-4">
         <View className="mb-3.5 flex-row gap-2">
-          <Stat value="24" label={t('lbl_total')} />
-          <Stat value="4" label={t('lbl_active')} tone="active" />
-          <Stat value="20" label={t('lbl_done')} tone="done" />
+          <Stat value={String(rawCases.length)} label={t('lbl_total')} />
+          <Stat value={String(rawCases.filter((c) => c.stage === 'submitted' || c.stage === 'progress' || c.stage === 'scheduled').length)} label={t('lbl_active')} tone="active" />
+          <Stat value={String(rawCases.filter((c) => c.stage === 'completed').length)} label={t('lbl_done')} tone="done" />
         </View>
         <View className="gap-2.5">
           {cases.map((c) => (
-            <Card key={c.id} onPress={() => router.push('/tracking')}>
+            <Card key={c.id} onPress={() => router.push({ pathname: '/tracking', params: { id: c.rawId, kind: 'case' } })}>
               <View className="mb-1.5 flex-row items-center justify-between">
                 <Text className="font-inter-black text-[12.5px] text-primary">{c.id}</Text>
                 <Pill status={c.stage} />

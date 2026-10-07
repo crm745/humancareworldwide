@@ -94,18 +94,19 @@ export function OtpInput({ value, onChange, large }) {
 
 export const otpComplete = (v) => /^\d{6}$/.test(v);
 
-export function PasswordField({ label, value, onChangeText, placeholder }) {
+export function PasswordField({ label, value, onChangeText, placeholder, required, error }) {
   const [hidden, setHidden] = useState(true);
   const Icon = hidden ? Eye : EyeOff;
   return (
     <View>
-      <FieldLabel large>{label}</FieldLabel>
+      <FieldLabel large required={required}>{label}</FieldLabel>
       <View className="justify-center">
         <Input large secureTextEntry={hidden} value={value} onChangeText={onChangeText} placeholder={placeholder} className="pr-11" />
         <Pressable onPress={() => setHidden(!hidden)} className="absolute right-3 p-1">
           <Icon size={18} color="#97A4B8" strokeWidth={1.8} />
         </Pressable>
       </View>
+      {error ? <Text className="mt-1 text-[12px] text-danger">{error}</Text> : null}
     </View>
   );
 }

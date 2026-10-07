@@ -93,6 +93,10 @@
   .pill.completed::before{ background:var(--green); }
   .pill.cancelled{ background:color-mix(in srgb, var(--red) 14%, transparent); color:var(--red); }
   .pill.cancelled::before{ background:var(--red); }
+  .pill.active{ background:color-mix(in srgb, var(--green) 15%, transparent); color:var(--green); }
+  .pill.active::before{ background:var(--green); }
+  .pill.inactive{ background:color-mix(in srgb, var(--faint) 20%, transparent); color:var(--muted); }
+  .pill.inactive::before{ background:var(--faint); }
 
   .row-flex{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
   .row-flex .field{ margin-bottom:0; flex:1; min-width:140px; }
@@ -146,13 +150,13 @@
       <div class="page-head"><div><h1>Dashboard</h1><div class="page-dek">Quick overview across the whole system.</div></div></div>
       <div class="stat-grid" id="stat-grid">
         <div class="stat-tile"><div class="num">—</div><div class="label">Total Cases</div></div>
-        <div class="stat-tile"><div class="num">—</div><div class="label">Unassigned</div></div>
+        <div class="stat-tile"><div class="num">—</div><div class="label">Completed</div></div>
         <div class="stat-tile"><div class="num">—</div><div class="label">Vendors</div></div>
         <div class="stat-tile"><div class="num">—</div><div class="label">Patients</div></div>
       </div>
       <div class="card">
         <div class="card-title">Recent Cases</div>
-        <div class="table-wrap"><table id="dash-recent-table"><tbody></tbody></table></div>
+        <div class="table-wrap"><table id="dash-recent-table"><thead><tr><th>Reference</th><th>Date</th><th>Service</th><th>Status</th><th>Patient</th></tr></thead><tbody></tbody></table></div>
       </div>
     </div>
 
@@ -193,9 +197,20 @@
         </select>
       </div>
       <div class="card">
+        <div class="row-flex">
+          <div class="field"><label>Search by reference, patient, or vendor</label><input id="case-search" placeholder="Type to search..." oninput="renderCases()"></div>
+          <div class="field" style="max-width:160px;"><label>Sort</label>
+            <select id="case-sort" onchange="renderCases()">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Reference</th><th>Patient</th><th>Service</th><th>Status</th><th>Vendor</th><th>Reassign</th></tr></thead>
+            <thead><tr><th>Reference</th><th>Date</th><th>Patient</th><th>Service</th><th>Status</th><th>Vendor</th><th>Reassign</th></tr></thead>
             <tbody id="cases-table-body"></tbody>
           </table>
         </div>
@@ -223,7 +238,7 @@
 
     <!-- PATIENTS -->
     <div class="page" id="page-patients">
-      <div class="page-head"><div><h1>Patients</h1><div class="page-dek">Look up an account for support purposes.</div></div></div>
+      <div class="page-head"><div><h1>Patients</h1><div class="page-dek" id="patients-count">Look up an account for support purposes.</div></div></div>
       <div class="card">
         <div class="row-flex">
           <div class="field"><label>Search by name, email, or mobile</label><input id="patient-search" placeholder="Type to search..." oninput="debouncedPatientSearch()"></div>
@@ -232,7 +247,7 @@
       <div class="card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Joined</th></tr></thead>
+            <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Joined</th><th>Status</th></tr></thead>
             <tbody id="patients-table-body"></tbody>
           </table>
         </div>
@@ -329,6 +344,14 @@
   function statusPill(status) {
     return '<span class="pill ' + status + '">' + status.replace('_', ' ') + '</span>';
   }
+  function resetHistoryCell(history) {
+    if (!history || !history.length) return '<span class="faint">Never reset</span>';
+    return history.slice(0, 3).map((h) => {
+      const when = new Date(h.createdAt).toLocaleString();
+      const state = h.consumedAt ? 'completed' : 'requested (not completed)';
+      return '<div class="faint">' + when + ' — ' + state + '</div>';
+    }).join('');
+  }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
@@ -342,16 +365,16 @@
         api('/admin/patients'),
       ]);
       const cases = casesRes.cases;
-      const unassigned = cases.filter((c) => !c.vendorId).length;
+      const completed = cases.filter((c) => c.status === 'completed').length;
       const tiles = document.querySelectorAll('#stat-grid .num');
       tiles[0].textContent = cases.length;
-      tiles[1].textContent = unassigned;
+      tiles[1].textContent = completed;
       tiles[2].textContent = vendorsRes.vendors.length;
       tiles[3].textContent = patientsRes.patients.length;
 
       const tbody = document.querySelector('#dash-recent-table tbody');
       tbody.innerHTML = cases.slice(0, 6).map((c) => (
-        '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td><td>' + esc(c.vendor ? c.vendor.companyName : 'Unassigned') + '</td></tr>'
+        '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td class="faint">' + new Date(c.createdAt).toLocaleDateString() + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td><td>' + esc(c.patientName) + '</td></tr>'
       )).join('') || '<tr><td class="empty-state" colspan="5">No cases yet.</td></tr>';
     } catch (err) { toast(err.message, true); }
   }
@@ -367,13 +390,12 @@
           '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">' +
             '<div><div class="card-title" style="margin-bottom:2px;">' + esc(v.companyName) + '</div><div class="faint">' + esc(v.type) + '</div></div>' +
           '</div>' +
-          '<table style="margin-top:12px;"><thead><tr><th>Login Email</th><th>Role</th></tr></thead><tbody>' +
-            (v.users.length ? v.users.map((u) => '<tr><td>' + esc(u.email) + '</td><td>' + esc(u.role) + '</td></tr>').join('') : '<tr><td class="empty-state" colspan="2">No logins yet.</td></tr>') +
+          '<table style="margin-top:12px;"><thead><tr><th>Login Email</th><th>Password Reset History</th></tr></thead><tbody>' +
+            (v.users.length ? v.users.map((u) => '<tr><td>' + esc(u.email) + '</td><td>' + resetHistoryCell(u.passwordResetHistory) + '</td></tr>').join('') : '<tr><td class="empty-state" colspan="2">No logins yet.</td></tr>') +
           '</tbody></table>' +
           '<div class="row-flex" style="margin-top:14px;">' +
             '<div class="field"><label>New login email</label><input id="vu-email-' + v.id + '" placeholder="ops@company.com"></div>' +
             '<div class="field"><label>Password</label><input id="vu-pwd-' + v.id + '" type="text" placeholder="min 8 characters"></div>' +
-            '<div class="field" style="max-width:120px;"><label>Role</label><select id="vu-role-' + v.id + '"><option value="admin">admin</option><option value="viewer">viewer</option></select></div>' +
             '<button class="btn btn-secondary" onclick="createVendorUser(' + v.id + ')">Add Login</button>' +
           '</div>' +
         '</div>'
@@ -396,16 +418,17 @@
   async function createVendorUser(vendorId) {
     const email = document.getElementById('vu-email-' + vendorId).value.trim();
     const password = document.getElementById('vu-pwd-' + vendorId).value;
-    const role = document.getElementById('vu-role-' + vendorId).value;
     if (!email || !password) return toast('Enter an email and password.', true);
     try {
-      await api('/admin/vendors/' + vendorId + '/users', { method: 'POST', body: { email, password, role } });
+      await api('/admin/vendors/' + vendorId + '/users', { method: 'POST', body: { email, password } });
       toast('Login created.');
       loadVendors();
     } catch (err) { toast(err.message, true); }
   }
 
   // ---- cases ----
+  let casesCache = [];
+
   async function loadCases() {
     try {
       const status = document.getElementById('case-status-filter').value;
@@ -414,15 +437,32 @@
         vendorsCache.length ? Promise.resolve({ vendors: vendorsCache }) : api('/admin/vendors'),
       ]);
       vendorsCache = vendorsRes.vendors;
-      const options = vendorsCache.map((v) => '<option value="' + v.id + '">' + esc(v.companyName) + '</option>').join('');
-      const tbody = document.getElementById('cases-table-body');
-      tbody.innerHTML = casesRes.cases.map((c) => (
-        '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td>' +
-        '<td>' + esc(c.vendor ? c.vendor.companyName : 'Unassigned') + '</td>' +
-        '<td><div style="display:flex;gap:6px;"><select id="reassign-' + c.id + '"><option value="">Choose vendor...</option>' + options + '</select>' +
-        '<button class="btn btn-secondary btn-sm" onclick="reassign(' + c.id + ')">Assign</button></div></td></tr>'
-      )).join('') || '<tr><td class="empty-state" colspan="6">No cases match this filter.</td></tr>';
+      casesCache = casesRes.cases;
+      renderCases();
     } catch (err) { toast(err.message, true); }
+  }
+
+  function renderCases() {
+    const q = (document.getElementById('case-search').value || '').trim().toLowerCase();
+    const sort = document.getElementById('case-sort').value;
+    const options = vendorsCache.map((v) => '<option value="' + v.id + '">' + esc(v.companyName) + '</option>').join('');
+
+    let rows = casesCache.filter((c) => {
+      if (!q) return true;
+      const vendorName = c.vendor ? c.vendor.companyName : '';
+      return (c.referenceNumber + ' ' + c.patientName + ' ' + vendorName).toLowerCase().includes(q);
+    });
+    rows = rows.slice().sort((a, b) => (
+      sort === 'oldest' ? new Date(a.createdAt) - new Date(b.createdAt) : new Date(b.createdAt) - new Date(a.createdAt)
+    ));
+
+    const tbody = document.getElementById('cases-table-body');
+    tbody.innerHTML = rows.map((c) => (
+      '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td class="faint">' + new Date(c.createdAt).toLocaleDateString() + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td>' +
+      '<td>' + esc(c.vendor ? c.vendor.companyName : 'Unassigned') + '</td>' +
+      '<td><div style="display:flex;gap:6px;"><select id="reassign-' + c.id + '"><option value="">Choose vendor...</option>' + options + '</select>' +
+      '<button class="btn btn-secondary btn-sm" onclick="reassign(' + c.id + ')">Assign</button></div></td></tr>'
+    )).join('') || '<tr><td class="empty-state" colspan="7">No cases match this filter.</td></tr>';
   }
 
   async function reassign(caseId) {
@@ -443,6 +483,7 @@
       const el = document.getElementById('services-list');
       el.innerHTML = services.map((s) => (
         '<div class="card">' +
+          '<div class="faint" style="margin-bottom:10px;">Created ' + new Date(s.createdAt).toLocaleDateString() + '</div>' +
           '<div class="row-flex">' +
             '<div class="field"><label>Name</label><input id="s-name-' + s.id + '" value="' + esc(s.name) + '"></div>' +
             '<div class="field"><label>Subtitle</label><input id="s-subtitle-' + s.id + '" value="' + esc(s.subtitle || '') + '"></div>' +
@@ -504,10 +545,12 @@
     try {
       const search = document.getElementById('patient-search').value.trim();
       const { patients } = await api('/admin/patients' + (search ? '?search=' + encodeURIComponent(search) : ''));
+      document.getElementById('patients-count').textContent = patients.length + ' patient' + (patients.length === 1 ? '' : 's');
       const tbody = document.getElementById('patients-table-body');
       tbody.innerHTML = patients.map((p) => (
-        '<tr><td>' + esc(p.name) + '</td><td>' + esc(p.email) + '</td><td>' + esc(p.mobile) + '</td><td class="faint">' + new Date(p.createdAt).toLocaleDateString() + '</td></tr>'
-      )).join('') || '<tr><td class="empty-state" colspan="4">No patients found.</td></tr>';
+        '<tr><td>' + esc(p.name) + '</td><td>' + esc(p.email) + '</td><td>' + esc(p.mobile) + '</td><td class="faint">' + new Date(p.createdAt).toLocaleDateString() + '</td>' +
+        '<td><span class="pill ' + (p.isActive ? 'active' : 'inactive') + '">' + (p.isActive ? 'active' : 'inactive') + '</span></td></tr>'
+      )).join('') || '<tr><td class="empty-state" colspan="5">No patients found.</td></tr>';
     } catch (err) { toast(err.message, true); }
   }
 

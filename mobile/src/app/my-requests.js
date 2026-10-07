@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp } from '../state/AppContext';
-import { MY_REQUESTS, REQUESTS_TODAY, SERVICE_LABELS } from '../data/mock';
+import { SERVICE_LABELS } from '../data/mock';
 import { DEFAULT_FILTERS, applyFilters } from '../lib/filters';
+import { apiGet } from '../lib/api';
+import { toListItem } from '../lib/requestShape';
 import { Body, BottomNav, Screen, TopBar } from '../components/layout';
 import { Card, Pill, Text } from '../components/ui';
 import { FilterSheet } from '../components/FilterSheet';
@@ -15,15 +17,24 @@ const FILTER_SERVICES = Object.entries(SERVICE_LABELS).map(([value, labelKey]) =
 // `status` param comes from the Profile overview: all | active | completed.
 // "active" (submitted + in progress) has no chip of its own, so no chip is highlighted for it.
 export default function MyRequests() {
-  const { t } = useApp();
+  const { t, toast } = useApp();
   const params = useLocalSearchParams();
   const [status, setStatus] = useState(params.status || 'all');
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [sheet, setSheet] = useState(false);
+  const [requests, setRequests] = useState([]);
 
+  useEffect(() => {
+    apiGet('/requests/me')
+      .then(({ requests: rows }) => setRequests(rows.map(toListItem)))
+      .catch((err) => toast(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
+  }, []);
+
+  const today = new Date().toISOString().slice(0, 10);
   const q = query.trim().toLowerCase();
-  const items = applyFilters(MY_REQUESTS, filters, REQUESTS_TODAY).filter((r) => {
+  const items = applyFilters(requests, filters, today).filter((r) => {
     const statusOk = status === 'all' || (status === 'active' ? ['submitted', 'progress'].includes(r.status) : r.status === status);
     const searchOk = !q || r.id.toLowerCase().includes(q) || t(SERVICE_LABELS[r.service]).toLowerCase().includes(q);
     return statusOk && searchOk;
@@ -43,7 +54,7 @@ export default function MyRequests() {
       />
       <Body withNav contentClassName="gap-2.5 px-[18px] pt-4">
         {items.map((r) => (
-          <Card key={r.id} onPress={() => router.push('/request-details')}>
+          <Card key={r.id} onPress={() => router.push({ pathname: '/request-details', params: { id: r.rawId } })}>
             <View className="flex-row items-start justify-between">
               <View>
                 <Text className="font-inter-black text-[14.5px]">{r.id}</Text>

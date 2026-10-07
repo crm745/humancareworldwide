@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { Check, ChevronRight, Mail, Pencil, Smartphone } from 'lucide-react-native';
 import { initialsOf, useApp } from '../state/AppContext';
 import { LANGUAGES, VENDOR_IDENTITY } from '../data/mock';
 import { navReplace } from '../lib/nav';
+import { apiGet } from '../lib/api';
+import { clearTokens } from '../lib/session';
 import { Body, BottomNav, IconButton, Screen, TopBar } from '../components/layout';
 import { Button, Card, InfoRow, Text } from '../components/ui';
 import { Sheet } from '../components/widgets';
@@ -48,13 +50,28 @@ function LanguageSheet({ visible, onClose }) {
 }
 
 export default function Profile() {
-  const { t, isVendor, profile, lang } = useApp();
+  const { t, isVendor, profile, lang, toast } = useApp();
   const [langSheet, setLangSheet] = useState(false);
+  const [counts, setCounts] = useState({ total: 0, active: 0, done: 0 });
+
+  useEffect(() => {
+    if (isVendor) return;
+    apiGet('/requests/me')
+      .then(({ requests }) => {
+        const active = requests.filter((r) => r.status === 'submitted' || r.status === 'in_progress').length;
+        const done = requests.filter((r) => r.status === 'completed').length;
+        setCounts({ total: requests.length, active, done });
+      })
+      .catch((err) => toast(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
+  }, [isVendor]);
+
   const stats = isVendor
     ? { total: '24', active: '4', done: '20', totalLbl: t('lbl_total'), doneLbl: t('lbl_done') }
-    : { total: '5', active: '2', done: '3', totalLbl: t('lbl_total_requests'), doneLbl: t('status_completed') };
+    : { total: String(counts.total), active: String(counts.active), done: String(counts.done), totalLbl: t('lbl_total_requests'), doneLbl: t('status_completed') };
   const openStat = (status) => (isVendor ? navReplace('/vendor-dashboard') : navReplace(`/my-requests?status=${status}`));
   const langLabel = LANGUAGES.find((l) => l.code === lang).label;
+  const signOut = async () => { await clearTokens(); navReplace('/welcome'); };
 
   return (
     <Screen>
@@ -102,7 +119,7 @@ export default function Profile() {
           <InfoRow className="py-[15px]" last label={t('language')} value={`${langLabel} >`} valueClassName="text-primary" onPress={() => setLangSheet(true)} />
         </Card>
 
-        <Button variant="danger" title={t('sign_out')} onPress={() => navReplace('/welcome')} className="py-[15px]" />
+        <Button variant="danger" title={t('sign_out')} onPress={signOut} className="py-[15px]" />
       </Body>
       <BottomNav />
       <LanguageSheet visible={langSheet} onClose={() => setLangSheet(false)} />

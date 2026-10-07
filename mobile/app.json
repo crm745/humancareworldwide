@@ -7,9 +7,12 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.humancareworldwide.app",
+      "usesAppleSignIn": true
     },
     "android": {
+      "package": "com.humancareworldwide.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -25,8 +28,17 @@
     "plugins": [
       "expo-router",
       "expo-status-bar",
-      "expo-font"
+      "expo-font",
+      "expo-web-browser",
+      "expo-secure-store",
+      "expo-sharing"
     ],
-    "scheme": "humancare"
+    "scheme": "humancare",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d2d77653-3b13-40b5-9bfa-50b04cd52904"
+      }
+    }
   }
 }

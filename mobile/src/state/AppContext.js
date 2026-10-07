@@ -18,7 +18,7 @@ export const INITIAL_DRAFT = {
   desc: '',
   dest: 'Dubai, UAE',
   date: '2026-09-25',
-  uploaded: false,
+  uploadedFile: null, // { uri, name, mimeType, size } from expo-document-picker, or null
   extra: '',
   special: '',
   source: '',

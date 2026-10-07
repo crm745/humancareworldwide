@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { Linking, Pressable, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import Animated, { Easing, withDelay, withSequence, withSpring, withTiming, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { BellRing, Check, ClipboardCheck, Phone, PhoneCall } from 'lucide-react-native';
 import { useApp } from '../../state/AppContext';
-import SERVICES from '../../data/services.json';
 import { EMERGENCY_DISPLAY, EMERGENCY_TEL } from '../../data/mock';
 import { navReplace } from '../../lib/nav';
 import { Body, Screen, TopBar } from '../../components/layout';
@@ -51,12 +51,9 @@ const STEPS = [
   ['next_step_updates', BellRing],
 ];
 
-// Mock reference; the backend's POST /requests will return the real one (ROADMAP.md §3).
-const MOCK_REQUEST_ID = 'REQ-1006';
-
 export default function RequestSubmitted() {
-  const { t, draft } = useApp();
-  const service = (SERVICES[draft.service] || SERVICES.air).title;
+  const { t } = useApp();
+  const { id, service } = useLocalSearchParams();
   return (
     <Screen>
       <TopBar title={t('request_submitted_title')} onBack={() => navReplace('/home')} />
@@ -68,7 +65,7 @@ export default function RequestSubmitted() {
         <Card className="mb-3 w-full flex-row items-center justify-between px-[18px] py-4">
           <View className="min-w-0 flex-1">
             <Text className="text-[12px] text-faint">{t('lbl_request_id')}</Text>
-            <Text className="mt-0.5 font-inter-black text-[17px] text-navy">{MOCK_REQUEST_ID}</Text>
+            <Text className="mt-0.5 font-inter-black text-[17px] text-navy">{id}</Text>
             <Text className="mt-0.5 text-[12.5px] text-muted" numberOfLines={1}>{service}</Text>
           </View>
           <Pill status="submitted" />

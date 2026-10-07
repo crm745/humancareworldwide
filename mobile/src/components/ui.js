@@ -1,6 +1,7 @@
 import { Pressable, Text as RNText, TextInput, View } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
+import { Spinner } from './Spinner';
 
 const HAS_COLOR = /(^|\s)text-(navy|ink|slate|muted|faint|white|primary|success|danger|warning|cancel|scheduled)/;
 const HAS_FONT = /(^|\s)font-inter/;
@@ -27,26 +28,30 @@ export function Heading({ className = '', ...props }) {
 }
 
 const BUTTON = {
-  primary: { box: 'bg-primary', text: 'text-white text-[15px]' },
-  outline: { box: 'bg-white border-[1.5px] border-primary', text: 'text-primary text-[14.5px]' },
-  ghost: { box: 'bg-transparent border-[1.5px] border-field', text: 'text-slate text-[14px]' },
-  danger: { box: 'bg-white border-[1.5px] border-danger-line', text: 'text-danger text-[14.5px]' },
-  sos: { box: 'bg-danger', text: 'text-white text-[14px]' },
+  primary: { box: 'bg-primary', text: 'text-white text-[15px]', spinner: '#fff' },
+  outline: { box: 'bg-white border-[1.5px] border-primary', text: 'text-primary text-[14.5px]', spinner: '#1A73E8' },
+  ghost: { box: 'bg-transparent border-[1.5px] border-field', text: 'text-slate text-[14px]', spinner: '#45526B' },
+  danger: { box: 'bg-white border-[1.5px] border-danger-line', text: 'text-danger text-[14.5px]', spinner: '#D64545' },
+  sos: { box: 'bg-danger', text: 'text-white text-[14px]', spinner: '#fff' },
 };
 
-// `dimmed` reproduces the prototype's 45%-opacity "not ready yet" buttons, which stay tappable.
-export function Button({ title, onPress, variant = 'primary', dimmed, large, icon, className = '', textClassName = '' }) {
+// `dimmed` reproduces the prototype's 45%-opacity "not ready yet" buttons, which stay
+// tappable (so a tap can still surface a validation message). `loading` is different —
+// a request is genuinely in flight, so the button is actually disabled (no double-submits)
+// and shows a spinner instead of the icon.
+export function Button({ title, onPress, variant = 'primary', dimmed, loading, large, icon, className = '', textClassName = '' }) {
   const v = BUTTON[variant];
-  const shadow = variant === 'primary' && !dimmed
+  const shadow = variant === 'primary' && !dimmed && !loading
     ? { shadowColor: '#1A73E8', shadowOpacity: 0.28, shadowRadius: 10, shadowOffset: { width: 0, height: 8 }, elevation: 4 }
     : null;
   return (
     <Pressable
       onPress={onPress}
+      disabled={loading}
       style={shadow}
-      className={cx(`flex-row items-center justify-center gap-1.5 rounded-xl ${large ? 'py-4' : 'py-3.5'} ${v.box} ${dimmed ? 'opacity-45' : 'active:opacity-85'}`, className)}
+      className={cx(`flex-row items-center justify-center gap-1.5 rounded-xl ${large ? 'py-4' : 'py-3.5'} ${v.box} ${dimmed || loading ? 'opacity-45' : 'active:opacity-85'}`, className)}
     >
-      {icon}
+      {loading ? <Spinner size={large ? 19 : 16} color={v.spinner} /> : icon}
       <Text className={`font-inter-bold ${v.text} ${large ? 'text-[16.5px]' : ''} ${textClassName}`}>{title}</Text>
     </Pressable>
   );
@@ -134,8 +139,12 @@ export function SectionLabel({ children, className = '' }) {
   return <Text className={`font-inter-black text-[12.5px] text-primary uppercase tracking-wider mb-2.5 ${className}`}>{children}</Text>;
 }
 
-export function FieldLabel({ children, large, className = '' }) {
-  return <Text className={`font-inter-bold ${large ? 'text-[14px]' : 'text-[12.5px]'} text-slate mb-1.5 ${className}`}>{children}</Text>;
+export function FieldLabel({ children, large, required, className = '' }) {
+  return (
+    <Text className={`font-inter-bold ${large ? 'text-[14px]' : 'text-[12.5px]'} text-slate mb-1.5 ${className}`}>
+      {children}{required ? <Text className="text-danger"> *</Text> : null}
+    </Text>
+  );
 }
 
 export function Input({ large, multiline, className = '', ...props }) {
@@ -150,11 +159,12 @@ export function Input({ large, multiline, className = '', ...props }) {
   );
 }
 
-export function Field({ label, large, className = '', ...inputProps }) {
+export function Field({ label, large, required, error, className = '', ...inputProps }) {
   return (
     <View className={className}>
-      <FieldLabel large={large}>{label}</FieldLabel>
+      <FieldLabel large={large} required={required}>{label}</FieldLabel>
       <Input large={large} {...inputProps} />
+      {error ? <Text className="mt-1 text-[12px] text-danger">{error}</Text> : null}
     </View>
   );
 }
