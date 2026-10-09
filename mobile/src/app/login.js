@@ -43,7 +43,7 @@ export default function Login() {
       <Body contentClassName="justify-center p-[26px]">
         <Heading className="text-center text-[29.5px]">{t('login_title')}</Heading>
         <Text className="mb-8 mt-2.5 text-center text-[16.5px] text-muted">{t('login_sub')}</Text>
-        <Field large label={t('field_mobile_email')} placeholder="98765 43210 or email" value={id} onChangeText={setId} autoCapitalize="none" required error={id && !isValidLoginIdentifier(id) ? 'Enter a valid mobile number or email.' : undefined} />
+        <Field large label={t('field_mobile_email')} placeholder="Mobile number or email" value={id} onChangeText={setId} autoCapitalize="none" required error={id && !isValidLoginIdentifier(id) ? 'Enter a valid mobile number or email.' : undefined} />
         <Button large title={t('send_otp_btn')} dimmed={!isValidLoginIdentifier(id)} loading={busy} onPress={submit} className="mt-[30px]" />
         <Text className="my-[22px] text-center text-[14px] text-faint">{t('login_or')}</Text>
         <View className="flex-row justify-center gap-3">

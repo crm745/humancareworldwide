@@ -1,4 +1,5 @@
 const { prisma } = require('../../db/prisma');
+const { sendExpoPush } = require('../../lib/expo-push.service');
 
 const VALID_CASE_STATUSES = ['submitted', 'scheduled', 'in_progress', 'completed', 'cancelled'];
 const CASE_INCLUDE = {
@@ -103,9 +104,12 @@ async function updateCaseStage(caseId, stage, note) {
 }
 
 async function notifyPatient(userId, { kind, title, body }) {
-  return prisma.notification.create({
+  const notification = await prisma.notification.create({
     data: { recipientType: 'patient', recipientId: userId, kind, title, body },
   });
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { pushToken: true } });
+  await sendExpoPush(user?.pushToken, { title, body });
+  return notification;
 }
 
 module.exports = {

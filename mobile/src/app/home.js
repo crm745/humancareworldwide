@@ -9,6 +9,7 @@ import { EMERGENCY_DISPLAY, EMERGENCY_TEL, VENDOR_IDENTITY } from '../data/mock'
 import { navReplace } from '../lib/nav';
 import { apiGet } from '../lib/api';
 import { clearTokens } from '../lib/session';
+import { registerForPushNotifications } from '../lib/pushNotifications';
 import { Body, BottomNav, IconButton, Screen } from '../components/layout';
 import { Button, Text } from '../components/ui';
 import { ServiceGrid } from '../components/ServiceGrid';
@@ -45,6 +46,7 @@ export default function Home() {
     apiGet('/notifications?unreadOnly=true')
       .then(({ notifications }) => setHasUnread(notifications.length > 0))
       .catch(() => {});
+    registerForPushNotifications();
   }, [isVendor]);
 
   const signOut = async () => {

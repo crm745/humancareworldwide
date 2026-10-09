@@ -12,6 +12,7 @@ const {
   refreshAccessToken,
   getMe,
   updateMe,
+  savePushToken,
   requestPasswordReset,
   resetPassword,
 } = require('./auth.controller');
@@ -36,5 +37,6 @@ authRouter.post('/reset-password', resetPassword);
 authRouter.post('/refresh', refreshAccessToken);
 authRouter.get('/me', requireAuth(), getMe);
 authRouter.patch('/me', requireAuth(['patient']), updateMe);
+authRouter.post('/push-token', requireAuth(['patient']), savePushToken);
 
 module.exports = { authRouter };

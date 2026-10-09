@@ -19,6 +19,7 @@ model User {
   countryCode  String   @default("+91") @map("country_code")
   googleId     String?  @unique @map("google_id")
   appleId      String?  @unique @map("apple_id")
+  pushToken    String?  @map("push_token")
   createdAt    DateTime @default(now()) @map("created_at")
   requests     ServiceRequest[]
 

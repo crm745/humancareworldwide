@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Linking, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { Check, Plane } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
 import { apiGet } from '../lib/api';
+import { downloadAndShare } from '../lib/download';
 import { toUiStatus, formatDisplayDate } from '../lib/requestShape';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Card, InfoRow, Pill, Spacer, Text } from '../components/ui';
 import { DocRow } from '../components/widgets';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
 
 // Stylised route map (placeholder until real map/live tracking is wired up).
 function RouteMap({ origin, destination }) {
@@ -162,7 +161,7 @@ export default function Tracking() {
         <Body contentClassName="p-[18px]">
           {item.documents.length === 0 && <Text className="py-6 text-center text-[13px] text-faint">No documents uploaded yet.</Text>}
           {item.documents.map((d) => (
-            <DocRow key={d.id} label={d.name} meta={d.fileSizeBytes ? `${Math.round(d.fileSizeBytes / 1024)} KB` : ''} onPress={() => Linking.openURL(`${API_URL}${d.fileUrl}`)} />
+            <DocRow key={d.id} label={d.name} meta={d.fileSizeBytes ? `${Math.round(d.fileSizeBytes / 1024)} KB` : ''} onPress={() => downloadAndShare(`/documents/${d.id}/file`, d.name).catch((err) => toast(err.message))} />
           ))}
           <Spacer min={14} />
         </Body>

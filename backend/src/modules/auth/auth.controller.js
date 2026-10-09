@@ -1,3 +1,4 @@
+const disposableDomains = require("disposable-email-domains");
 const { prisma } = require("../../db/prisma");
 const {
   signAccessToken,
@@ -12,12 +13,24 @@ const {
   findOrCreateSocialUser,
 } = require("./auth.service");
 
+const disposableDomainSet = new Set(disposableDomains);
+function isDisposableEmail(email) {
+  const domain = email.split("@")[1]?.toLowerCase();
+  return !!domain && disposableDomainSet.has(domain);
+}
+
+//
 async function registerRequestOtp(req, res) {
   const { name, email, mobile } = req.body;
   if (!name || !email || !mobile) {
     return res
       .status(400)
       .json({ error: "name, email and mobile are required" });
+  }
+  if (isDisposableEmail(email)) {
+    return res
+      .status(400)
+      .json({ error: "Please use a permanent email address, not a temporary/disposable one." });
   }
 
   const existing = await prisma.user.findFirst({
@@ -42,13 +55,18 @@ async function registerRequestOtp(req, res) {
   }
   res.json({ message: "OTP sent." });
 }
-
+//
 async function registerVerifyOtp(req, res) {
   const { name, email, mobile, countryCode, code } = req.body;
   if (!name || !email || !mobile || !code) {
     return res
       .status(400)
       .json({ error: "name, email, mobile and code are required" });
+  }
+  if (isDisposableEmail(email)) {
+    return res
+      .status(400)
+      .json({ error: "Please use a permanent email address, not a temporary/disposable one." });
   }
 
   const result = await verifyOtp(mobile, "patient_register", code);
@@ -77,16 +95,20 @@ async function registerVerifyOtp(req, res) {
 
 // Mobile numbers are stored without a country code (e.g. "8691930716"), but someone
 // logging in might type "+918691930716" — matching on the exact string would miss
-// their own account. Matching on the last 10 digits instead means it doesn't matter
-// whether a country code was typed, or which one.
+// their own account. A fixed "last 10 digits" match only works for the countries whose
+// national numbers happen to be 10 digits long (India/UK/US are, but e.g. the UAE's are
+// 9) — so instead we try the typed digits with 0 to 4 leading characters stripped (the
+// range of real-world calling-code lengths) and match whichever one is a stored number.
+// That works for any country without needing a hardcoded table of code lengths.
 async function findUserByIdentifier(identifier) {
   if (identifier.includes("@")) {
     return prisma.user.findFirst({ where: { email: identifier } });
   }
-  const last10 = identifier.replace(/\D/g, "").slice(-10);
-  return prisma.user.findFirst({ where: { mobile: { endsWith: last10 } } });
+  const digits = identifier.replace(/\D/g, "");
+  const candidates = [0, 1, 2, 3, 4].map((n) => digits.slice(n)).filter(Boolean);
+  return prisma.user.findFirst({ where: { mobile: { in: candidates } } });
 }
-
+//
 async function loginRequestOtp(req, res) {
   const { identifier } = req.body;
   if (!identifier)
@@ -112,7 +134,7 @@ async function loginRequestOtp(req, res) {
       "If an account exists for that email or mobile number, an OTP has been sent.",
   });
 }
-
+//
 async function loginVerifyOtp(req, res) {
   const { identifier, code } = req.body;
   if (!identifier || !code)
@@ -129,7 +151,7 @@ async function loginVerifyOtp(req, res) {
   const { passwordHash: _omit, ...safeUser } = user;
   res.json({ token, refreshToken, user: safeUser });
 }
-
+// the function for continue with google 
 async function googleLogin(req, res) {
   const { idToken } = req.body;
   if (!idToken) return res.status(400).json({ error: "idToken is required" });
@@ -222,7 +244,6 @@ async function vendorVerifyOtp(req, res) {
   const { passwordHash: _omit, ...safeVendorUser } = vendorUser;
   res.json({ token, refreshToken, vendorUser: safeVendorUser });
 }
-//the function for the access refresh token 
 async function refreshAccessToken(req, res) {
   const { refreshToken } = req.body;
   if (!refreshToken)
@@ -244,7 +265,7 @@ async function refreshAccessToken(req, res) {
   const newRefreshToken = signRefreshToken(claims);
   res.json({ token, refreshToken: newRefreshToken });
 }
-//the function is 
+
 async function getMe(req, res) {
   if (req.user.role === "vendor") {
     const vendorUser = await prisma.vendorUser.findUnique({
@@ -262,7 +283,7 @@ async function getMe(req, res) {
   const { passwordHash: _omit, ...safeUser } = user;
   res.json({ user: safeUser });
 }
-//the function for updating the profile 
+// the function for updating the profile using email
 async function updateMe(req, res) {
   const { name, mobile, email, countryCode } = req.body;
 
@@ -299,6 +320,14 @@ async function updateMe(req, res) {
   const { passwordHash: _omit, ...safeUser } = user;
   res.json({ user: safeUser });
 }
+// the function for saving the push token in the db for popup notification and we need ios account for it while doing the login task with it we'll do the notification task as well
+async function savePushToken(req, res) {
+  const { pushToken } = req.body;
+  if (!pushToken) return res.status(400).json({ error: "pushToken is required" });
+
+  await prisma.user.update({ where: { id: req.user.id }, data: { pushToken } });
+  res.json({ message: "Push token saved." });
+}
 
 // Vendor accounts still use a password, so "forgot password" only applies to them —
 // patients authenticate via OTP and have nothing to reset.
@@ -324,7 +353,7 @@ async function requestPasswordReset(req, res) {
       "If a vendor account exists for that email, a reset code has been sent.",
   });
 }
-//reset password function using
+
 async function resetPassword(req, res) {
   const { email, code, newPassword } = req.body;
   if (!email || !code || !newPassword) {
@@ -366,6 +395,7 @@ module.exports = {
   refreshAccessToken,
   getMe,
   updateMe,
+  savePushToken,
   requestPasswordReset,
   resetPassword,
 };

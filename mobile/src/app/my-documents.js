@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
 import { useApp } from '../state/AppContext';
 import { apiGet } from '../lib/api';
+import { downloadAndShare } from '../lib/download';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Text } from '../components/ui';
 import { DocRow } from '../components/widgets';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
 
 export default function MyDocuments() {
   const { t, toast } = useApp();
@@ -30,7 +28,7 @@ export default function MyDocuments() {
             key={d.id}
             label={d.name}
             meta={`${d.case?.referenceNumber || ''}${d.fileSizeBytes ? ` · ${Math.round(d.fileSizeBytes / 1024)} KB` : ''}`}
-            onPress={() => Linking.openURL(`${API_URL}${d.fileUrl}`)}
+            onPress={() => downloadAndShare(`/documents/${d.id}/file`, d.name).catch((err) => toast(err.message))}
           />
         ))}
       </Body>

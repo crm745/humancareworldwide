@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "330921739805",
+    "project_id": "humancare-world-wide-18ae0",
+    "storage_bucket": "humancare-world-wide-18ae0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330921739805:android:500e274d7ec26818cfe8f4",
+        "android_client_info": {
+          "package_name": "com.humancareworldwide.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuFfFxLyYt_pN-QKcQv_pSmGfYDILsmf4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

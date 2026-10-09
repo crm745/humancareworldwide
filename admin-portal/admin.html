@@ -428,7 +428,7 @@
 
   // ---- cases ----
   let casesCache = [];
-
+//the function for loading the cases
   async function loadCases() {
     try {
       const status = document.getElementById('case-status-filter').value;
@@ -498,7 +498,7 @@
       )).join('') || '<div class="empty-state">No services yet — add one above.</div>';
     } catch (err) { toast(err.message, true); }
   }
-
+//the function for creating service in the database
   async function createService() {
     const slug = document.getElementById('ns-slug').value.trim();
     const name = document.getElementById('ns-name').value.trim();
@@ -513,7 +513,7 @@
       loadServices();
     } catch (err) { toast(err.message, true); }
   }
-
+  //the function for saving the service data in db 
   async function saveService(slug, id) {
     const name = document.getElementById('s-name-' + id).value.trim();
     const subtitle = document.getElementById('s-subtitle-' + id).value.trim();
@@ -525,7 +525,7 @@
       loadServices();
     } catch (err) { toast(err.message, true); }
   }
-
+// the function to remove service from the database by running delete command
   async function removeService(slug) {
     if (!confirm('Delete this service? This cannot be undone.')) return;
     try {
@@ -541,6 +541,7 @@
     clearTimeout(patientDebounce);
     patientDebounce = setTimeout(loadPatients, 300);
   }
+  // the function for loading the patients data
   async function loadPatients() {
     try {
       const search = document.getElementById('patient-search').value.trim();
