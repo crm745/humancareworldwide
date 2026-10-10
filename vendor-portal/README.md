@@ -3,7 +3,7 @@
 Frontend for HumanCare's vendor and corporate partners: registration and KYC, case requests, patients,
 documents, invoices, payments, notifications and support.
 
-React 18 · TypeScript · Vite · Tailwind CSS · React Router · React Hook Form + Zod · Recharts · Axios · Lucide icons.
+React 18 · JavaScript (JSX) · Vite · Tailwind CSS · React Router · React Hook Form + Zod · Recharts · Axios · Lucide icons.
 
 ## Run it
 
@@ -21,9 +21,8 @@ built-in mock API that stores data in the browser's `localStorage`.
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Development server with hot reload |
-| `npm run build` | Type-check (`tsc`) and production build into `dist/` |
+| `npm run build` | Production build into `dist/` |
 | `npm run preview` | Serve the production build locally |
-| `npm run typecheck` | TypeScript check only |
 
 ## Trying it out
 
@@ -51,7 +50,7 @@ uploaded files are deliberately never saved in a draft.
 
 ```
 src/
-├── App.tsx                 providers + router
+├── App.jsx                 providers + router
 ├── routes/                 route table (lazy-loaded pages) and auth guards
 ├── layouts/                AuthLayout (split login), DashboardLayout (sidebar/header/bottom nav), RegistrationLayout (stepper)
 ├── pages/
@@ -80,10 +79,10 @@ src/
    VITE_USE_MOCK_API=false
    VITE_API_BASE_URL=https://your-api.example.com/api
    ```
-2. Every method in `src/services/*Service.ts` already has the matching REST call next to its mock
+2. Every method in `src/services/*Service.js` already has the matching REST call next to its mock
    implementation (for example `POST /auth/vendor/login`, `GET /vendor/cases`, `POST /vendors/register`).
    Implement those endpoints on the Express server.
-3. `src/services/http.ts` is the Axios client. It sends `Authorization: Bearer <JWT>` on every request and
+3. `src/services/http.js` is the Axios client. It sends `Authorization: Bearer <JWT>` on every request and
    signs the user out on a `401`.
 4. Login expects `{ token, user, expiresIn }`. The session is kept in `localStorage` when **Remember me**
    is ticked (30 days), otherwise in `sessionStorage` (8 hours).
