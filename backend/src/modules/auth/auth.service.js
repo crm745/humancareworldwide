@@ -16,7 +16,7 @@ function generateOtp() {
   return crypto.randomInt(0, 1000000).toString().padStart(6, '0');
 }
 
-async function issueOtp(identifier, purpose) {
+async function issueOtp(identifier, purpose, countryCode) {
   const lastCode = await prisma.otpCode.findFirst({
     where: { identifier, purpose },
     orderBy: { createdAt: 'desc' },
@@ -38,7 +38,7 @@ async function issueOtp(identifier, purpose) {
     data: { identifier, codeHash, purpose, expiresAt },
   });
 
-  await deliverOtp(identifier, code, purpose);
+  await deliverOtp(identifier, code, purpose, countryCode);
   return { throttled: false, expiresAt };
 }
 // the function for verify with the otp for normal users

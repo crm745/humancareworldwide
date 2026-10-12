@@ -15,6 +15,8 @@ const {
   savePushToken,
   requestPasswordReset,
   resetPassword,
+  changePassword,
+  vendorLogout,
 } = require('./auth.controller');
 
 const authRouter = Router();
@@ -33,6 +35,12 @@ authRouter.post('/vendor/login', vendorLogin);
 authRouter.post('/vendor/otp/verify', vendorVerifyOtp);
 authRouter.post('/forgot-password', requestPasswordReset);
 authRouter.post('/reset-password', resetPassword);
+// Same two handlers, reachable under /vendor/* too — the vendor-portal web app calls
+// them by this name; patients never had a password to reset in the first place.
+authRouter.post('/vendor/forgot-password', requestPasswordReset);
+authRouter.post('/vendor/reset-password', resetPassword);
+authRouter.post('/vendor/change-password', requireAuth(['vendor']), changePassword);
+authRouter.post('/vendor/logout', vendorLogout);
 
 authRouter.post('/refresh', refreshAccessToken);
 authRouter.get('/me', requireAuth(), getMe);

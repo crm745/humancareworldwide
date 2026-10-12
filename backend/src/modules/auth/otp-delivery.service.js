@@ -33,15 +33,15 @@ async function sendOtpEmail(email, code, purpose) {
 
 // The mobile field is stored without its country code (the patient app splits them
 // into separate `cc`/`phone` fields but only sends `phone` through) — Twilio needs a
-// full E.164 number (e.g. +919876543210) though, so this fills in a default country
-// code when one isn't already present. India-only assumption for now; once mobile
-// numbers are stored with their real country code end to end, this can go away.
-function toE164(mobile) {
+// full E.164 number (e.g. +919876543210) though, so this fills in the caller-supplied
+// country code when the number doesn't already have one. Falls back to +91 only when
+// no country code is known at all (e.g. an old record from before this was tracked).
+function toE164(mobile, countryCode) {
   if (mobile.startsWith('+')) return mobile;
-  return `+91${mobile}`;
+  return `${countryCode || '+91'}${mobile}`;
 }
-
-async function sendOtpSms(mobile, code, purpose) {
+//the function for send otp on sms to registered mobile number for login and registration
+async function sendOtpSms(mobile, code, purpose, countryCode) {
   const sid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const from = process.env.TWILIO_PHONE_NUMBER;
@@ -50,7 +50,7 @@ async function sendOtpSms(mobile, code, purpose) {
   const client = twilio(sid, authToken);
   const label = PURPOSE_LABEL[purpose] || 'HumanCare';
   await client.messages.create({
-    to: toE164(mobile),
+    to: toE164(mobile, countryCode),
     from,
     body: `${code} is your ${label} code. It expires in 5 minutes.`,
   });
@@ -60,11 +60,11 @@ async function sendOtpSms(mobile, code, purpose) {
 // a failed OTP send is something the person needs to know about immediately (they'll
 // just be stuck waiting for a code that never arrives), so this throws on failure
 // rather than swallowing the error.
-async function deliverOtp(identifier, code, purpose) {
+async function deliverOtp(identifier, code, purpose, countryCode) {
   if (isEmail(identifier)) {
     await sendOtpEmail(identifier, code, purpose);
   } else {
-    await sendOtpSms(identifier, code, purpose);
+    await sendOtpSms(identifier, code, purpose, countryCode);
   }
 }
 

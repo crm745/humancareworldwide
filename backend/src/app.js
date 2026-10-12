@@ -7,6 +7,7 @@ const { notificationsRouter } = require('./modules/notifications/notifications.r
 const { servicesRouter } = require('./modules/services/services.routes');
 const { adminRouter } = require('./modules/admin/admin.routes');
 const { documentsRouter } = require('./modules/documents/documents.routes');
+const { vendorPortalRouter } = require('./modules/vendor-portal/vendor-portal.routes');
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ app.use('/auth', authRouter);
 app.use('/services', servicesRouter);
 app.use('/requests', requestsRouter);
 app.use('/vendor/cases', casesRouter);
+app.use('/vendor', vendorPortalRouter);
 app.use('/notifications', notificationsRouter);
 app.use('/admin', adminRouter);
 app.use('/documents', documentsRouter);
@@ -29,6 +31,7 @@ app.use((req, res) => {
 });
 
 // eslint-disable-next-line no-unused-vars
+// error handling middleware
 app.use((err, req, res, next) => {
   console.error(err);
   const isUploadError = err.name === 'MulterError' || /Unsupported file type/.test(err.message || '');

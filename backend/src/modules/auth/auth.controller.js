@@ -19,9 +19,9 @@ function isDisposableEmail(email) {
   return !!domain && disposableDomainSet.has(domain);
 }
 
-//
+//the
 async function registerRequestOtp(req, res) {
-  const { name, email, mobile } = req.body;
+  const { name, email, mobile, countryCode } = req.body;
   if (!name || !email || !mobile) {
     return res
       .status(400)
@@ -44,7 +44,7 @@ async function registerRequestOtp(req, res) {
       });
   }
 
-  const result = await issueOtp(mobile, "patient_register");
+  const result = await issueOtp(mobile, "patient_register", countryCode);
   if (result.throttled) {
     return res
       .status(429)
@@ -118,7 +118,7 @@ async function loginRequestOtp(req, res) {
 
   const user = await findUserByIdentifier(identifier);
   if (user) {
-    const result = await issueOtp(identifier, "patient_login");
+    const result = await issueOtp(identifier, "patient_login", user.countryCode);
     if (result.throttled) {
       return res
         .status(429)
@@ -169,7 +169,7 @@ async function googleLogin(req, res) {
   const { passwordHash: _omit, ...safeUser } = user;
   res.json({ token, refreshToken, user: safeUser });
 }
-//
+//the function for apple login with the help of name and password
 async function appleLogin(req, res) {
   const { idToken, name } = req.body;
   if (!idToken) return res.status(400).json({ error: "idToken is required" });
@@ -215,7 +215,6 @@ async function vendorLogin(req, res) {
   }
   res.json({ message: "OTP sent." });
 }
-
 // Step 2: the actual token issuance, once the OTP sent above checks out.
 async function vendorVerifyOtp(req, res) {
   const { email, code } = req.body;
@@ -244,6 +243,7 @@ async function vendorVerifyOtp(req, res) {
   const { passwordHash: _omit, ...safeVendorUser } = vendorUser;
   res.json({ token, refreshToken, vendorUser: safeVendorUser });
 }
+//
 async function refreshAccessToken(req, res) {
   const { refreshToken } = req.body;
   if (!refreshToken)
@@ -265,7 +265,7 @@ async function refreshAccessToken(req, res) {
   const newRefreshToken = signRefreshToken(claims);
   res.json({ token, refreshToken: newRefreshToken });
 }
-
+//the function for getting  the profile page
 async function getMe(req, res) {
   if (req.user.role === "vendor") {
     const vendorUser = await prisma.vendorUser.findUnique({
@@ -383,6 +383,38 @@ async function resetPassword(req, res) {
   });
 }
 
+// For a vendor who's already logged in and knows their current password — different
+// from resetPassword above, which is for someone locked out who verifies via OTP instead.
+async function changePassword(req, res) {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword) {
+    return res
+      .status(400)
+      .json({ error: "currentPassword and newPassword are required" });
+  }
+  if (newPassword.length < 8) {
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 8 characters" });
+  }
+
+  const vendorUser = await prisma.vendorUser.findUnique({ where: { id: req.user.id } });
+  if (!vendorUser) return res.status(404).json({ error: "Account not found" });
+
+  const matches = await comparePassword(currentPassword, vendorUser.passwordHash);
+  if (!matches) return res.status(400).json({ error: "Current password is incorrect." });
+
+  const passwordHash = await hashPassword(newPassword);
+  await prisma.vendorUser.update({ where: { id: vendorUser.id }, data: { passwordHash } });
+  res.json({ message: "Password updated." });
+}
+
+// JWTs are stateless — there's no server-side session to end, so this is just a
+// well-known endpoint for the frontend to call that always succeeds.
+async function vendorLogout(req, res) {
+  res.json({ message: "Logged out." });
+}
+
 module.exports = {
   registerRequestOtp,
   registerVerifyOtp,
@@ -398,4 +430,6 @@ module.exports = {
   savePushToken,
   requestPasswordReset,
   resetPassword,
+  changePassword,
+  vendorLogout,
 };

@@ -5,7 +5,7 @@ function row(doc, label, value) {
   doc.fontSize(11).fillColor('#5B6B84').text(label, { continued: true });
   doc.fillColor('#0D2340').text(`  ${value}`);
 }
-
+//the function for requesting summary pdf
 function streamRequestSummaryPdf(res, request) {
   const doc = new PDFDocument({ margin: 50 });
   res.setHeader('Content-Type', 'application/pdf');

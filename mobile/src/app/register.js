@@ -27,7 +27,7 @@ export default function Register() {
   const submit = async () => {
     if (!ready) { toast('Enter a valid name, mobile number, email, and accept the required consents.'); return; }
     try {
-      await apiPost('/auth/register/request-otp', { name, email, mobile: phone });
+      await apiPost('/auth/register/request-otp', { name, email, mobile: phone, countryCode: cc });
       toast('OTP sent');
       router.push({ pathname: '/register-otp', params: { identifier: `${cc} ${phone}`, name, email, mobile: phone, countryCode: cc } });
     } catch (err) {

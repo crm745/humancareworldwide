@@ -9,7 +9,7 @@ const { addDocumentToCase } = require('../documents/documents.service');
 const { streamRequestSummaryPdf } = require('./request-summary.pdf');
 
 const REQUIRED_FIELDS = ['serviceType', 'patientName', 'origin', 'destination'];
-
+//
 async function submitRequest(req, res, next) {
   try {
     const missing = REQUIRED_FIELDS.filter((field) => !req.body[field]);
@@ -22,7 +22,7 @@ async function submitRequest(req, res, next) {
     next(err);
   }
 }
-
+//
 async function listMyRequests(req, res, next) {
   try {
     const requests = await listRequestsForUser(req.user.id, { status: req.query.status });
@@ -31,7 +31,7 @@ async function listMyRequests(req, res, next) {
     next(err);
   }
 }
-
+//
 async function getMyRequestById(req, res, next) {
   try {
     const request = await getRequestForUser(req.user.id, req.params.id);
@@ -40,7 +40,7 @@ async function getMyRequestById(req, res, next) {
     next(err);
   }
 }
-
+//
 async function listMyDocuments(req, res, next) {
   try {
     const documents = await listDocumentsForUser(req.user.id);
@@ -49,7 +49,7 @@ async function listMyDocuments(req, res, next) {
     next(err);
   }
 }
-
+//
 async function trackByReference(req, res, next) {
   try {
     const { mobile } = req.query;
@@ -60,7 +60,7 @@ async function trackByReference(req, res, next) {
     next(err);
   }
 }
-
+//
 async function uploadRequestDocument(req, res, next) {
   try {
     if (!req.file) return res.status(400).json({ error: 'file is required' });
@@ -76,7 +76,7 @@ async function uploadRequestDocument(req, res, next) {
     next(err);
   }
 }
-
+//
 async function downloadRequestSummary(req, res, next) {
   try {
     const request = await getRequestForUser(req.user.id, req.params.id);

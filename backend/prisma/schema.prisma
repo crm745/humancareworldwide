@@ -65,14 +65,59 @@ model Service {
 }
 
 model Vendor {
-  id          Int      @id @default(autoincrement())
-  companyName String   @map("company_name")
-  type        String   // "insurance" | "government" | "tpa" | "corporate"
-  createdAt   DateTime @default(now()) @map("created_at")
-  users       VendorUser[]
-  cases       Case[]
+  id                 Int      @id @default(autoincrement())
+  companyName        String   @map("company_name")
+  type               String   // "insurance" | "government" | "tpa" | "corporate"
+  // Company-profile fields the vendor-portal web app's Profile page edits. All
+  // optional since existing/admin-created vendors won't have these filled in yet.
+  registrationNumber String?  @map("registration_number")
+  companyType        String?  @map("company_type")
+  country            String?
+  state              String?
+  city               String?
+  address            String?  @db.Text
+  pincode            String?
+  officialEmail      String?  @map("official_email")
+  officialPhone      String?  @map("official_phone")
+  website            String?
+  contactName        String?  @map("contact_name")
+  contactDesignation String?  @map("contact_designation")
+  contactEmail       String?  @map("contact_email")
+  contactPhone       String?  @map("contact_phone")
+  createdAt          DateTime @default(now()) @map("created_at")
+  users              VendorUser[]
+  cases              Case[]
+  tickets            SupportTicket[]
 
   @@map("vendors")
+}
+
+model SupportTicket {
+  id        Int      @id @default(autoincrement())
+  vendorId  Int      @map("vendor_id")
+  vendor    Vendor   @relation(fields: [vendorId], references: [id])
+  subject   String
+  category  String?
+  priority  String   @default("Medium") // "Low" | "Medium" | "High" | "Urgent"
+  status    String   @default("open") // "open" | "in_progress" | "resolved" | "closed"
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  messages  SupportTicketMessage[]
+
+  @@index([vendorId])
+  @@map("support_tickets")
+}
+
+model SupportTicketMessage {
+  id         Int           @id @default(autoincrement())
+  ticketId   Int           @map("ticket_id")
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id])
+  authorName String?       @map("author_name")
+  body       String        @db.Text
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  @@index([ticketId])
+  @@map("support_ticket_messages")
 }
 
 model VendorUser {
@@ -82,6 +127,11 @@ model VendorUser {
   email        String   @unique
   passwordHash String   @map("password_hash")
   role         String   @default("viewer") // "admin" | "viewer"
+  // Free-form preferences bag for the vendor-portal web app's Settings page
+  // (notification channels, language, timezone, date format, two-factor toggle) — a
+  // JSON column since this is a flexible, evolving per-login preference set, not
+  // something that needs to be queried/filtered on.
+  settings     Json?
   createdAt    DateTime @default(now()) @map("created_at")
 
   @@map("vendor_users")
@@ -145,9 +195,28 @@ model Case {
   updatedAt           DateTime  @updatedAt @map("updated_at")
   stageEvents         CaseStageEvent[]
   documents           Document[]
+  communications      CaseCommunication[]
 
   @@index([vendorId, status])
   @@map("cases")
+}
+
+// A log of a vendor's contact with the patient about this case (a call, an email, a
+// portal note) — the vendor-portal web app calls this a "patient communication," but
+// since each of its "patients" is really just the patient-facing view of one Case
+// (see vendor-portal.service.js), it's keyed directly off caseId, not a separate
+// patient entity.
+model CaseCommunication {
+  id         Int      @id @default(autoincrement())
+  caseId     Int      @map("case_id")
+  case       Case     @relation(fields: [caseId], references: [id])
+  channel    String
+  summary    String   @db.Text
+  authorName String?  @map("author_name")
+  occurredAt DateTime @default(now()) @map("occurred_at")
+
+  @@index([caseId])
+  @@map("case_communications")
 }
 
 model CaseStageEvent {

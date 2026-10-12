@@ -25,14 +25,14 @@ async function listCasesForVendor(vendorId, { status } = {}) {
   return prisma.case.findMany({ where, orderBy: { updatedAt: 'desc' } });
 }
 
+// Accepts either the numeric database id (what the mobile app has always used) or the
+// human-readable referenceNumber like "CASE-1042" (what the vendor-portal web app
+// links to, since that's the id it displays) — whichever one `id` looks like.
 async function getCaseById(id) {
   const numericId = Number(id);
-  if (!Number.isInteger(numericId)) {
-    const err = new Error('Invalid case id');
-    err.statusCode = 400;
-    throw err;
-  }
-  const caseRecord = await prisma.case.findUnique({ where: { id: numericId }, include: CASE_INCLUDE });
+  const caseRecord = Number.isInteger(numericId)
+    ? await prisma.case.findUnique({ where: { id: numericId }, include: CASE_INCLUDE })
+    : await prisma.case.findUnique({ where: { referenceNumber: String(id) }, include: CASE_INCLUDE });
   if (!caseRecord) {
     const err = new Error('Case not found');
     err.statusCode = 404;

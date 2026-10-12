@@ -8,6 +8,7 @@ const request = require('supertest');
 const { app } = require('../src/app');
 const { prisma } = require('../src/db/prisma');
 const { deliverOtp } = require('../src/modules/auth/otp-delivery.service');
+const { createVendorUserAndLogin } = require('./helpers');
 
 // Each test run uses a fresh, unique mobile/email so tests never collide with each
 // other or with leftover data from a previous run.
@@ -18,9 +19,12 @@ function uniqueEmail() {
   return `test-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
 }
 
+// Finds the MOST RECENT call for this identifier — a test flow can trigger more than
+// one OTP to the same identifier (e.g. a login OTP during setup, then a separate
+// password-reset OTP later), and it's always the latest one that's still valid.
 function codeSentTo(identifier) {
-  const call = deliverOtp.mock.calls.find((c) => c[0] === identifier);
-  return call?.[1];
+  const calls = deliverOtp.mock.calls.filter((c) => c[0] === identifier);
+  return calls[calls.length - 1]?.[1];
 }
 
 afterAll(async () => {
@@ -48,6 +52,19 @@ describe('POST /auth/register/request-otp', () => {
       .send({ name: 'Test User', email: uniqueEmail(), mobile });
     expect(res.status).toBe(200);
     expect(codeSentTo(mobile)).toMatch(/^\d{6}$/);
+  });
+
+  // Regression test for a real bug: the SMS-sending step used to hardcode +91 for
+  // every registration regardless of which country code the person actually picked,
+  // so a UAE/UK/US number would get sent to the wrong country entirely.
+  it('passes the actual selected country code through to OTP delivery, not a hardcoded one', async () => {
+    const mobile = uniqueMobile();
+    await request(app)
+      .post('/auth/register/request-otp')
+      .send({ name: 'UAE Test User', email: uniqueEmail(), mobile, countryCode: '+971' });
+
+    const call = deliverOtp.mock.calls.find((c) => c[0] === mobile);
+    expect(call[3]).toBe('+971'); // deliverOtp(identifier, code, purpose, countryCode)
   });
 });
 
@@ -127,5 +144,71 @@ describe('GET /auth/me', () => {
   it('rejects a malformed/invalid token', async () => {
     const res = await request(app).get('/auth/me').set('Authorization', 'Bearer not-a-real-token');
     expect(res.status).toBe(401);
+  });
+});
+
+// These /vendor/* paths are aliases added for the vendor-portal web app (2026-10-12) —
+// same handlers as the originals, just reachable under a name that app expects.
+describe('vendor-portal auth aliases', () => {
+  it('forgot-password alias triggers the same OTP flow as the original route', async () => {
+    const { email } = await createVendorUserAndLogin();
+    const res = await request(app).post('/auth/vendor/forgot-password').send({ email });
+    expect(res.status).toBe(200);
+    expect(codeSentTo(email)).toMatch(/^\d{6}$/);
+  });
+
+  it('reset-password alias resets the password with a correct OTP', async () => {
+    const { email } = await createVendorUserAndLogin();
+    await request(app).post('/auth/vendor/forgot-password').send({ email });
+    const code = codeSentTo(email);
+
+    const res = await request(app)
+      .post('/auth/vendor/reset-password')
+      .send({ email, code, newPassword: 'BrandNewPass@123' });
+    expect(res.status).toBe(200);
+
+    // The old password should no longer work. (Not re-testing the new one through a
+    // full login here — that would issue a 2nd "vendor_login" OTP for this email
+    // within the 30s resend cooldown already started by createVendorUserAndLogin's
+    // own setup call, and get throttled rather than actually proving anything.)
+    const oldLoginRes = await request(app).post('/auth/vendor/login').send({ email, password: 'TestPass@123' });
+    expect(oldLoginRes.status).toBe(401);
+  });
+});
+
+describe('POST /auth/vendor/change-password', () => {
+  it('requires authentication', async () => {
+    const res = await request(app).post('/auth/vendor/change-password').send({ currentPassword: 'a', newPassword: 'b' });
+    expect(res.status).toBe(401);
+  });
+
+  it('rejects an incorrect current password', async () => {
+    const { token } = await createVendorUserAndLogin({ password: 'OriginalPass@123' });
+    const res = await request(app)
+      .post('/auth/vendor/change-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ currentPassword: 'WrongPass@123', newPassword: 'NewPass@456' });
+    expect(res.status).toBe(400);
+  });
+
+  it('changes the password with the correct current password', async () => {
+    const { token, email } = await createVendorUserAndLogin({ password: 'OriginalPass@123' });
+    const res = await request(app)
+      .post('/auth/vendor/change-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ currentPassword: 'OriginalPass@123', newPassword: 'NewPass@456' });
+    expect(res.status).toBe(200);
+
+    // Same reasoning as the reset-password test above: confirm via the OLD password
+    // now failing, rather than re-triggering a throttled login OTP for the new one.
+    const oldLoginRes = await request(app).post('/auth/vendor/login').send({ email, password: 'OriginalPass@123' });
+    expect(oldLoginRes.status).toBe(401);
+  });
+});
+
+describe('POST /auth/vendor/logout', () => {
+  it('always succeeds (JWTs are stateless, there is nothing server-side to clear)', async () => {
+    const res = await request(app).post('/auth/vendor/logout');
+    expect(res.status).toBe(200);
   });
 });
