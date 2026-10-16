@@ -1,8 +1,8 @@
 const { prisma } = require('../../db/prisma');
 
-async function addDocumentToCase(caseId, { name, fileUrl, fileSizeBytes }) {
+async function addDocumentToCase(caseId, { type, name, fileUrl, fileSizeBytes }) {
   return prisma.document.create({
-    data: { caseId: Number(caseId), name, fileUrl, fileSizeBytes: fileSizeBytes || null },
+    data: { caseId: Number(caseId), type: type || null, name, fileUrl, fileSizeBytes: fileSizeBytes || null },
   });
 }
 

@@ -3,7 +3,6 @@ const {
   listRequestsForUser,
   getRequestForUser,
   listDocumentsForUser,
-  getRequestByReferenceForGuest,
 } = require('./requests.service');
 const { addDocumentToCase } = require('../documents/documents.service');
 const { streamRequestSummaryPdf } = require('./request-summary.pdf');
@@ -22,7 +21,7 @@ async function submitRequest(req, res, next) {
     next(err);
   }
 }
-//
+//the function for listing my requests
 async function listMyRequests(req, res, next) {
   try {
     const requests = await listRequestsForUser(req.user.id, { status: req.query.status });
@@ -50,23 +49,15 @@ async function listMyDocuments(req, res, next) {
   }
 }
 //
-async function trackByReference(req, res, next) {
-  try {
-    const { mobile } = req.query;
-    if (!mobile) return res.status(400).json({ error: 'mobile query parameter is required' });
-    const request = await getRequestByReferenceForGuest(req.params.ref, mobile);
-    res.json({ request });
-  } catch (err) {
-    next(err);
-  }
-}
-//
 async function uploadRequestDocument(req, res, next) {
   try {
     if (!req.file) return res.status(400).json({ error: 'file is required' });
     const request = await getRequestForUser(req.user.id, req.params.id);
     if (!request.case) return res.status(409).json({ error: 'This request has no case yet.' });
+    // Always a medical report in this flow — this is specifically the "Upload Medical
+    // Report" field on the initial request form, in both the mobile app and corporate-portal.
     const document = await addDocumentToCase(request.case.id, {
+      type: 'Medical Report',
       name: req.file.originalname,
       fileUrl: `/uploads/${req.file.filename}`,
       fileSizeBytes: req.file.size,
@@ -85,13 +76,12 @@ async function downloadRequestSummary(req, res, next) {
     next(err);
   }
 }
-
+//
 module.exports = {
   submitRequest,
   listMyRequests,
   getMyRequestById,
   listMyDocuments,
-  trackByReference,
   uploadRequestDocument,
   downloadRequestSummary,
 };

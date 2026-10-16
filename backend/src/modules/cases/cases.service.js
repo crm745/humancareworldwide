@@ -42,19 +42,42 @@ async function getCaseById(id) {
 }
 
 async function createCaseByCorporate(corporateId, data) {
-  const { patientName, patientContact, serviceType, origin, destination, urgency, policyReference, notes } = data;
+  const {
+    patientName,
+    patientAge,
+    patientGender,
+    patientContact,
+    serviceType,
+    origin,
+    destination,
+    urgency,
+    policyReference,
+    careLevel,
+    description,
+    additionalInfo,
+    specialRequirements,
+    referralSource,
+    notes,
+  } = data;
 
   const created = await prisma.case.create({
     data: {
       corporateId,
       referenceNumber: `TEMP-${Date.now()}`,
       patientName,
+      patientAge: patientAge ? Number(patientAge) : null,
+      patientGender: patientGender || null,
       patientContact: patientContact || null,
       serviceType,
       origin,
       destination,
       urgency: urgency || 'routine',
       policyReference: policyReference || null,
+      careLevel: careLevel || null,
+      description: description || null,
+      additionalInfo: additionalInfo || null,
+      specialRequirements: specialRequirements || null,
+      referralSource: referralSource || null,
       notes: notes || null,
       status: 'submitted',
     },

@@ -86,6 +86,13 @@ async function createRequest(userId, data) {
     await prisma.serviceRequest.update({ where: { id: request.id }, data: { bitrixLeadId: leadId } });
   } catch (err) {
     console.error(`Bitrix24 lead creation failed for ${request.referenceNumber}:`, err.message);
+    // Persisted (not just logged) so the background retry job in bitrix-retry.service.js
+    // can pick it back up — a console line nobody is watching used to be the only
+    // record a lead ever dropped.
+    await prisma.serviceRequest.update({
+      where: { id: request.id },
+      data: { bitrixSyncAttempts: 1, bitrixLastError: err.message, bitrixSyncFailedAt: new Date() },
+    });
   }
 
   return request;
@@ -128,28 +135,10 @@ async function listDocumentsForUser(userId) {
   });
 }
 
-async function getRequestByReferenceForGuest(referenceNumber, mobile) {
-  const request = await prisma.serviceRequest.findUnique({
-    where: { referenceNumber },
-    include: {
-      user: true,
-      case: { include: { stageEvents: { orderBy: { occurredAt: 'asc' } }, documents: true } },
-    },
-  });
-  if (!request || request.user.mobile !== mobile) {
-    const err = new Error('No request found for that reference number and mobile number.');
-    err.statusCode = 404;
-    throw err;
-  }
-  const { user, ...requestOnly } = request;
-  return requestOnly;
-}
-
 module.exports = {
   VALID_STATUSES,
   createRequest,
   listRequestsForUser,
   getRequestForUser,
   listDocumentsForUser,
-  getRequestByReferenceForGuest,
 };

@@ -88,6 +88,7 @@ model Corporate {
   users              CorporateUser[]
   cases              Case[]
   tickets            SupportTicket[]
+  documents          CorporateDocument[]
 
   @@map("corporates")
 }
@@ -161,6 +162,9 @@ model ServiceRequest {
   referenceNumber   String    @unique @map("reference_number")
   status            String    @default("submitted")
   bitrixLeadId      Int?      @map("bitrix_lead_id")
+  bitrixSyncAttempts Int      @default(0) @map("bitrix_sync_attempts")
+  bitrixLastError   String?   @db.Text @map("bitrix_last_error")
+  bitrixSyncFailedAt DateTime? @map("bitrix_sync_failed_at")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
   case              Case?
@@ -179,12 +183,22 @@ model Case {
   corporate           Corporate? @relation(fields: [corporateId], references: [id])
   referenceNumber     String    @unique @map("reference_number")
   patientName         String    @map("patient_name")
+  patientAge          Int?      @map("patient_age")
+  patientGender       String?   @map("patient_gender")
   patientContact      String?   @map("patient_contact")
   serviceType         String    @map("service_type")
   origin              String
   destination         String
   urgency             String?   @default("routine") // "routine" | "urgent" | "critical"
   policyReference      String?  @map("policy_reference")
+  // Mirrors the patient-facing ServiceRequest's equivalent fields (see above) so the
+  // corporate-portal's "Request a Service" form can capture the same information the
+  // mobile app's request flow does, not just a bare name/origin/destination.
+  careLevel           String?   @map("care_level") // comma-joined care-level keys, same convention as ServiceRequest
+  description         String?   @db.Text // "what do you need" — free text from the requester
+  additionalInfo      String?   @db.Text @map("additional_info")
+  specialRequirements String?   @db.Text @map("special_requirements")
+  referralSource      String?   @map("referral_source")
   notes               String?   @db.Text
   status              String    @default("submitted") // "submitted" | "scheduled" | "in_progress" | "completed" | "cancelled"
   attendingPhysician  String?   @map("attending_physician")
@@ -236,6 +250,10 @@ model Document {
   id            Int      @id @default(autoincrement())
   caseId        Int      @map("case_id")
   case          Case     @relation(fields: [caseId], references: [id])
+  // Nullable — the original "attach medical report while submitting a request" upload
+  // never set this, so older rows won't have it. New uploads (see
+  // cases.controller.js#uploadCaseDocument) always set one.
+  type          String?
   name          String
   fileUrl       String   @map("file_url")
   fileSizeBytes Int?     @map("file_size_bytes")
@@ -243,6 +261,25 @@ model Document {
 
   @@index([caseId])
   @@map("documents")
+}
+
+// Company-level compliance documents (registration certificate, GST, PAN, etc.) — a
+// corporate uploading these to its own profile, not tied to any one case. Deliberately
+// has no status/verification field: that review workflow isn't built, so this just
+// stores and lists what was uploaded rather than pretending to track Verified/Pending/
+// Expired/Rejected state nobody is actually setting.
+model CorporateDocument {
+  id            Int      @id @default(autoincrement())
+  corporateId   Int      @map("corporate_id")
+  corporate     Corporate @relation(fields: [corporateId], references: [id])
+  type          String
+  name          String
+  fileUrl       String   @map("file_url")
+  fileSizeBytes Int?     @map("file_size_bytes")
+  uploadedAt    DateTime @default(now()) @map("uploaded_at")
+
+  @@index([corporateId])
+  @@map("corporate_documents")
 }
 
 model Notification {

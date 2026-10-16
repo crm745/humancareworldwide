@@ -6,7 +6,6 @@ const {
   listMyRequests,
   getMyRequestById,
   listMyDocuments,
-  trackByReference,
   uploadRequestDocument,
   downloadRequestSummary,
 } = require('./requests.controller');
@@ -20,6 +19,7 @@ requestsRouter.get('/me/documents', requireAuth(['patient']), listMyDocuments);
 requestsRouter.get('/me/:id', requireAuth(['patient']), getMyRequestById);
 requestsRouter.get('/me/:id/summary', requireAuth(['patient']), downloadRequestSummary);
 requestsRouter.post('/me/:id/documents', requireAuth(['patient']), upload.single('file'), uploadRequestDocument);
-requestsRouter.get('/track/:ref', trackByReference); // guest lookup, no auth — gated by mobile match instead
+// No unauthenticated "guest" lookup by reference + mobile — every case view requires
+// a logged-in session now, removed per product decision (no access without login).
 
 module.exports = { requestsRouter };

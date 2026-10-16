@@ -10,7 +10,11 @@ const { documentsRouter } = require('./modules/documents/documents.routes');
 const { corporatePortalRouter } = require('./modules/corporate-portal/corporate-portal.routes');
 
 const app = express();
-app.use(cors());
+// `origin: true` reflects the caller's own Origin back (same effective permissiveness
+// as the old wildcard) — required because `credentials: true` is incompatible with a
+// literal '*' origin, and the admin portal's cookie-based session needs credentials
+// allowed cross-origin (it's served from a different port than this API).
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));

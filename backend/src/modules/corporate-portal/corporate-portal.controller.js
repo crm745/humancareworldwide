@@ -1,4 +1,6 @@
+const path = require('path');
 const { prisma } = require('../../db/prisma');
+const { UPLOAD_DIR } = require('../../middleware/upload.middleware');
 const {
   getDashboardStats,
   listCorporateNotifications,
@@ -16,9 +18,13 @@ const {
   getCorporateSettings,
   updateCorporateSettings,
   searchCorporate,
+  listCorporateDocuments,
+  addCorporateDocument,
+  getCorporateDocumentForDownload,
+  deleteCorporateDocument,
 } = require('./corporate-portal.service');
 
-const VALID_RANGES = ['today', 'week', 'month', 'quarter', 'year'];
+const VALID_RANGES = ['today', 'week', 'month', 'year', 'all'];
 
 // We don't have a "contact name" field on CorporateUser — their login email is the best
 // available stand-in for attributing something they wrote (a note, a ticket message).
@@ -179,6 +185,48 @@ async function search(req, res, next) {
   }
 }
 
+async function listDocuments(req, res, next) {
+  try {
+    res.json(await listCorporateDocuments(req.user.corporateId));
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function postDocument(req, res, next) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'file is required' });
+    if (!req.body.type) return res.status(400).json({ error: 'type is required' });
+    const doc = await addCorporateDocument(req.user.corporateId, {
+      type: req.body.type,
+      name: req.body.name?.trim() || req.file.originalname,
+      fileUrl: `/uploads/${req.file.filename}`,
+      fileSizeBytes: req.file.size,
+    });
+    res.status(201).json(doc);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function downloadDocument(req, res, next) {
+  try {
+    const doc = await getCorporateDocumentForDownload(req.user.corporateId, req.params.id);
+    res.download(path.join(UPLOAD_DIR, path.basename(doc.fileUrl)), doc.name);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteDocumentRoute(req, res, next) {
+  try {
+    await deleteCorporateDocument(req.user.corporateId, req.params.id);
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getDashboard,
   listNotifications,
@@ -196,4 +244,8 @@ module.exports = {
   getSettings,
   putSettings,
   search,
+  listDocuments,
+  postDocument,
+  downloadDocument,
+  deleteDocumentRoute,
 };

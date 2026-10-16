@@ -1,4 +1,7 @@
+const path = require('path');
+const fs = require('fs');
 const { prisma } = require('../../db/prisma');
+const { UPLOAD_DIR } = require('../../middleware/upload.middleware');
 const {
   listNotificationsFor,
   setReadStatus,
@@ -55,10 +58,10 @@ function rangeStart(range) {
     case 'month':
       d.setDate(1);
       return d;
-    case 'quarter':
-      return new Date(Date.now() - 90 * DAY_MS);
     case 'year':
       return new Date(d.getFullYear(), 0, 1);
+    case 'all':
+      return new Date(0);
     default:
       d.setDate(1);
       return d; // unrecognized range falls back to "month"
@@ -83,15 +86,14 @@ function buckets(range) {
       const d = new Date(t);
       out.push({ label: range === 'week' ? d.toLocaleDateString('en-GB', { weekday: 'short' }) : String(d.getDate()), start: t, end: t + DAY_MS });
     }
-  } else if (range === 'quarter') {
-    for (let t = start.getTime(); t <= now; t += 7 * DAY_MS) {
-      const d = new Date(t);
-      out.push({ label: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }), start: t, end: t + 7 * DAY_MS });
-    }
   } else {
+    // 'year' and 'all' both land here — 'all' shows the current year's monthly
+    // breakdown rather than every year since inception, matching the "Monthly Cases"
+    // trend chart above (which is always a fixed last-12-months view regardless of range).
+    const thisYear = new Date().getFullYear();
     for (let m = 0; m <= new Date().getMonth(); m++) {
-      const s = new Date(start.getFullYear(), m, 1);
-      const e = new Date(start.getFullYear(), m + 1, 1);
+      const s = new Date(thisYear, m, 1);
+      const e = new Date(thisYear, m + 1, 1);
       out.push({ label: s.toLocaleDateString('en-GB', { month: 'short' }), start: s.getTime(), end: e.getTime() });
     }
   }
@@ -237,13 +239,15 @@ async function getCorporatePatient(corporateId, patientId) {
     id: patientId,
     name: caseRecord.patientName,
     contact: caseRecord.patientContact,
+    age: caseRecord.patientAge,
+    gender: caseRecord.patientGender,
     caseId: caseRecord.referenceNumber,
     status: STATUS_LABEL[caseRecord.status] || caseRecord.status,
     service: caseRecord.serviceType,
     origin: caseRecord.origin,
     destination: caseRecord.destination,
     condition: URGENCY_TO_CONDITION[caseRecord.urgency] || 'Stable',
-    documents: documents.map((d) => ({ id: d.id, name: d.name, uploadedAt: d.uploadedAt, fileSizeBytes: d.fileSizeBytes })),
+    documents: documents.map((d) => ({ id: d.id, type: d.type, name: d.name, uploadedAt: d.uploadedAt, fileSizeBytes: d.fileSizeBytes })),
     communications: communications.map((c) => ({ id: c.id, date: c.occurredAt, channel: c.channel, by: c.authorName, summary: c.summary })),
   };
 }
@@ -354,11 +358,22 @@ const DEFAULT_SETTINGS = {
   twoFactor: false,
 };
 
+// Same reference-id style as patientIdFor/ticketIdFor above — a real, deterministic
+// formatting of the row's own id, not a fabricated value.
+function corporateRefId(id) {
+  return `HCW-COR-${String(id).padStart(5, '0')}`;
+}
+
 async function getCorporateProfile(corporateId) {
   const corporate = await prisma.corporate.findUnique({ where: { id: corporateId } });
-  // Bank details are deferred along with the self-registration/payments work — no
-  // `bank` key at all here rather than a fake empty one.
-  return { company: toPortalCompany(corporate) };
+  // Bank details and the verification workflow are deferred along with the
+  // self-registration/payments work — no `bank`/`verificationStatus`/`verification` keys
+  // at all here rather than fake ones; the frontend treats their absence as "not available yet".
+  return {
+    corporateId: corporateRefId(corporate.id),
+    memberSince: corporate.createdAt,
+    company: toPortalCompany(corporate),
+  };
 }
 
 async function updateCorporateCompany(corporateId, company) {
@@ -401,6 +416,35 @@ async function searchCorporate(corporateId, query) {
   return [...caseResults, ...patientResults];
 }
 
+// Company-level compliance documents (registration cert, GST, PAN, etc.) — see
+// CorporateDocument in schema.prisma for why there's no status/verification field.
+async function listCorporateDocuments(corporateId) {
+  return prisma.corporateDocument.findMany({ where: { corporateId }, orderBy: { uploadedAt: 'desc' } });
+}
+
+async function addCorporateDocument(corporateId, { type, name, fileUrl, fileSizeBytes }) {
+  return prisma.corporateDocument.create({
+    data: { corporateId, type, name, fileUrl, fileSizeBytes: fileSizeBytes || null },
+  });
+}
+
+async function getCorporateDocumentForDownload(corporateId, documentId) {
+  const doc = await prisma.corporateDocument.findUnique({ where: { id: Number(documentId) } });
+  if (!doc || doc.corporateId !== corporateId) {
+    const err = new Error('Document not found');
+    err.statusCode = 404;
+    throw err;
+  }
+  return doc;
+}
+
+async function deleteCorporateDocument(corporateId, documentId) {
+  const doc = await getCorporateDocumentForDownload(corporateId, documentId);
+  await prisma.corporateDocument.delete({ where: { id: doc.id } });
+  // Best-effort — a file already missing from disk shouldn't block the DB delete.
+  fs.unlink(path.join(UPLOAD_DIR, path.basename(doc.fileUrl)), () => {});
+}
+
 module.exports = {
   getDashboardStats,
   listCorporateNotifications,
@@ -418,6 +462,10 @@ module.exports = {
   getCorporateSettings,
   updateCorporateSettings,
   searchCorporate,
+  listCorporateDocuments,
+  addCorporateDocument,
+  getCorporateDocumentForDownload,
+  deleteCorporateDocument,
   ticketIdFor,
   ticketDbIdFrom,
   TICKET_STATUS_LABEL,

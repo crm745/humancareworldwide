@@ -106,20 +106,3 @@ describe('request lifecycle for the patient who submitted it', () => {
     expect(uploadRes.status).toBe(400);
   });
 });
-
-describe('GET /requests/track/:ref (guest tracking)', () => {
-  it('returns the request when the mobile matches, and fails when it does not', async () => {
-    const { token, mobile } = await createPatient();
-    const createRes = await request(app)
-      .post('/requests')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ ...baseRequestBody, patientContact: mobile });
-    const ref = createRes.body.request.referenceNumber;
-
-    const goodRes = await request(app).get(`/requests/track/${ref}`).query({ mobile });
-    expect(goodRes.status).toBe(200);
-
-    const badRes = await request(app).get(`/requests/track/${ref}`).query({ mobile: '0000000000' });
-    expect(badRes.status).not.toBe(200);
-  });
-});

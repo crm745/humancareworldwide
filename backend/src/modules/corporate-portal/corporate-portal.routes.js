@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { requireAuth } = require('../../middleware/auth.middleware');
+const { upload } = require('../../middleware/upload.middleware');
 const {
   getDashboard,
   listNotifications,
@@ -17,12 +18,16 @@ const {
   getSettings,
   putSettings,
   search,
+  listDocuments,
+  postDocument,
+  downloadDocument,
+  deleteDocumentRoute,
 } = require('./corporate-portal.controller');
 
 // Mounted at /corporate (not /corporate/cases, which casesRouter already owns) — this is
 // where new corporate-portal-web-app-specific endpoints live: dashboard, notifications,
-// patients, tickets, profile, settings, search. Documents/invoices/bank details are
-// deferred — see the self-registration flow they're tied to.
+// patients, tickets, profile, settings, search, company compliance documents. Invoices/
+// bank details are still deferred — see the self-registration/payments flow they're tied to.
 const corporatePortalRouter = Router();
 
 corporatePortalRouter.get('/dashboard', requireAuth(['corporate']), getDashboard);
@@ -49,5 +54,10 @@ corporatePortalRouter.put('/profile/company', requireAuth(['corporate']), putCom
 corporatePortalRouter.get('/settings', requireAuth(['corporate']), getSettings);
 corporatePortalRouter.put('/settings', requireAuth(['corporate']), putSettings);
 corporatePortalRouter.get('/search', requireAuth(['corporate']), search);
+
+corporatePortalRouter.get('/documents', requireAuth(['corporate']), listDocuments);
+corporatePortalRouter.post('/documents', requireAuth(['corporate']), upload.single('file'), postDocument);
+corporatePortalRouter.get('/documents/:id/file', requireAuth(['corporate']), downloadDocument);
+corporatePortalRouter.delete('/documents/:id', requireAuth(['corporate']), deleteDocumentRoute);
 
 module.exports = { corporatePortalRouter };

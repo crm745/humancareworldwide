@@ -1,7 +1,10 @@
 const { Router } = require('express');
 const { requireAuth } = require('../../middleware/auth.middleware');
+const { loginLimiter } = require('../../middleware/rate-limit.middleware');
 const {
   login,
+  me,
+  logout,
   getCorporates,
   postCorporate,
   postCorporateUser,
@@ -25,9 +28,12 @@ const {
 
 const adminRouter = Router();
 
-adminRouter.post('/login', login);
+adminRouter.post('/login', loginLimiter, login);
 
 adminRouter.use(requireAuth(['admin']));
+
+adminRouter.get('/me', me);
+adminRouter.post('/logout', logout);
 
 adminRouter.get('/corporates', getCorporates);
 adminRouter.post('/corporates', postCorporate);

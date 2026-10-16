@@ -47,6 +47,7 @@ async function uploadCaseDocument(req, res, next) {
       return res.status(403).json({ error: 'This case was not submitted by your organization.' });
     }
     const document = await addDocumentToCase(caseRecord.id, {
+      type: req.body.type,
       name: req.file.originalname,
       fileUrl: `/uploads/${req.file.filename}`,
       fileSizeBytes: req.file.size,

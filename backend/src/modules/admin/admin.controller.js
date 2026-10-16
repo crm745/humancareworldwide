@@ -21,10 +21,29 @@ async function login(req, res, next) {
     if (!email || !password) return res.status(400).json({ error: 'email and password are required' });
     const result = await loginAdmin(email, password);
     if (!result) return res.status(401).json({ error: 'Invalid credentials' });
+    // The admin portal (admin.html) never reads result.token — it relies on this
+    // httpOnly cookie instead, so a compromised script on the page can't read the
+    // session out of localStorage. The token is still returned in the body too, for
+    // the test suite and any other API client that authenticates via header instead.
+    res.cookie('hc_admin_token', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 15 * 60 * 1000, // matches the access token's own 15-minute lifetime
+    });
     res.json(result);
   } catch (err) {
     next(err);
   }
+}
+
+async function me(req, res) {
+  res.json({ ok: true, admin: req.user });
+}
+
+async function logout(req, res) {
+  res.clearCookie('hc_admin_token');
+  res.json({ message: 'Logged out.' });
 }
 
 async function getCorporates(req, res, next) {
@@ -155,6 +174,8 @@ async function patchTicketStatus(req, res, next) {
 
 module.exports = {
   login,
+  me,
+  logout,
   getCorporates,
   postCorporate,
   postCorporateUser,
