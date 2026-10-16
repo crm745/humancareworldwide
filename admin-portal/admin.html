@@ -211,9 +211,9 @@
       </div>
       <div class="card">
         <div class="row-flex">
-          <div class="field"><label>Search by reference, patient, or corporate</label><input id="case-search" placeholder="Type to search..." oninput="renderCases()"></div>
+          <div class="field"><label>Search by reference, patient, or corporate</label><input id="case-search" placeholder="Type to search..." oninput="renderCasesFromFilterChange()"></div>
           <div class="field" style="max-width:160px;"><label>Sort</label>
-            <select id="case-sort" onchange="renderCases()">
+            <select id="case-sort" onchange="renderCasesFromFilterChange()">
               <option value="newest">Newest first</option>
               <option value="oldest">Oldest first</option>
             </select>
@@ -227,6 +227,7 @@
             <tbody id="cases-table-body"></tbody>
           </table>
         </div>
+        <div class="pagination" id="cases-pagination" style="display:flex;align-items:center;gap:10px;justify-content:flex-end;padding:12px 4px 0;"></div>
       </div>
     </div>
 
@@ -264,6 +265,7 @@
             <tbody id="patients-table-body"></tbody>
           </table>
         </div>
+        <div class="pagination" id="patients-pagination" style="display:flex;align-items:center;gap:10px;justify-content:flex-end;padding:12px 4px 0;"></div>
       </div>
     </div>
 
@@ -288,6 +290,7 @@
               <tbody id="tickets-table-body"></tbody>
             </table>
           </div>
+          <div class="pagination" id="tickets-pagination" style="display:flex;align-items:center;gap:10px;justify-content:flex-end;padding:12px 4px 0;"></div>
         </div>
       </div>
 
@@ -304,8 +307,31 @@
 
 <script>
   const API_BASE = 'http://localhost:4000';
-  let TOKEN = localStorage.getItem('hc_admin_token') || null;
   let corporatesCache = [];
+  const PAGE_SIZE = 25;
+
+  // Shared pagination: slices `items` down to one page and renders Prev/Next controls
+  // into `containerId`. `onChangeFnName` is the global function name to call (as a
+  // string) with the new page number when Prev/Next is clicked.
+  function paginate(items, page, containerId, onChangeFnName) {
+    const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+    const clampedPage = Math.min(Math.max(1, page), totalPages);
+    const start = (clampedPage - 1) * PAGE_SIZE;
+    const pageItems = items.slice(start, start + PAGE_SIZE);
+
+    const container = document.getElementById(containerId);
+    if (container) {
+      if (items.length <= PAGE_SIZE) {
+        container.innerHTML = '';
+      } else {
+        container.innerHTML =
+          '<button class="btn btn-secondary btn-sm" ' + (clampedPage <= 1 ? 'disabled' : '') + ' onclick="' + onChangeFnName + '(' + (clampedPage - 1) + ')">Prev</button>' +
+          '<span class="faint">Page ' + clampedPage + ' of ' + totalPages + ' (' + items.length + ' total)</span>' +
+          '<button class="btn btn-secondary btn-sm" ' + (clampedPage >= totalPages ? 'disabled' : '') + ' onclick="' + onChangeFnName + '(' + (clampedPage + 1) + ')">Next</button>';
+      }
+    }
+    return { pageItems, clampedPage };
+  }
 
   function toast(msg, isErr) {
     const t = document.getElementById('toast');
@@ -317,14 +343,16 @@
   async function api(path, opts) {
     opts = opts || {};
     const headers = Object.assign({}, opts.headers || {});
-    if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
     if (opts.body && !(opts.body instanceof FormData)) {
       headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(opts.body);
     }
-    const res = await fetch(API_BASE + path, Object.assign({}, opts, { headers }));
+    // No Authorization header here — the session lives in an httpOnly cookie the
+    // browser attaches automatically (credentials: 'include'), so a compromised
+    // third-party script on this page can't read the token out of localStorage.
+    const res = await fetch(API_BASE + path, Object.assign({}, opts, { headers, credentials: 'include' }));
     if (res.status === 401) {
-      logout();
+      showLoginScreen();
       throw new Error('Session expired. Please log in again.');
     }
     let data = {};
@@ -344,12 +372,13 @@
       const res = await fetch(API_BASE + '/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // lets the browser accept the Set-Cookie the server sends back
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Login failed');
-      TOKEN = data.token;
-      localStorage.setItem('hc_admin_token', TOKEN);
+      // The session token now lives only in the httpOnly cookie the server just set —
+      // nothing to store client-side.
       showApp();
     } catch (err) {
       errBox.textContent = err.message;
@@ -357,9 +386,15 @@
     }
   }
 
-  function logout() {
-    TOKEN = null;
-    localStorage.removeItem('hc_admin_token');
+  // User-initiated logout: tells the server to clear the cookie, then resets the UI.
+  async function logout() {
+    try { await api('/admin/logout', { method: 'POST' }); } catch (e) { /* cookie may already be gone */ }
+    showLoginScreen();
+  }
+
+  // UI-only reset (no server call) — used when a request comes back 401 because the
+  // session already expired, so there's nothing left for the server to clear.
+  function showLoginScreen() {
     document.getElementById('app-shell').classList.remove('open');
     document.getElementById('app-shell').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
@@ -482,9 +517,16 @@
       ]);
       corporatesCache = corporatesRes.corporates;
       casesCache = casesRes.cases;
+      casesPage = 1;
       renderCases();
     } catch (err) { toast(err.message, true); }
   }
+
+  let casesPage = 1;
+  function setCasesPage(page) { casesPage = page; renderCases(); }
+  // Any change to the search box, sort order, or status filter invalidates the
+  // current page (results shift), so always jump back to page 1.
+  function renderCasesFromFilterChange() { casesPage = 1; renderCases(); }
 
   function renderCases() {
     const q = (document.getElementById('case-search').value || '').trim().toLowerCase();
@@ -500,8 +542,11 @@
       sort === 'oldest' ? new Date(a.createdAt) - new Date(b.createdAt) : new Date(b.createdAt) - new Date(a.createdAt)
     ));
 
+    const { pageItems, clampedPage } = paginate(rows, casesPage, 'cases-pagination', 'setCasesPage');
+    casesPage = clampedPage;
+
     const tbody = document.getElementById('cases-table-body');
-    tbody.innerHTML = rows.map((c) => (
+    tbody.innerHTML = pageItems.map((c) => (
       '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td class="faint">' + new Date(c.createdAt).toLocaleDateString() + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td>' +
       '<td>' + esc(c.corporate ? c.corporate.companyName : 'Unassigned') + '</td>' +
       '<td><div style="display:flex;gap:6px;"><select id="reassign-' + c.id + '"><option value="">Choose corporate...</option>' + options + '</select>' +
@@ -512,7 +557,9 @@
   async function reassign(caseId) {
     const sel = document.getElementById('reassign-' + caseId);
     const corporateId = sel.value;
+    const corporateName = sel.options[sel.selectedIndex]?.text || '';
     if (!corporateId) return toast('Choose a corporate first.', true);
+    if (!confirm('Reassign this case to ' + corporateName + '? The current corporate will lose access to it.')) return;
     try {
       await api('/admin/cases/' + caseId + '/assign', { method: 'PATCH', body: { corporateId } });
       toast('Case reassigned.');
@@ -581,26 +628,38 @@
 
   // ---- patients ----
   let patientDebounce;
+  let patientsCache = [];
+  let patientsPage = 1;
   function debouncedPatientSearch() {
     clearTimeout(patientDebounce);
-    patientDebounce = setTimeout(loadPatients, 300);
+    patientDebounce = setTimeout(() => { patientsPage = 1; loadPatients(); }, 300);
   }
+  function setPatientsPage(page) { patientsPage = page; renderPatients(); }
   // the function for loading the patients data
   async function loadPatients() {
     try {
       const search = document.getElementById('patient-search').value.trim();
       const { patients } = await api('/admin/patients' + (search ? '?search=' + encodeURIComponent(search) : ''));
+      patientsCache = patients;
       document.getElementById('patients-count').textContent = patients.length + ' patient' + (patients.length === 1 ? '' : 's');
-      const tbody = document.getElementById('patients-table-body');
-      tbody.innerHTML = patients.map((p) => (
-        '<tr><td>' + esc(p.name) + '</td><td>' + esc(p.email) + '</td><td>' + esc(p.mobile) + '</td><td class="faint">' + new Date(p.createdAt).toLocaleDateString() + '</td>' +
-        '<td><span class="pill ' + (p.isActive ? 'active' : 'inactive') + '">' + (p.isActive ? 'active' : 'inactive') + '</span></td></tr>'
-      )).join('') || '<tr><td class="empty-state" colspan="5">No patients found.</td></tr>';
+      renderPatients();
     } catch (err) { toast(err.message, true); }
+  }
+
+  function renderPatients() {
+    const { pageItems, clampedPage } = paginate(patientsCache, patientsPage, 'patients-pagination', 'setPatientsPage');
+    patientsPage = clampedPage;
+    const tbody = document.getElementById('patients-table-body');
+    tbody.innerHTML = pageItems.map((p) => (
+      '<tr><td>' + esc(p.name) + '</td><td>' + esc(p.email) + '</td><td>' + esc(p.mobile) + '</td><td class="faint">' + new Date(p.createdAt).toLocaleDateString() + '</td>' +
+      '<td><span class="pill ' + (p.isActive ? 'active' : 'inactive') + '">' + (p.isActive ? 'active' : 'inactive') + '</span></td></tr>'
+    )).join('') || '<tr><td class="empty-state" colspan="5">No patients found.</td></tr>';
   }
 
   // ---- support tickets ----
   let ticketsCache = [];
+  let ticketsPage = 1;
+  function setTicketsPage(page) { ticketsPage = page; renderTickets(); }
 
   function ticketStatusPill(label) {
     const cls = String(label).toLowerCase().replace(/\s+/g, '_');
@@ -612,13 +671,20 @@
       const status = document.getElementById('ticket-status-filter').value;
       const { tickets } = await api('/admin/tickets' + (status ? '?status=' + status : ''));
       ticketsCache = tickets;
-      const tbody = document.getElementById('tickets-table-body');
-      tbody.innerHTML = tickets.map((t) => (
-        '<tr><td class="mono">' + esc(t.id) + '</td><td>' + esc(t.corporate.companyName) + '</td><td>' + esc(t.subject) + '</td><td>' + esc(t.priority) + '</td>' +
-        '<td>' + ticketStatusPill(t.status) + '</td><td class="faint">' + new Date(t.updatedAt).toLocaleString() + '</td>' +
-        '<td><button class="btn btn-secondary btn-sm" onclick="viewTicket(\'' + t.id + '\')">View</button></td></tr>'
-      )).join('') || '<tr><td class="empty-state" colspan="7">No support tickets yet.</td></tr>';
+      ticketsPage = 1;
+      renderTickets();
     } catch (err) { toast(err.message, true); }
+  }
+
+  function renderTickets() {
+    const { pageItems, clampedPage } = paginate(ticketsCache, ticketsPage, 'tickets-pagination', 'setTicketsPage');
+    ticketsPage = clampedPage;
+    const tbody = document.getElementById('tickets-table-body');
+    tbody.innerHTML = pageItems.map((t) => (
+      '<tr><td class="mono">' + esc(t.id) + '</td><td>' + esc(t.corporate.companyName) + '</td><td>' + esc(t.subject) + '</td><td>' + esc(t.priority) + '</td>' +
+      '<td>' + ticketStatusPill(t.status) + '</td><td class="faint">' + new Date(t.updatedAt).toLocaleString() + '</td>' +
+      '<td><button class="btn btn-secondary btn-sm" onclick="viewTicket(\'' + t.id + '\')">View</button></td></tr>'
+    )).join('') || '<tr><td class="empty-state" colspan="7">No support tickets yet.</td></tr>';
   }
 
   async function viewTicket(id) {
@@ -679,7 +745,10 @@
 
   // ---- boot ----
   document.getElementById('lg-pwd').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
-  if (TOKEN) { showApp(); } else { logout(); }
+  // The session cookie is httpOnly, so JS can't just check whether it exists — ask
+  // the server instead. A 401 here throws inside api(), which already shows the
+  // login screen, so the catch below just needs to not be an unhandled rejection.
+  api('/admin/me').then(showApp).catch(() => {});
 </script>
 
 </body>

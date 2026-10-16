@@ -2,6 +2,7 @@
   "name": "admin-portal-e2e",
   "private": true,
   "scripts": {
+    "serve": "node serve.js",
     "test": "playwright test"
   },
   "devDependencies": {

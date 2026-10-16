@@ -1,11 +1,16 @@
 // @ts-check
-const path = require('path');
 const { test, expect } = require('@playwright/test');
 
 const ADMIN_EMAIL = 'admin@humancareworldwide.com';
 const ADMIN_PASSWORD = 'TestAdmin@2026'; // seeded by backend/src/seed-admin.js
-const ADMIN_HTML_URL = 'file://' + path.join(__dirname, '..', 'admin.html').replace(/\\/g, '/');
+// Must be http(s), not file:// — the admin session lives in a cookie (see
+// auth.middleware.js), and browsers won't set or send cookies for file://.
+const ADMIN_HTML_URL = 'http://localhost:3000/admin.html';
 
+// Fills in and submits the login form — only used by the `login` describe block
+// below, which starts logged out on purpose to exercise the form itself. Every
+// other test starts already authenticated via the shared storageState set up in
+// global-setup.js, so it only needs openApp().
 async function login(page, email = ADMIN_EMAIL, password = ADMIN_PASSWORD) {
   await page.goto(ADMIN_HTML_URL);
   await page.fill('#lg-email', email);
@@ -13,7 +18,18 @@ async function login(page, email = ADMIN_EMAIL, password = ADMIN_PASSWORD) {
   await page.locator('button', { hasText: 'Log In' }).click();
 }
 
+// Loads the page for a test that's already authenticated (via storageState) and
+// waits for the dashboard to actually appear before the test proceeds.
+async function openApp(page) {
+  await page.goto(ADMIN_HTML_URL);
+  await expect(page.locator('#app-shell')).toBeVisible();
+}
+
 test.describe('login', () => {
+  // These two specifically test the login form, so they need to start logged out —
+  // overrides the suite-wide authenticated storageState back to empty.
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test('rejects a wrong password', async ({ page }) => {
     await login(page, ADMIN_EMAIL, 'definitely-wrong');
     await expect(page.locator('#login-error')).toBeVisible();
@@ -29,7 +45,7 @@ test.describe('login', () => {
 
 test.describe('dashboard', () => {
   test('loads stat tiles and the recent cases table', async ({ page }) => {
-    await login(page);
+    await openApp(page);
     // Tiles start as "—" and get replaced with real numbers once the API calls resolve.
     await expect(page.locator('#stat-grid .num').first()).not.toHaveText('—');
     const tileLabels = await page.locator('#stat-grid .label').allTextContents();
@@ -39,7 +55,7 @@ test.describe('dashboard', () => {
 
 test.describe('corporates', () => {
   test('creates a corporate and a login for it', async ({ page }) => {
-    await login(page);
+    await openApp(page);
     await page.click('[data-page="corporates"]');
     await expect(page.locator('#page-corporates')).toHaveClass(/active/);
 
@@ -69,9 +85,11 @@ test.describe('corporates', () => {
 
 test.describe('cases', () => {
   test('search and sort controls affect the table', async ({ page }) => {
-    await login(page);
+    await openApp(page);
+    const casesLoaded = page.waitForResponse((r) => /\/admin\/cases(\?.*)?$/.test(r.url()) && r.request().method() === 'GET');
     await page.click('[data-page="cases"]');
     await expect(page.locator('#page-cases')).toHaveClass(/active/);
+    await casesLoaded;
 
     const rowCountBefore = await page.locator('#cases-table-body tr').count();
 
@@ -85,11 +103,59 @@ test.describe('cases', () => {
     // Just confirm it doesn't error out and the table still has the same row count.
     await expect(page.locator('#cases-table-body tr')).toHaveCount(rowCountBefore);
   });
+
+  test('reassigning a case asks for confirmation first', async ({ page }) => {
+    await openApp(page);
+    await page.click('[data-page="cases"]');
+    const firstRow = page.locator('#cases-table-body tr').first();
+    const select = firstRow.locator('select[id^="reassign-"]');
+    const optionCount = await select.locator('option').count();
+    test.skip(optionCount < 2, 'No corporates available to reassign to in this environment.');
+    await select.selectOption({ index: 1 });
+
+    // Declining the confirm dialog must leave the case exactly where it was.
+    const corporateBefore = await firstRow.locator('td').nth(5).textContent();
+    page.once('dialog', (d) => d.dismiss());
+    await firstRow.locator('button', { hasText: 'Assign' }).click();
+    await page.waitForTimeout(300);
+    await expect(firstRow.locator('td').nth(5)).toHaveText(corporateBefore || '');
+
+    // Accepting it actually reassigns.
+    const assignResponse = page.waitForResponse((r) => /\/admin\/cases\/\d+\/assign$/.test(r.url()) && r.request().method() === 'PATCH');
+    page.once('dialog', (d) => d.accept());
+    await firstRow.locator('button', { hasText: 'Assign' }).click();
+    expect((await assignResponse).ok()).toBe(true);
+  });
+});
+
+test.describe('session', () => {
+  test('survives a page reload (cookie-based, not localStorage)', async ({ page }) => {
+    await openApp(page);
+
+    // Nothing admin-related should be sitting in localStorage any more — the session
+    // lives entirely in the httpOnly cookie, invisible to page JS.
+    const stored = await page.evaluate(() => localStorage.getItem('hc_admin_token'));
+    expect(stored).toBeNull();
+
+    await page.reload();
+    await expect(page.locator('#app-shell')).toBeVisible();
+    await expect(page.locator('#login-screen')).not.toBeVisible();
+  });
+
+  test('log out clears the session so a reload shows the login screen', async ({ page }) => {
+    await openApp(page);
+    await page.locator('button', { hasText: 'Log Out' }).click();
+    await expect(page.locator('#login-screen')).toBeVisible();
+
+    await page.reload();
+    await expect(page.locator('#login-screen')).toBeVisible();
+    await expect(page.locator('#app-shell')).not.toBeVisible();
+  });
 });
 
 test.describe('services', () => {
   test('creates, edits, and deletes a service', async ({ page }) => {
-    await login(page);
+    await openApp(page);
     await page.click('[data-page="services"]');
     await expect(page.locator('#page-services')).toHaveClass(/active/);
 
@@ -118,7 +184,7 @@ test.describe('services', () => {
 
 test.describe('patients', () => {
   test('shows a count and an active/inactive status per patient', async ({ page }) => {
-    await login(page);
+    await openApp(page);
     await page.click('[data-page="patients"]');
     await expect(page.locator('#page-patients')).toHaveClass(/active/);
     await expect(page.locator('#patients-count')).toContainText('patient');
