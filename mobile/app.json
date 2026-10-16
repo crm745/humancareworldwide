@@ -39,7 +39,8 @@
           "icon": "./assets/icon.png",
           "color": "#1A73E8"
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "scheme": "humancare",
     "extra": {

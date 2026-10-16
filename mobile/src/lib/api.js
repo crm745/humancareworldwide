@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+import * as FileSystem from 'expo-file-system/legacy';
 import { getAccessToken, getRefreshToken, saveTokens, clearTokens } from './session';
 import { navReplace } from './nav';
 
@@ -72,21 +74,76 @@ export function apiPatch(path, body) {
 // File uploads go through FormData, which needs its own multipart boundary in the
 // Content-Type header — fetch sets that automatically, but only if we don't also set
 // 'Content-Type': 'application/json' like apiFetch does for everything else.
-export async function apiUpload(path, file, isRetry = false) {
+//
+// `onProgress(fraction)` is called with a 0–1 value as the upload advances, so the
+// caller can show a real percentage instead of a silent 10-15s wait on a big medical
+// PDF over a slow connection. Plain fetch has no upload-progress event on any
+// platform, so this branches: native uses expo-file-system's upload task (which
+// reports progress natively), web uses XMLHttpRequest (whose `upload.onprogress` is
+// the one place that web API still beats fetch).
+export async function apiUpload(path, file, isRetry = false, onProgress) {
   const token = await getAccessToken();
-  const form = new FormData();
-  form.append('file', { uri: file.uri, name: file.name, type: file.mimeType || 'application/octet-stream' });
+  const url = `${API_URL}${path}`;
 
-  const res = await fetch(`${API_URL}${path}`, {
-    method: 'POST',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    body: form,
-  });
+  if (Platform.OS === 'web') {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url);
+      if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhr.upload.onprogress = (e) => {
+        if (onProgress && e.lengthComputable) onProgress(e.loaded / e.total);
+      };
+      xhr.onload = async () => {
+        let data = {};
+        try { data = JSON.parse(xhr.responseText); } catch { /* no/invalid body */ }
 
-  if (res.status === 401 && token && !isRetry) {
+        if (xhr.status === 401 && token && !isRetry) {
+          try {
+            await refreshAccessToken();
+            resolve(await apiUpload(path, file, true, onProgress));
+          } catch {
+            await clearTokens();
+            navReplace('/welcome');
+            reject(new Error('Your session expired. Please log in again.'));
+          }
+          return;
+        }
+
+        if (xhr.status >= 200 && xhr.status < 300) resolve(data);
+        else reject(new Error(data.error || 'Upload failed. Please try again.'));
+      };
+      xhr.onerror = () => reject(new Error('Upload failed. Please try again.'));
+      const form = new FormData();
+      form.append('file', { uri: file.uri, name: file.name, type: file.mimeType || 'application/octet-stream' });
+      xhr.send(form);
+    });
+  }
+
+  const task = FileSystem.createUploadTask(
+    url,
+    file.uri,
+    {
+      httpMethod: 'POST',
+      uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+      fieldName: 'file',
+      mimeType: file.mimeType || 'application/octet-stream',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    },
+    (progress) => {
+      if (onProgress && progress.totalBytesExpectedToSend > 0) {
+        onProgress(progress.totalBytesSent / progress.totalBytesExpectedToSend);
+      }
+    },
+  );
+
+  const result = await task.uploadAsync();
+  let data = {};
+  try { data = JSON.parse(result.body); } catch { /* no/invalid body */ }
+
+  if (result.status === 401 && token && !isRetry) {
     try {
       await refreshAccessToken();
-      return apiUpload(path, file, true);
+      return apiUpload(path, file, true, onProgress);
     } catch {
       await clearTokens();
       navReplace('/welcome');
@@ -94,7 +151,6 @@ export async function apiUpload(path, file, isRetry = false) {
     }
   }
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Upload failed. Please try again.');
+  if (result.status < 200 || result.status >= 300) throw new Error(data.error || 'Upload failed. Please try again.');
   return data;
 }

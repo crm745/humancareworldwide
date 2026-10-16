@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,10 +22,13 @@ export function Screen({ children, bg = 'bg-canvas', padded, className = '', sty
 // room for the tab bar when there is one, the device's safe area, and a gap so the last
 // button never sits against the bottom edge or the gesture bar.
 const BOTTOM_GAP = 32;
-export function Body({ children, className = '', contentClassName = '', withNav, grow = true }) {
+// forwardRef so a parent (e.g. RequestStep, to scroll back to the top offending
+// field when validation fails) can call scrollTo on the underlying ScrollView.
+export const Body = forwardRef(function Body({ children, className = '', contentClassName = '', withNav, grow = true }, ref) {
   const insets = useSafeAreaInsets();
   return (
     <ScrollView
+      ref={ref}
       className={`flex-1 ${className}`}
       contentContainerClassName={`${grow ? 'flex-grow' : ''} ${contentClassName}`}
       contentContainerStyle={{ paddingBottom: (withNav ? 64 : 0) + BOTTOM_GAP + insets.bottom }}
@@ -34,7 +38,7 @@ export function Body({ children, className = '', contentClassName = '', withNav,
       {children}
     </ScrollView>
   );
-}
+});
 
 export function IconButton({ children, onPress, className = '' }) {
   return (

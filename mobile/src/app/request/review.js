@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { View } from 'react-native';
 import { needsCareLevel, useApp } from '../../state/AppContext';
 import SERVICES from '../../data/services.json';
 import { SOURCE_OTHER } from '../../data/mock';
@@ -7,6 +8,20 @@ import { apiPost, apiUpload } from '../../lib/api';
 import { Body, Screen, TopBar } from '../../components/layout';
 import { Button, Card, InfoRow, SectionLabel, Text } from '../../components/ui';
 import { StepWizard } from '../../components/widgets';
+
+// Shown while the medical-report attachment is uploading — without this, a big PDF
+// on a slow connection is 10-15s of total silence that reads as a frozen app.
+function UploadProgressBar({ progress }) {
+  const pct = Math.round(progress * 100);
+  return (
+    <View className="mt-3">
+      <View className="h-2 overflow-hidden rounded-full bg-line">
+        <View className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+      </View>
+      <Text className="mt-1.5 text-center text-[12.5px] text-faint">Uploading medical report… {pct}%</Text>
+    </View>
+  );
+}
 
 function Section({ title, rows, className = '' }) {
   return (
@@ -21,6 +36,8 @@ function Section({ title, rows, className = '' }) {
 export default function RequestReview() {
   const { t, draft: d, toast } = useApp();
   const [busy, setBusy] = useState(false);
+  // null while not uploading, 0–1 once the attachment upload starts.
+  const [uploadProgress, setUploadProgress] = useState(null);
   const source = d.source === SOURCE_OTHER && d.sourceOther.trim() ? `${SOURCE_OTHER}: ${d.sourceOther.trim()}` : d.source;
   const serviceTitle = (SERVICES[d.service] || SERVICES.air).title;
 
@@ -44,11 +61,14 @@ export default function RequestReview() {
       });
 
       if (d.uploadedFile) {
+        setUploadProgress(0);
         try {
-          await apiUpload(`/requests/me/${request.id}/documents`, d.uploadedFile);
+          await apiUpload(`/requests/me/${request.id}/documents`, d.uploadedFile, false, setUploadProgress);
         } catch (err) {
           // Request is already saved at this point — a failed attachment shouldn't block it.
           toast(`Request submitted, but the attachment failed to upload: ${err.message}`);
+        } finally {
+          setUploadProgress(null);
         }
       }
 
@@ -96,7 +116,8 @@ export default function RequestReview() {
             [t('lbl_heard_about_us'), source],
           ]}
         />
-        <Button title={t('submit_request_btn')} onPress={submit} dimmed={busy} className="mt-5" />
+        <Button title={t('submit_request_btn')} onPress={submit} dimmed={busy} loading={busy} className="mt-5" />
+        {uploadProgress !== null && <UploadProgressBar progress={uploadProgress} />}
       </Body>
     </Screen>
   );

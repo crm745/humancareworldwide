@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Path } from 'react-native-svg';
-import { Check, Plane } from 'lucide-react-native';
+import { Check } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
 import { apiGet } from '../lib/api';
 import { downloadAndShare } from '../lib/download';
@@ -11,27 +9,6 @@ import { toUiStatus, formatDisplayDate } from '../lib/requestShape';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Card, InfoRow, Pill, Spacer, Text } from '../components/ui';
 import { DocRow } from '../components/widgets';
-
-// Stylised route map (placeholder until real map/live tracking is wired up).
-function RouteMap({ origin, destination }) {
-  return (
-    <View className="h-[150px] overflow-hidden rounded-[14px]" style={{ direction: 'ltr' }}>
-      <LinearGradient colors={['#DCEBFB', '#EAF3FE', '#E4F5EA']} locations={[0, 0.6, 1]} start={{ x: 0.2, y: 0 }} end={{ x: 0.8, y: 1 }} style={{ flex: 1 }}>
-        <Svg viewBox="0 0 390 150" preserveAspectRatio="none" style={{ position: 'absolute', width: '100%', height: '100%' }}>
-          <Path d="M20 100 Q120 20 200 60 T370 40" stroke="#1A73E8" strokeWidth={2.5} strokeDasharray="6 5" fill="none" />
-        </Svg>
-        <View className="absolute bottom-2.5 left-3.5 rounded-md bg-white px-2 py-[3px]"><Text className="font-inter-black text-[11.5px]">{origin}</Text></View>
-        <View className="absolute right-3.5 top-2.5 rounded-md bg-white px-2 py-[3px]"><Text className="font-inter-black text-[11.5px]">{destination}</Text></View>
-        <View
-          className="absolute h-[26px] w-[26px] items-center justify-center rounded-full bg-primary"
-          style={{ left: '56%', top: '36%', shadowColor: '#1A73E8', shadowOpacity: 0.4, shadowRadius: 5, shadowOffset: { width: 0, height: 4 }, elevation: 4 }}
-        >
-          <Plane size={14} color="#fff" strokeWidth={2.4} />
-        </View>
-      </LinearGradient>
-    </View>
-  );
-}
 
 function stageEventsToTimeline(stageEvents, status) {
   const rows = stageEvents.map((ev, i) => ({
@@ -126,11 +103,10 @@ export default function Tracking() {
   return (
     <Screen>
       <TopBar title={t('tracking_details_title')} />
-      <View className="flex-row items-center justify-between bg-white px-[18px] pt-3.5">
+      <View className="flex-row items-center justify-between bg-white px-[18px] py-3.5">
         <Text className="font-inter-black text-[14.5px] text-navy">{item.referenceNumber} · {item.serviceType}</Text>
         <Pill status={toUiStatus(item.status)} />
       </View>
-      <View className="bg-white px-[18px] py-3.5"><RouteMap origin={item.origin} destination={item.destination} /></View>
       <View className="flex-row border-b border-line bg-white">
         {TABS.map(([id, key]) => (
           <Pressable key={id} onPress={() => setTab(id)} className={`flex-1 items-center border-b-2 py-3 ${tab === id ? 'border-primary' : 'border-transparent'}`}>
