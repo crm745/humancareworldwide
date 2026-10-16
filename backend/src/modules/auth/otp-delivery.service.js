@@ -8,7 +8,7 @@ const twilio = require('twilio');
 const PURPOSE_LABEL = {
   patient_register: 'HumanCare registration',
   patient_login: 'HumanCare login',
-  vendor_password_reset: 'HumanCare password reset',
+  corporate_password_reset: 'HumanCare password reset',
 };
 
 function isEmail(identifier) {

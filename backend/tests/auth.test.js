@@ -8,7 +8,7 @@ const request = require('supertest');
 const { app } = require('../src/app');
 const { prisma } = require('../src/db/prisma');
 const { deliverOtp } = require('../src/modules/auth/otp-delivery.service');
-const { createVendorUserAndLogin } = require('./helpers');
+const { createCorporateUserAndLogin } = require('./helpers');
 
 // Each test run uses a fresh, unique mobile/email so tests never collide with each
 // other or with leftover data from a previous run.
@@ -147,68 +147,68 @@ describe('GET /auth/me', () => {
   });
 });
 
-// These /vendor/* paths are aliases added for the vendor-portal web app (2026-10-12) —
+// These /corporate/* paths are aliases added for the corporate-portal web app (2026-10-12) —
 // same handlers as the originals, just reachable under a name that app expects.
-describe('vendor-portal auth aliases', () => {
+describe('corporate-portal auth aliases', () => {
   it('forgot-password alias triggers the same OTP flow as the original route', async () => {
-    const { email } = await createVendorUserAndLogin();
-    const res = await request(app).post('/auth/vendor/forgot-password').send({ email });
+    const { email } = await createCorporateUserAndLogin();
+    const res = await request(app).post('/auth/corporate/forgot-password').send({ email });
     expect(res.status).toBe(200);
     expect(codeSentTo(email)).toMatch(/^\d{6}$/);
   });
 
   it('reset-password alias resets the password with a correct OTP', async () => {
-    const { email } = await createVendorUserAndLogin();
-    await request(app).post('/auth/vendor/forgot-password').send({ email });
+    const { email } = await createCorporateUserAndLogin();
+    await request(app).post('/auth/corporate/forgot-password').send({ email });
     const code = codeSentTo(email);
 
     const res = await request(app)
-      .post('/auth/vendor/reset-password')
+      .post('/auth/corporate/reset-password')
       .send({ email, code, newPassword: 'BrandNewPass@123' });
     expect(res.status).toBe(200);
 
     // The old password should no longer work. (Not re-testing the new one through a
-    // full login here — that would issue a 2nd "vendor_login" OTP for this email
-    // within the 30s resend cooldown already started by createVendorUserAndLogin's
+    // full login here — that would issue a 2nd "corporate_login" OTP for this email
+    // within the 30s resend cooldown already started by createCorporateUserAndLogin's
     // own setup call, and get throttled rather than actually proving anything.)
-    const oldLoginRes = await request(app).post('/auth/vendor/login').send({ email, password: 'TestPass@123' });
+    const oldLoginRes = await request(app).post('/auth/corporate/login').send({ email, password: 'TestPass@123' });
     expect(oldLoginRes.status).toBe(401);
   });
 });
 
-describe('POST /auth/vendor/change-password', () => {
+describe('POST /auth/corporate/change-password', () => {
   it('requires authentication', async () => {
-    const res = await request(app).post('/auth/vendor/change-password').send({ currentPassword: 'a', newPassword: 'b' });
+    const res = await request(app).post('/auth/corporate/change-password').send({ currentPassword: 'a', newPassword: 'b' });
     expect(res.status).toBe(401);
   });
 
   it('rejects an incorrect current password', async () => {
-    const { token } = await createVendorUserAndLogin({ password: 'OriginalPass@123' });
+    const { token } = await createCorporateUserAndLogin({ password: 'OriginalPass@123' });
     const res = await request(app)
-      .post('/auth/vendor/change-password')
+      .post('/auth/corporate/change-password')
       .set('Authorization', `Bearer ${token}`)
       .send({ currentPassword: 'WrongPass@123', newPassword: 'NewPass@456' });
     expect(res.status).toBe(400);
   });
 
   it('changes the password with the correct current password', async () => {
-    const { token, email } = await createVendorUserAndLogin({ password: 'OriginalPass@123' });
+    const { token, email } = await createCorporateUserAndLogin({ password: 'OriginalPass@123' });
     const res = await request(app)
-      .post('/auth/vendor/change-password')
+      .post('/auth/corporate/change-password')
       .set('Authorization', `Bearer ${token}`)
       .send({ currentPassword: 'OriginalPass@123', newPassword: 'NewPass@456' });
     expect(res.status).toBe(200);
 
     // Same reasoning as the reset-password test above: confirm via the OLD password
     // now failing, rather than re-triggering a throttled login OTP for the new one.
-    const oldLoginRes = await request(app).post('/auth/vendor/login').send({ email, password: 'OriginalPass@123' });
+    const oldLoginRes = await request(app).post('/auth/corporate/login').send({ email, password: 'OriginalPass@123' });
     expect(oldLoginRes.status).toBe(401);
   });
 });
 
-describe('POST /auth/vendor/logout', () => {
+describe('POST /auth/corporate/logout', () => {
   it('always succeeds (JWTs are stateless, there is nothing server-side to clear)', async () => {
-    const res = await request(app).post('/auth/vendor/logout');
+    const res = await request(app).post('/auth/corporate/logout');
     expect(res.status).toBe(200);
   });
 });

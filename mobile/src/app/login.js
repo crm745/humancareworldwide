@@ -58,8 +58,8 @@ export default function Login() {
           <Text className="font-inter-bold text-primary" onPress={() => router.push('/register')}>{t('cta_signup')}</Text>
         </Text>
         <Text className="mt-3 text-center text-[14px] text-faint">
-          {t('login_vendor_q')}{' '}
-          <Text className="font-inter-bold text-primary" onPress={() => router.push('/vendor-login')}>{t('cta_vendor_partner')}</Text>
+          {t('login_corporate_q')}{' '}
+          <Text className="font-inter-bold text-primary" onPress={() => router.push('/corporate-login')}>{t('cta_corporate_partner')}</Text>
         </Text>
       </Body>
     </Screen>

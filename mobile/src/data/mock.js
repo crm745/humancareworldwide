@@ -35,7 +35,7 @@ export const MY_REQUESTS = [
 // "today" in the date filters — the real date would empty every filter.
 export const REQUESTS_TODAY = '2024-05-10';
 
-export const VENDOR_CASES = [
+export const CORPORATE_CASES = [
   { id: '#HC-2026-107', patient: 'Klaus Weber', route: 'Munich → Berlin', stage: 'submitted', service: 'ground', date: '2026-05-12' },
   { id: '#HC-2026-102', patient: 'Elena Rostova', route: 'Doha → London', stage: 'progress', service: 'air', date: '2026-05-02' },
   { id: '#HC-2026-094', patient: 'Sarah Jenkins', route: 'Dubai → Mumbai', stage: 'scheduled', service: 'hospital', date: '2026-03-15' },
@@ -43,7 +43,7 @@ export const VENDOR_CASES = [
 ];
 export const CASES_TODAY = '2026-05-12';
 
-export const VENDOR_IDENTITY = { name: 'Bupa Global Assistance', avatar: 'BG', partner: 'Partner #HC-CORP-482' };
+export const CORPORATE_IDENTITY = { name: 'Bupa Global Assistance', avatar: 'BG', partner: 'Partner #HC-CORP-482' };
 
 export const NOTIFICATIONS = [
   { kind: 'submitted', title: 'notif_request_submitted_title', body: 'notif_request_submitted_body', ago: '2h ago' },

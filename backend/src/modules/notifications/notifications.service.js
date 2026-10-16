@@ -24,7 +24,7 @@ async function markAllRead(recipientType, recipientId) {
   return { ok: true };
 }
 
-// Like markRead, but can also un-mark (the vendor-portal web app lets a vendor
+// Like markRead, but can also un-mark (the corporate-portal web app lets a corporate
 // toggle a notification back to unread, not just forward to read).
 async function setReadStatus(recipientType, recipientId, id, read) {
   const notification = await prisma.notification.findFirst({ where: { id: Number(id), recipientType, recipientId } });

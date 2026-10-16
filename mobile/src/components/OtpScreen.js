@@ -15,12 +15,12 @@ function formatTime(totalSeconds) {
   return `${m}:${s}`;
 }
 
-// Shared by login-otp, register-otp and vendor-otp: 6 digits, then sign in as `session`.
+// Shared by login-otp, register-otp and corporate-otp: 6 digits, then sign in as `session`.
 // `onVerify(code, identifier)` / `onResend(identifier)` take the CURRENT identifier (not
 // a stale value from the caller's own route params), since it can change right here via
 // the edit link. `onChangeIdentifier(newIdentifier)` sends a fresh OTP to that new value
 // and, on success, this screen starts treating it as the current one. Any of the three
-// can be left out — screens that can't support them (vendor-otp has no password to
+// can be left out — screens that can't support them (corporate-otp has no password to
 // replay) just don't get that affordance.
 export function OtpScreen({ titleKey, identifier, session, compact, onVerify, onResend, onChangeIdentifier }) {
   const { t, toast, setSession, setProfile } = useApp();

@@ -1,6 +1,6 @@
 // Covers the authenticated/ownership-checked document download added 2026-10-07 —
 // the whole point of that fix was that documents must NOT be reachable by anyone
-// other than the patient (or vendor) who owns them.
+// other than the patient (or corporate) who owns them.
 jest.mock('../src/modules/auth/otp-delivery.service', () => ({
   deliverOtp: jest.fn().mockResolvedValue(undefined),
 }));

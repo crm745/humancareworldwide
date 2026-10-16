@@ -7,7 +7,7 @@ const { notificationsRouter } = require('./modules/notifications/notifications.r
 const { servicesRouter } = require('./modules/services/services.routes');
 const { adminRouter } = require('./modules/admin/admin.routes');
 const { documentsRouter } = require('./modules/documents/documents.routes');
-const { vendorPortalRouter } = require('./modules/vendor-portal/vendor-portal.routes');
+const { corporatePortalRouter } = require('./modules/corporate-portal/corporate-portal.routes');
 
 const app = express();
 app.use(cors());
@@ -20,8 +20,8 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use('/auth', authRouter);
 app.use('/services', servicesRouter);
 app.use('/requests', requestsRouter);
-app.use('/vendor/cases', casesRouter);
-app.use('/vendor', vendorPortalRouter);
+app.use('/corporate/cases', casesRouter);
+app.use('/corporate', corporatePortalRouter);
 app.use('/notifications', notificationsRouter);
 app.use('/admin', adminRouter);
 app.use('/documents', documentsRouter);

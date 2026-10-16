@@ -10,11 +10,11 @@ const {
 
 const casesRouter = Router();
 
-// Insurance/Government/Corporate vendors submit on behalf of someone they cover, and
+// Insurance/Government/Corporate corporates submit on behalf of someone they cover, and
 // track it — they don't claim or work cases themselves. See cases.service.js.
-casesRouter.get('/', requireAuth(['vendor']), listMyCases);
-casesRouter.get('/:id', requireAuth(['vendor']), getCase);
-casesRouter.post('/', requireAuth(['vendor']), createCase);
-casesRouter.post('/:id/documents', requireAuth(['vendor']), upload.single('file'), uploadCaseDocument);
+casesRouter.get('/', requireAuth(['corporate']), listMyCases);
+casesRouter.get('/:id', requireAuth(['corporate']), getCase);
+casesRouter.post('/', requireAuth(['corporate']), createCase);
+casesRouter.post('/:id/documents', requireAuth(['corporate']), upload.single('file'), uploadCaseDocument);
 
 module.exports = { casesRouter };

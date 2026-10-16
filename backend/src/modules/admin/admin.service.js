@@ -1,6 +1,7 @@
 const { prisma } = require('../../db/prisma');
 const { hashPassword, comparePassword, signAccessToken, signRefreshToken } = require('../auth/auth.service');
 const { VALID_CASE_STATUSES } = require('../cases/cases.service');
+const { ticketIdFor, ticketDbIdFrom, TICKET_STATUS_LABEL } = require('../corporate-portal/corporate-portal.service');
 
 async function loginAdmin(email, password) {
   const admin = await prisma.adminUser.findUnique({ where: { email } });
@@ -14,25 +15,25 @@ async function loginAdmin(email, password) {
   return { token, refreshToken, admin: safeAdmin };
 }
 
-// Vendor logins don't have a password-value history (never store old passwords —
+// Corporate logins don't have a password-value history (never store old passwords —
 // that's a security anti-pattern). This is just an event log of when a reset was
 // requested/completed, read straight off the OTP records already created for that flow.
-async function listVendors() {
-  const vendors = await prisma.vendor.findMany({
+async function listCorporates() {
+  const corporates = await prisma.corporate.findMany({
     include: { users: { select: { id: true, email: true, role: true, createdAt: true } } },
     orderBy: { createdAt: 'desc' },
   });
 
-  const emails = vendors.flatMap((v) => v.users.map((u) => u.email));
+  const emails = corporates.flatMap((v) => v.users.map((u) => u.email));
   const resets = emails.length
     ? await prisma.otpCode.findMany({
-        where: { identifier: { in: emails }, purpose: 'vendor_password_reset' },
+        where: { identifier: { in: emails }, purpose: 'corporate_password_reset' },
         orderBy: { createdAt: 'desc' },
         select: { identifier: true, createdAt: true, consumedAt: true },
       })
     : [];
 
-  return vendors.map((v) => ({
+  return corporates.map((v) => ({
     ...v,
     users: v.users.map((u) => ({
       ...u,
@@ -41,32 +42,32 @@ async function listVendors() {
   }));
 }
 
-async function createVendor({ companyName, type }) {
-  return prisma.vendor.create({ data: { companyName, type } });
+async function createCorporate({ companyName, type }) {
+  return prisma.corporate.create({ data: { companyName, type } });
 }
 
-async function createVendorUser(vendorId, { email, password, role }) {
-  const vendor = await prisma.vendor.findUnique({ where: { id: Number(vendorId) } });
-  if (!vendor) {
-    const err = new Error('Vendor not found');
+async function createCorporateUser(corporateId, { email, password, role }) {
+  const corporate = await prisma.corporate.findUnique({ where: { id: Number(corporateId) } });
+  if (!corporate) {
+    const err = new Error('Corporate not found');
     err.statusCode = 404;
     throw err;
   }
-  const existing = await prisma.vendorUser.findUnique({ where: { email } });
+  const existing = await prisma.corporateUser.findUnique({ where: { email } });
   if (existing) {
-    const err = new Error('A vendor user with that email already exists.');
+    const err = new Error('A corporate user with that email already exists.');
     err.statusCode = 409;
     throw err;
   }
   const passwordHash = await hashPassword(password);
-  const vendorUser = await prisma.vendorUser.create({
-    data: { vendorId: vendor.id, email, passwordHash, role: role || 'viewer' },
+  const corporateUser = await prisma.corporateUser.create({
+    data: { corporateId: corporate.id, email, passwordHash, role: role || 'viewer' },
   });
-  const { passwordHash: _omit, ...safeVendorUser } = vendorUser;
-  return safeVendorUser;
+  const { passwordHash: _omit, ...safeCorporateUser } = corporateUser;
+  return safeCorporateUser;
 }
 
-async function listAllCases({ status, vendorId } = {}) {
+async function listAllCases({ status, corporateId } = {}) {
   const where = {};
   if (status && status !== 'all') {
     if (!VALID_CASE_STATUSES.includes(status)) {
@@ -76,19 +77,19 @@ async function listAllCases({ status, vendorId } = {}) {
     }
     where.status = status;
   }
-  if (vendorId) where.vendorId = Number(vendorId);
+  if (corporateId) where.corporateId = Number(corporateId);
 
   return prisma.case.findMany({
     where,
-    include: { vendor: { select: { id: true, companyName: true } } },
+    include: { corporate: { select: { id: true, companyName: true } } },
     orderBy: { createdAt: 'desc' },
   });
 }
 
-async function reassignCase(caseId, vendorId) {
-  const vendor = await prisma.vendor.findUnique({ where: { id: Number(vendorId) } });
-  if (!vendor) {
-    const err = new Error('Vendor not found');
+async function reassignCase(caseId, corporateId) {
+  const corporate = await prisma.corporate.findUnique({ where: { id: Number(corporateId) } });
+  if (!corporate) {
+    const err = new Error('Corporate not found');
     err.statusCode = 404;
     throw err;
   }
@@ -98,9 +99,9 @@ async function reassignCase(caseId, vendorId) {
     err.statusCode = 404;
     throw err;
   }
-  const updated = await prisma.case.update({ where: { id: caseRecord.id }, data: { vendorId: vendor.id } });
+  const updated = await prisma.case.update({ where: { id: caseRecord.id }, data: { corporateId: corporate.id } });
   await prisma.caseStageEvent.create({
-    data: { caseId: caseRecord.id, stage: caseRecord.status, note: `Reassigned to ${vendor.companyName} by admin.` },
+    data: { caseId: caseRecord.id, stage: caseRecord.status, note: `Reassigned to ${corporate.companyName} by admin.` },
   });
   return updated;
 }
@@ -126,12 +127,115 @@ async function searchPatients(search) {
   return patients.map((p) => ({ ...p, isActive: activeIds.has(p.id) }));
 }
 
+// ---------- support tickets ----------
+// Reuses the corporate-portal's own HCW-TKT-00001 id format and status labels so the
+// ticket id an admin sees here is exactly the one the corporate sees on their side.
+const VALID_TICKET_STATUSES = ['open', 'in_progress', 'resolved', 'closed'];
+
+const TICKET_INCLUDE = {
+  corporate: { select: { id: true, companyName: true } },
+  messages: { orderBy: { createdAt: 'asc' } },
+};
+
+function toAdminTicket(t) {
+  return {
+    id: ticketIdFor(t.id),
+    corporate: { id: t.corporate.id, companyName: t.corporate.companyName },
+    subject: t.subject,
+    category: t.category,
+    priority: t.priority,
+    status: TICKET_STATUS_LABEL[t.status] || t.status,
+    createdAt: t.createdAt,
+    updatedAt: t.updatedAt,
+    messages: t.messages.map((m) => ({ id: m.id, from: m.authorRole || 'corporate', author: m.authorName, date: m.createdAt, body: m.body })),
+  };
+}
+
+async function findTicketByTicketId(ticketId) {
+  const dbId = ticketDbIdFrom(ticketId);
+  if (dbId == null) return null;
+  return prisma.supportTicket.findUnique({ where: { id: dbId }, include: TICKET_INCLUDE });
+}
+
+async function listAllTickets({ status } = {}) {
+  const tickets = await prisma.supportTicket.findMany({
+    where: status ? { status } : undefined,
+    include: TICKET_INCLUDE,
+    orderBy: { updatedAt: 'desc' },
+  });
+  return tickets.map(toAdminTicket);
+}
+
+async function getTicketById(ticketId) {
+  const ticket = await findTicketByTicketId(ticketId);
+  if (!ticket) {
+    const err = new Error('Ticket not found');
+    err.statusCode = 404;
+    throw err;
+  }
+  return toAdminTicket(ticket);
+}
+
+// A reply here is always from HumanCare staff — unlike the corporate side, this never
+// reopens a resolved/closed ticket on its own; status changes go through
+// updateTicketStatus so an admin can reply (e.g. "closing this now") without the
+// ticket silently flipping back to open underneath them.
+async function replyToTicket(ticketId, authorName, body) {
+  const ticket = await findTicketByTicketId(ticketId);
+  if (!ticket) {
+    const err = new Error('Ticket not found');
+    err.statusCode = 404;
+    throw err;
+  }
+  const updated = await prisma.supportTicket.update({
+    where: { id: ticket.id },
+    data: { messages: { create: [{ authorName, authorRole: 'admin', body }] } },
+    include: TICKET_INCLUDE,
+  });
+
+  const corporateUsers = await prisma.corporateUser.findMany({ where: { corporateId: ticket.corporateId }, select: { id: true } });
+  if (corporateUsers.length) {
+    await prisma.notification.createMany({
+      data: corporateUsers.map((u) => ({
+        recipientType: 'corporate_user',
+        recipientId: u.id,
+        kind: 'system',
+        title: `Reply on ticket ${ticketIdFor(ticket.id)}`,
+        body: body.length > 140 ? `${body.slice(0, 140)}…` : body,
+      })),
+    });
+  }
+
+  return toAdminTicket(updated);
+}
+
+async function updateTicketStatus(ticketId, status) {
+  if (!VALID_TICKET_STATUSES.includes(status)) {
+    const err = new Error(`status must be one of: ${VALID_TICKET_STATUSES.join(', ')}`);
+    err.statusCode = 400;
+    throw err;
+  }
+  const ticket = await findTicketByTicketId(ticketId);
+  if (!ticket) {
+    const err = new Error('Ticket not found');
+    err.statusCode = 404;
+    throw err;
+  }
+  const updated = await prisma.supportTicket.update({ where: { id: ticket.id }, data: { status }, include: TICKET_INCLUDE });
+  return toAdminTicket(updated);
+}
+
 module.exports = {
   loginAdmin,
-  listVendors,
-  createVendor,
-  createVendorUser,
+  listCorporates,
+  createCorporate,
+  createCorporateUser,
   listAllCases,
   reassignCase,
   searchPatients,
+  VALID_TICKET_STATUSES,
+  listAllTickets,
+  getTicketById,
+  replyToTicket,
+  updateTicketStatus,
 };

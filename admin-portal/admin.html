@@ -97,6 +97,18 @@
   .pill.active::before{ background:var(--green); }
   .pill.inactive{ background:color-mix(in srgb, var(--faint) 20%, transparent); color:var(--muted); }
   .pill.inactive::before{ background:var(--faint); }
+  .pill.open{ background:color-mix(in srgb, var(--blue) 15%, transparent); color:var(--blue); }
+  .pill.open::before{ background:var(--blue); }
+  .pill.resolved{ background:color-mix(in srgb, var(--green) 15%, transparent); color:var(--green); }
+  .pill.resolved::before{ background:var(--green); }
+  .pill.closed{ background:color-mix(in srgb, var(--faint) 20%, transparent); color:var(--muted); }
+  .pill.closed::before{ background:var(--faint); }
+
+  .ticket-msg{ padding:10px 12px; border-radius:10px; margin-bottom:10px; max-width:78%; }
+  .ticket-msg.corporate{ background:var(--surface-2); margin-right:auto; }
+  .ticket-msg.admin{ background:color-mix(in srgb, var(--blue) 10%, transparent); margin-left:auto; }
+  .ticket-msg .meta{ font-size:11px; color:var(--muted); margin-bottom:4px; }
+  .ticket-thread{ display:flex; flex-direction:column; margin-bottom:16px; }
 
   .row-flex{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
   .row-flex .field{ margin-bottom:0; flex:1; min-width:140px; }
@@ -134,10 +146,11 @@
   <div class="sidebar">
     <div class="mark"><div class="mark-dot"></div><div class="mark-text">HumanCare Admin</div></div>
     <div class="nav-item active" data-page="dashboard" onclick="nav('dashboard')">Dashboard</div>
-    <div class="nav-item" data-page="vendors" onclick="nav('vendors')">Vendors</div>
+    <div class="nav-item" data-page="corporates" onclick="nav('corporates')">Corporates</div>
     <div class="nav-item" data-page="cases" onclick="nav('cases')">Cases</div>
     <div class="nav-item" data-page="services" onclick="nav('services')">Services</div>
     <div class="nav-item" data-page="patients" onclick="nav('patients')">Patients</div>
+    <div class="nav-item" data-page="tickets" onclick="nav('tickets')">Support Tickets</div>
     <div class="sidebar-footer">
       <button class="btn btn-secondary btn-block" onclick="logout()">Log Out</button>
     </div>
@@ -151,7 +164,7 @@
       <div class="stat-grid" id="stat-grid">
         <div class="stat-tile"><div class="num">—</div><div class="label">Total Cases</div></div>
         <div class="stat-tile"><div class="num">—</div><div class="label">Completed</div></div>
-        <div class="stat-tile"><div class="num">—</div><div class="label">Vendors</div></div>
+        <div class="stat-tile"><div class="num">—</div><div class="label">Corporates</div></div>
         <div class="stat-tile"><div class="num">—</div><div class="label">Patients</div></div>
       </div>
       <div class="card">
@@ -160,12 +173,12 @@
       </div>
     </div>
 
-    <!-- VENDORS -->
-    <div class="page" id="page-vendors">
-      <div class="page-head"><div><h1>Vendors</h1><div class="page-dek">Add vendor companies and their login accounts.</div></div></div>
+    <!-- CORPORATES -->
+    <div class="page" id="page-corporates">
+      <div class="page-head"><div><h1>Corporates</h1><div class="page-dek">Add corporate companies and their login accounts.</div></div></div>
 
       <div class="card">
-        <div class="card-title">Add a New Vendor Company</div>
+        <div class="card-title">Add a New Corporate Company</div>
         <div class="row-flex">
           <div class="field"><label>Company Name</label><input id="nv-name" placeholder="e.g. Meridian Global Assistance"></div>
           <div class="field"><label>Type</label>
@@ -176,17 +189,17 @@
               <option value="corporate">Corporate</option>
             </select>
           </div>
-          <button class="btn btn-primary" onclick="createVendor()">Add Vendor</button>
+          <button class="btn btn-primary" onclick="createCorporate()">Add Corporate</button>
         </div>
       </div>
 
-      <div id="vendors-list"></div>
+      <div id="corporates-list"></div>
     </div>
 
     <!-- CASES -->
     <div class="page" id="page-cases">
       <div class="page-head">
-        <div><h1>Cases</h1><div class="page-dek">Every case across every vendor.</div></div>
+        <div><h1>Cases</h1><div class="page-dek">Every case across every corporate.</div></div>
         <select class="status-filter" id="case-status-filter" onchange="loadCases()">
           <option value="all">All statuses</option>
           <option value="submitted">Submitted</option>
@@ -198,7 +211,7 @@
       </div>
       <div class="card">
         <div class="row-flex">
-          <div class="field"><label>Search by reference, patient, or vendor</label><input id="case-search" placeholder="Type to search..." oninput="renderCases()"></div>
+          <div class="field"><label>Search by reference, patient, or corporate</label><input id="case-search" placeholder="Type to search..." oninput="renderCases()"></div>
           <div class="field" style="max-width:160px;"><label>Sort</label>
             <select id="case-sort" onchange="renderCases()">
               <option value="newest">Newest first</option>
@@ -210,7 +223,7 @@
       <div class="card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Reference</th><th>Date</th><th>Patient</th><th>Service</th><th>Status</th><th>Vendor</th><th>Reassign</th></tr></thead>
+            <thead><tr><th>Reference</th><th>Date</th><th>Patient</th><th>Service</th><th>Status</th><th>Corporate</th><th>Reassign</th></tr></thead>
             <tbody id="cases-table-body"></tbody>
           </table>
         </div>
@@ -254,6 +267,36 @@
       </div>
     </div>
 
+    <!-- SUPPORT TICKETS -->
+    <div class="page" id="page-tickets">
+      <div class="page-head">
+        <div><h1>Support Tickets</h1><div class="page-dek">Requests corporates submit from the corporate portal's Support page.</div></div>
+        <select class="status-filter" id="ticket-status-filter" onchange="loadTickets()">
+          <option value="">All statuses</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="closed">Closed</option>
+        </select>
+      </div>
+
+      <div id="tickets-list-view">
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Ticket</th><th>Corporate</th><th>Subject</th><th>Priority</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+              <tbody id="tickets-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="ticket-detail-view" style="display:none;">
+        <button class="btn btn-secondary btn-sm" style="margin-bottom:14px;" onclick="closeTicketDetail()">&larr; Back to tickets</button>
+        <div class="card" id="ticket-detail-card"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -262,7 +305,7 @@
 <script>
   const API_BASE = 'http://localhost:4000';
   let TOKEN = localStorage.getItem('hc_admin_token') || null;
-  let vendorsCache = [];
+  let corporatesCache = [];
 
   function toast(msg, isErr) {
     const t = document.getElementById('toast');
@@ -335,10 +378,11 @@
     document.getElementById('page-' + page).classList.add('active');
     document.querySelector('.nav-item[data-page="' + page + '"]').classList.add('active');
     if (page === 'dashboard') loadDashboard();
-    if (page === 'vendors') loadVendors();
+    if (page === 'corporates') loadCorporates();
     if (page === 'cases') loadCases();
     if (page === 'services') loadServices();
     if (page === 'patients') loadPatients();
+    if (page === 'tickets') loadTickets();
   }
 
   function statusPill(status) {
@@ -359,9 +403,9 @@
   // ---- dashboard ----
   async function loadDashboard() {
     try {
-      const [casesRes, vendorsRes, patientsRes] = await Promise.all([
+      const [casesRes, corporatesRes, patientsRes] = await Promise.all([
         api('/admin/cases'),
-        api('/admin/vendors'),
+        api('/admin/corporates'),
         api('/admin/patients'),
       ]);
       const cases = casesRes.cases;
@@ -369,7 +413,7 @@
       const tiles = document.querySelectorAll('#stat-grid .num');
       tiles[0].textContent = cases.length;
       tiles[1].textContent = completed;
-      tiles[2].textContent = vendorsRes.vendors.length;
+      tiles[2].textContent = corporatesRes.corporates.length;
       tiles[3].textContent = patientsRes.patients.length;
 
       const tbody = document.querySelector('#dash-recent-table tbody');
@@ -379,13 +423,13 @@
     } catch (err) { toast(err.message, true); }
   }
 
-  // ---- vendors ----
-  async function loadVendors() {
+  // ---- corporates ----
+  async function loadCorporates() {
     try {
-      const { vendors } = await api('/admin/vendors');
-      vendorsCache = vendors;
-      const el = document.getElementById('vendors-list');
-      el.innerHTML = vendors.map((v) => (
+      const { corporates } = await api('/admin/corporates');
+      corporatesCache = corporates;
+      const el = document.getElementById('corporates-list');
+      el.innerHTML = corporates.map((v) => (
         '<div class="card">' +
           '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">' +
             '<div><div class="card-title" style="margin-bottom:2px;">' + esc(v.companyName) + '</div><div class="faint">' + esc(v.type) + '</div></div>' +
@@ -396,33 +440,33 @@
           '<div class="row-flex" style="margin-top:14px;">' +
             '<div class="field"><label>New login email</label><input id="vu-email-' + v.id + '" placeholder="ops@company.com"></div>' +
             '<div class="field"><label>Password</label><input id="vu-pwd-' + v.id + '" type="text" placeholder="min 8 characters"></div>' +
-            '<button class="btn btn-secondary" onclick="createVendorUser(' + v.id + ')">Add Login</button>' +
+            '<button class="btn btn-secondary" onclick="createCorporateUser(' + v.id + ')">Add Login</button>' +
           '</div>' +
         '</div>'
-      )).join('') || '<div class="empty-state">No vendors yet — add one above.</div>';
+      )).join('') || '<div class="empty-state">No corporates yet — add one above.</div>';
     } catch (err) { toast(err.message, true); }
   }
 
-  async function createVendor() {
+  async function createCorporate() {
     const companyName = document.getElementById('nv-name').value.trim();
     const type = document.getElementById('nv-type').value;
     if (!companyName) return toast('Enter a company name.', true);
     try {
-      await api('/admin/vendors', { method: 'POST', body: { companyName, type } });
+      await api('/admin/corporates', { method: 'POST', body: { companyName, type } });
       document.getElementById('nv-name').value = '';
-      toast('Vendor added.');
-      loadVendors();
+      toast('Corporate added.');
+      loadCorporates();
     } catch (err) { toast(err.message, true); }
   }
 
-  async function createVendorUser(vendorId) {
-    const email = document.getElementById('vu-email-' + vendorId).value.trim();
-    const password = document.getElementById('vu-pwd-' + vendorId).value;
+  async function createCorporateUser(corporateId) {
+    const email = document.getElementById('vu-email-' + corporateId).value.trim();
+    const password = document.getElementById('vu-pwd-' + corporateId).value;
     if (!email || !password) return toast('Enter an email and password.', true);
     try {
-      await api('/admin/vendors/' + vendorId + '/users', { method: 'POST', body: { email, password } });
+      await api('/admin/corporates/' + corporateId + '/users', { method: 'POST', body: { email, password } });
       toast('Login created.');
-      loadVendors();
+      loadCorporates();
     } catch (err) { toast(err.message, true); }
   }
 
@@ -432,11 +476,11 @@
   async function loadCases() {
     try {
       const status = document.getElementById('case-status-filter').value;
-      const [casesRes, vendorsRes] = await Promise.all([
+      const [casesRes, corporatesRes] = await Promise.all([
         api('/admin/cases' + (status !== 'all' ? '?status=' + status : '')),
-        vendorsCache.length ? Promise.resolve({ vendors: vendorsCache }) : api('/admin/vendors'),
+        corporatesCache.length ? Promise.resolve({ corporates: corporatesCache }) : api('/admin/corporates'),
       ]);
-      vendorsCache = vendorsRes.vendors;
+      corporatesCache = corporatesRes.corporates;
       casesCache = casesRes.cases;
       renderCases();
     } catch (err) { toast(err.message, true); }
@@ -445,12 +489,12 @@
   function renderCases() {
     const q = (document.getElementById('case-search').value || '').trim().toLowerCase();
     const sort = document.getElementById('case-sort').value;
-    const options = vendorsCache.map((v) => '<option value="' + v.id + '">' + esc(v.companyName) + '</option>').join('');
+    const options = corporatesCache.map((v) => '<option value="' + v.id + '">' + esc(v.companyName) + '</option>').join('');
 
     let rows = casesCache.filter((c) => {
       if (!q) return true;
-      const vendorName = c.vendor ? c.vendor.companyName : '';
-      return (c.referenceNumber + ' ' + c.patientName + ' ' + vendorName).toLowerCase().includes(q);
+      const corporateName = c.corporate ? c.corporate.companyName : '';
+      return (c.referenceNumber + ' ' + c.patientName + ' ' + corporateName).toLowerCase().includes(q);
     });
     rows = rows.slice().sort((a, b) => (
       sort === 'oldest' ? new Date(a.createdAt) - new Date(b.createdAt) : new Date(b.createdAt) - new Date(a.createdAt)
@@ -459,18 +503,18 @@
     const tbody = document.getElementById('cases-table-body');
     tbody.innerHTML = rows.map((c) => (
       '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td class="faint">' + new Date(c.createdAt).toLocaleDateString() + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td>' +
-      '<td>' + esc(c.vendor ? c.vendor.companyName : 'Unassigned') + '</td>' +
-      '<td><div style="display:flex;gap:6px;"><select id="reassign-' + c.id + '"><option value="">Choose vendor...</option>' + options + '</select>' +
+      '<td>' + esc(c.corporate ? c.corporate.companyName : 'Unassigned') + '</td>' +
+      '<td><div style="display:flex;gap:6px;"><select id="reassign-' + c.id + '"><option value="">Choose corporate...</option>' + options + '</select>' +
       '<button class="btn btn-secondary btn-sm" onclick="reassign(' + c.id + ')">Assign</button></div></td></tr>'
     )).join('') || '<tr><td class="empty-state" colspan="7">No cases match this filter.</td></tr>';
   }
 
   async function reassign(caseId) {
     const sel = document.getElementById('reassign-' + caseId);
-    const vendorId = sel.value;
-    if (!vendorId) return toast('Choose a vendor first.', true);
+    const corporateId = sel.value;
+    if (!corporateId) return toast('Choose a corporate first.', true);
     try {
-      await api('/admin/cases/' + caseId + '/assign', { method: 'PATCH', body: { vendorId } });
+      await api('/admin/cases/' + caseId + '/assign', { method: 'PATCH', body: { corporateId } });
       toast('Case reassigned.');
       loadCases();
     } catch (err) { toast(err.message, true); }
@@ -552,6 +596,84 @@
         '<tr><td>' + esc(p.name) + '</td><td>' + esc(p.email) + '</td><td>' + esc(p.mobile) + '</td><td class="faint">' + new Date(p.createdAt).toLocaleDateString() + '</td>' +
         '<td><span class="pill ' + (p.isActive ? 'active' : 'inactive') + '">' + (p.isActive ? 'active' : 'inactive') + '</span></td></tr>'
       )).join('') || '<tr><td class="empty-state" colspan="5">No patients found.</td></tr>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // ---- support tickets ----
+  let ticketsCache = [];
+
+  function ticketStatusPill(label) {
+    const cls = String(label).toLowerCase().replace(/\s+/g, '_');
+    return '<span class="pill ' + cls + '">' + esc(label) + '</span>';
+  }
+
+  async function loadTickets() {
+    try {
+      const status = document.getElementById('ticket-status-filter').value;
+      const { tickets } = await api('/admin/tickets' + (status ? '?status=' + status : ''));
+      ticketsCache = tickets;
+      const tbody = document.getElementById('tickets-table-body');
+      tbody.innerHTML = tickets.map((t) => (
+        '<tr><td class="mono">' + esc(t.id) + '</td><td>' + esc(t.corporate.companyName) + '</td><td>' + esc(t.subject) + '</td><td>' + esc(t.priority) + '</td>' +
+        '<td>' + ticketStatusPill(t.status) + '</td><td class="faint">' + new Date(t.updatedAt).toLocaleString() + '</td>' +
+        '<td><button class="btn btn-secondary btn-sm" onclick="viewTicket(\'' + t.id + '\')">View</button></td></tr>'
+      )).join('') || '<tr><td class="empty-state" colspan="7">No support tickets yet.</td></tr>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function viewTicket(id) {
+    try {
+      const { ticket } = await api('/admin/tickets/' + id);
+      document.getElementById('tickets-list-view').style.display = 'none';
+      document.getElementById('ticket-detail-view').style.display = 'block';
+      renderTicketDetail(ticket);
+    } catch (err) { toast(err.message, true); }
+  }
+
+  function closeTicketDetail() {
+    document.getElementById('ticket-detail-view').style.display = 'none';
+    document.getElementById('tickets-list-view').style.display = 'block';
+  }
+
+  function renderTicketDetail(t) {
+    const statusOptions = ['open', 'in_progress', 'resolved', 'closed'].map((s) => (
+      '<option value="' + s + '"' + (t.status.toLowerCase().replace(/\s+/g, '_') === s ? ' selected' : '') + '>' + s.replace('_', ' ') + '</option>'
+    )).join('');
+
+    document.getElementById('ticket-detail-card').innerHTML =
+      '<div class="page-head"><div><div class="card-title" style="margin-bottom:2px;">' + esc(t.subject) + '</div>' +
+        '<div class="faint">' + esc(t.id) + ' · ' + esc(t.corporate.companyName) + (t.category ? ' · ' + esc(t.category) : '') + ' · ' + esc(t.priority) + ' priority</div></div>' +
+        ticketStatusPill(t.status) +
+      '</div>' +
+      '<div class="row-flex" style="margin-bottom:18px;">' +
+        '<div class="field" style="max-width:200px;"><label>Status</label><select id="ticket-status-select">' + statusOptions + '</select></div>' +
+        '<button class="btn btn-secondary" onclick="changeTicketStatus(\'' + t.id + '\')">Update Status</button>' +
+      '</div>' +
+      '<div class="ticket-thread">' +
+        t.messages.map((m) => (
+          '<div class="ticket-msg ' + m.from + '"><div class="meta">' + esc(m.author || (m.from === 'admin' ? 'HumanCare Support' : 'Corporate')) + ' · ' + new Date(m.date).toLocaleString() + '</div>' + esc(m.body) + '</div>'
+        )).join('') +
+      '</div>' +
+      '<div class="field"><label>Reply as HumanCare Support</label><textarea id="ticket-reply-text" placeholder="Type your reply..."></textarea></div>' +
+      '<button class="btn btn-primary" style="margin-top:10px;" onclick="sendTicketReply(\'' + t.id + '\')">Send Reply</button>';
+  }
+
+  async function sendTicketReply(id) {
+    const text = document.getElementById('ticket-reply-text').value.trim();
+    if (!text) return toast('Enter a reply first.', true);
+    try {
+      const { ticket } = await api('/admin/tickets/' + id + '/messages', { method: 'POST', body: { body: text } });
+      toast('Reply sent.');
+      renderTicketDetail(ticket);
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function changeTicketStatus(id) {
+    const status = document.getElementById('ticket-status-select').value;
+    try {
+      const { ticket } = await api('/admin/tickets/' + id + '/status', { method: 'PATCH', body: { status } });
+      toast('Status updated.');
+      renderTicketDetail(ticket);
     } catch (err) { toast(err.message, true); }
   }
 

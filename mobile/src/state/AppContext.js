@@ -35,7 +35,7 @@ export function initialsOf(name) {
 
 export function AppProvider({ children }) {
   const [lang, setLang] = useState('EN');
-  const [session, setSession] = useState('patient'); // 'patient' | 'vendor'
+  const [session, setSession] = useState('patient'); // 'patient' | 'corporate'
   const [profile, setProfile] = useState(INITIAL_PROFILE);
   const [draft, setDraft] = useState(INITIAL_DRAFT);
   const [toastMsg, setToastMsg] = useState(null);
@@ -59,7 +59,7 @@ export function AppProvider({ children }) {
       t,
       session,
       setSession,
-      isVendor: session === 'vendor',
+      isCorporate: session === 'corporate',
       profile,
       setProfile,
       draft,

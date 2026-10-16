@@ -27,19 +27,19 @@ async function createPatient({ name = 'Test Patient' } = {}) {
   return { token: res.body.token, user: res.body.user, mobile, email };
 }
 
-// Creates a vendor + vendor login directly (there's no public vendor sign-up endpoint —
-// real vendor accounts are created by an admin), then logs in through the real
+// Creates a corporate + corporate login directly (there's no public corporate sign-up endpoint —
+// real corporate accounts are created by an admin), then logs in through the real
 // password+OTP flow to get a token, same as the app does.
-async function createVendorUserAndLogin({ companyName = 'Test Vendor Co', type = 'corporate', password = 'TestPass@123' } = {}) {
-  const vendor = await prisma.vendor.create({ data: { companyName, type } });
-  const email = uniqueEmail('vendor');
+async function createCorporateUserAndLogin({ companyName = 'Test Corporate Co', type = 'corporate', password = 'TestPass@123' } = {}) {
+  const corporate = await prisma.corporate.create({ data: { companyName, type } });
+  const email = uniqueEmail('corporate');
   const passwordHash = await bcrypt.hash(password, 10);
-  await prisma.vendorUser.create({ data: { vendorId: vendor.id, email, passwordHash, role: 'admin' } });
+  await prisma.corporateUser.create({ data: { corporateId: corporate.id, email, passwordHash, role: 'admin' } });
 
-  await request(app).post('/auth/vendor/login').send({ email, password });
+  await request(app).post('/auth/corporate/login').send({ email, password });
   const code = codeSentTo(email);
-  const res = await request(app).post('/auth/vendor/otp/verify').send({ email, code });
-  return { token: res.body.token, vendorUser: res.body.vendorUser, vendor, email };
+  const res = await request(app).post('/auth/corporate/otp/verify').send({ email, code });
+  return { token: res.body.token, corporateUser: res.body.corporateUser, corporate, email };
 }
 
 async function createAdminAndLogin({ password = 'TestAdminPass@123' } = {}) {
@@ -55,6 +55,6 @@ module.exports = {
   uniqueEmail,
   codeSentTo,
   createPatient,
-  createVendorUserAndLogin,
+  createCorporateUserAndLogin,
   createAdminAndLogin,
 };

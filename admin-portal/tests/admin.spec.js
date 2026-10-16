@@ -33,37 +33,37 @@ test.describe('dashboard', () => {
     // Tiles start as "—" and get replaced with real numbers once the API calls resolve.
     await expect(page.locator('#stat-grid .num').first()).not.toHaveText('—');
     const tileLabels = await page.locator('#stat-grid .label').allTextContents();
-    expect(tileLabels).toEqual(['Total Cases', 'Completed', 'Vendors', 'Patients']);
+    expect(tileLabels).toEqual(['Total Cases', 'Completed', 'Corporates', 'Patients']);
   });
 });
 
-test.describe('vendors', () => {
-  test('creates a vendor and a login for it', async ({ page }) => {
+test.describe('corporates', () => {
+  test('creates a corporate and a login for it', async ({ page }) => {
     await login(page);
-    await page.click('[data-page="vendors"]');
-    await expect(page.locator('#page-vendors')).toHaveClass(/active/);
+    await page.click('[data-page="corporates"]');
+    await expect(page.locator('#page-corporates')).toHaveClass(/active/);
 
-    const companyName = 'Playwright Test Vendor ' + Date.now();
+    const companyName = 'Playwright Test Corporate ' + Date.now();
     await page.fill('#nv-name', companyName);
     await page.selectOption('#nv-type', 'tpa');
-    const createResponse = page.waitForResponse((r) => r.url().endsWith('/admin/vendors') && r.request().method() === 'POST');
-    await page.locator('button', { hasText: 'Add Vendor' }).click();
+    const createResponse = page.waitForResponse((r) => r.url().endsWith('/admin/corporates') && r.request().method() === 'POST');
+    await page.locator('button', { hasText: 'Add Corporate' }).click();
     expect((await createResponse).ok()).toBe(true);
-    await page.waitForResponse((r) => r.url().endsWith('/admin/vendors') && r.request().method() === 'GET');
+    await page.waitForResponse((r) => r.url().endsWith('/admin/corporates') && r.request().method() === 'GET');
 
-    const vendorCard = page.locator('.card', { hasText: companyName });
-    await expect(vendorCard).toBeVisible();
+    const corporateCard = page.locator('.card', { hasText: companyName });
+    await expect(corporateCard).toBeVisible();
 
     // No "Role" field should exist anywhere on this page (removed per the Oct 2026
-    // vendor single-user simplification).
-    await expect(page.locator('#page-vendors')).not.toContainText('Role');
+    // corporate single-user simplification).
+    await expect(page.locator('#page-corporates')).not.toContainText('Role');
 
     const email = `pw-test-${Date.now()}@example.com`;
-    await vendorCard.locator('[id^="vu-email-"]').fill(email);
-    await vendorCard.locator('[id^="vu-pwd-"]').fill('TestLoginPw123');
-    await vendorCard.locator('button', { hasText: 'Add Login' }).click();
+    await corporateCard.locator('[id^="vu-email-"]').fill(email);
+    await corporateCard.locator('[id^="vu-pwd-"]').fill('TestLoginPw123');
+    await corporateCard.locator('button', { hasText: 'Add Login' }).click();
 
-    await expect(vendorCard).toContainText(email);
+    await expect(corporateCard).toContainText(email);
   });
 });
 

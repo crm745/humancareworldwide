@@ -8,12 +8,12 @@ const CASE_INCLUDE = {
   serviceRequest: { select: { id: true, userId: true, referenceNumber: true } },
 };
 
-// vendorId here means "which institution requested this," not "who is working it" —
-// vendors (insurance/government/corporate) submit and track, they don't claim or
+// corporateId here means "which institution requested this," not "who is working it" —
+// corporates (insurance/government/corporate) submit and track, they don't claim or
 // fulfill cases themselves. Actual case work happens in Bitrix24 by HumanCare's own
 // Operations team; see updateCaseStage below for how that flows back in.
-async function listCasesForVendor(vendorId, { status } = {}) {
-  const where = { vendorId };
+async function listCasesForCorporate(corporateId, { status } = {}) {
+  const where = { corporateId };
   if (status && status !== 'all') {
     if (!VALID_CASE_STATUSES.includes(status)) {
       const err = new Error(`Invalid status filter. Use one of: ${VALID_CASE_STATUSES.join(', ')}`);
@@ -26,7 +26,7 @@ async function listCasesForVendor(vendorId, { status } = {}) {
 }
 
 // Accepts either the numeric database id (what the mobile app has always used) or the
-// human-readable referenceNumber like "CASE-1042" (what the vendor-portal web app
+// human-readable referenceNumber like "CASE-1042" (what the corporate-portal web app
 // links to, since that's the id it displays) — whichever one `id` looks like.
 async function getCaseById(id) {
   const numericId = Number(id);
@@ -41,12 +41,12 @@ async function getCaseById(id) {
   return caseRecord;
 }
 
-async function createCaseByVendor(vendorId, data) {
+async function createCaseByCorporate(corporateId, data) {
   const { patientName, patientContact, serviceType, origin, destination, urgency, policyReference, notes } = data;
 
   const created = await prisma.case.create({
     data: {
-      vendorId,
+      corporateId,
       referenceNumber: `TEMP-${Date.now()}`,
       patientName,
       patientContact: patientContact || null,
@@ -68,13 +68,13 @@ async function createCaseByVendor(vendorId, data) {
   });
 
   await prisma.caseStageEvent.create({
-    data: { caseId: caseRecord.id, stage: 'submitted', note: 'Case opened by vendor.' },
+    data: { caseId: caseRecord.id, stage: 'submitted', note: 'Case opened by corporate.' },
   });
 
   return caseRecord;
 }
 
-// Not exposed to vendors directly. Reachable today via PATCH /admin/cases/:id/stage
+// Not exposed to corporates directly. Reachable today via PATCH /admin/cases/:id/stage
 // as a manual stand-in for Operations; once the Bitrix24 webhook exists, that will
 // call this too whenever a lead's stage moves in Bitrix24.
 async function updateCaseStage(caseId, stage, note) {
@@ -114,8 +114,8 @@ async function notifyPatient(userId, { kind, title, body }) {
 
 module.exports = {
   VALID_CASE_STATUSES,
-  listCasesForVendor,
+  listCasesForCorporate,
   getCaseById,
-  createCaseByVendor,
+  createCaseByCorporate,
   updateCaseStage,
 };

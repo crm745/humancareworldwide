@@ -18,7 +18,7 @@ function RoleCard({ Icon, bg, color, title, sub, onPress, className = '' }) {
   );
 }
 
-// Portal chooser (patient vs vendor). Not linked from the main flow; kept for parity with the prototype.
+// Portal chooser (patient vs corporate). Not linked from the main flow; kept for parity with the prototype.
 export default function ChooseLogin() {
   const { t } = useApp();
   return (
@@ -31,7 +31,7 @@ export default function ChooseLogin() {
           <Text className="mt-2 max-w-[260px] text-center text-[13.5px] text-muted">{t('choose_login_sub')}</Text>
         </View>
         <RoleCard className="mb-3" Icon={User} bg="bg-primary-soft" color="#1A73E8" title={t('role_patient_title')} sub={t('role_patient_sub')} onPress={() => router.push('/login')} />
-        <RoleCard Icon={Building2} bg="bg-success-soft" color="#1E8E4A" title={t('role_vendor_title')} sub={t('role_vendor_sub')} onPress={() => router.push('/vendor-login')} />
+        <RoleCard Icon={Building2} bg="bg-success-soft" color="#1E8E4A" title={t('role_corporate_title')} sub={t('role_corporate_sub')} onPress={() => router.push('/corporate-login')} />
       </View>
       <Text className="text-center text-[12.5px] text-faint">
         {t('need_credentials_q')} <Text className="font-inter-bold text-primary">{OPS_EMAIL}</Text>

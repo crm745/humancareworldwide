@@ -1,8 +1,8 @@
 const { listNotificationsFor, markRead, markAllRead } = require('./notifications.service');
 
 function recipientFor(req) {
-  return req.user.role === 'vendor'
-    ? { recipientType: 'vendor_user', recipientId: req.user.id }
+  return req.user.role === 'corporate'
+    ? { recipientType: 'corporate_user', recipientId: req.user.id }
     : { recipientType: 'patient', recipientId: req.user.id };
 }
 

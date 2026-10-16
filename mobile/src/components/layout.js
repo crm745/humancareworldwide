@@ -72,9 +72,9 @@ const TABS = [
   { id: '/profile', key: 'nav_profile', Icon: User },
 ];
 
-// Bottom tab bar. Vendors see "Cases" (vendor dashboard) in place of "Requests".
+// Bottom tab bar. Corporates see "Cases" (corporate dashboard) in place of "Requests".
 export function BottomNav() {
-  const { t, isVendor } = useApp();
+  const { t, isCorporate } = useApp();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   return (
@@ -83,14 +83,14 @@ export function BottomNav() {
       style={{ height: 64 + insets.bottom, paddingBottom: insets.bottom }}
     >
       {TABS.map(({ id, key, Icon }) => {
-        const vendorCases = id === '/my-requests' && isVendor;
-        const target = vendorCases ? '/vendor-dashboard' : id;
+        const corporateCases = id === '/my-requests' && isCorporate;
+        const target = corporateCases ? '/corporate-dashboard' : id;
         const on = pathname === target;
         const color = on ? '#1A73E8' : '#97A4B8';
         return (
           <Pressable key={id} onPress={() => navReplace(target)} className="items-center gap-[3px] px-4">
             <Icon size={18} color={color} strokeWidth={2} />
-            <Text className={`font-inter-bold text-[11px] ${on ? 'text-primary' : 'text-faint'}`}>{vendorCases ? t('nav_cases') : t(key)}</Text>
+            <Text className={`font-inter-bold text-[11px] ${on ? 'text-primary' : 'text-faint'}`}>{corporateCases ? t('nav_cases') : t(key)}</Text>
           </Pressable>
         );
       })}

@@ -73,7 +73,7 @@ function Timeline({ rows }) {
 
 const TABS = [['overview', 'tab_overview'], ['timeline', 'tab_timeline'], ['docs', 'tab_documents']];
 
-// A patient's ServiceRequest (with its linked Case nested inside) and a vendor's Case
+// A patient's ServiceRequest (with its linked Case nested inside) and a corporate's Case
 // are different shapes from the backend — this flattens either one into what the UI
 // below actually needs, so the rest of the screen doesn't care which it's looking at.
 function fromRequest(request) {
@@ -114,7 +114,7 @@ export default function Tracking() {
 
   useEffect(() => {
     if (!params.id) return;
-    const path = isCase ? `/vendor/cases/${params.id}` : `/requests/me/${params.id}`;
+    const path = isCase ? `/corporate/cases/${params.id}` : `/requests/me/${params.id}`;
     apiGet(path)
       .then((data) => setItem(isCase ? fromCase(data.case) : fromRequest(data.request)))
       .catch((err) => toast(err.message));

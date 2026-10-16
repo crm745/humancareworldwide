@@ -103,7 +103,7 @@ export function ChipGroup({ options, value, onChange, wrap = true, className = '
   );
 }
 
-// 2x2 multi-select "Care Level" grid (request form and vendor new-case form).
+// 2x2 multi-select "Care Level" grid (request form and corporate new-case form).
 // `value` is an array of keys. "Not Applicable" is exclusive: picking it clears the
 // others, and picking any other level clears it.
 export const CARE_LEVELS = ['care_icu', 'care_stable', 'care_ambulatory', 'care_na'];

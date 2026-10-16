@@ -53,7 +53,7 @@ async function createRequest(userId, data) {
   });
 
   // Every submitted request becomes a Case immediately, unassigned, so it shows up
-  // in the vendor queue as soon as it lands — vendors triage from there.
+  // in the corporate queue as soon as it lands — corporates triage from there.
   const newCase = await prisma.case.create({
     data: {
       serviceRequestId: request.id,

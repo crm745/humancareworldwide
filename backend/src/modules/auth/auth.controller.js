@@ -188,23 +188,23 @@ async function appleLogin(req, res) {
   res.json({ token, refreshToken, user: safeUser });
 }
 
-// Step 1 of vendor login: password gets you an OTP, not a token — the actual
-// token only comes from vendorVerifyOtp below. Same "don't reveal which accounts
+// Step 1 of corporate login: password gets you an OTP, not a token — the actual
+// token only comes from corporateVerifyOtp below. Same "don't reveal which accounts
 // exist" shape as the patient OTP flow isn't needed here since a wrong password
 // already tells you the account exists, so we just say "Invalid credentials" plainly.
-async function vendorLogin(req, res) {
+async function corporateLogin(req, res) {
   const { email, password } = req.body;
   if (!email || !password)
     return res.status(400).json({ error: "email and password are required" });
 
-  const vendorUser = await prisma.vendorUser.findUnique({ where: { email } });
-  if (!vendorUser)
+  const corporateUser = await prisma.corporateUser.findUnique({ where: { email } });
+  if (!corporateUser)
     return res.status(401).json({ error: "Invalid credentials" });
 
-  const matches = await comparePassword(password, vendorUser.passwordHash);
+  const matches = await comparePassword(password, corporateUser.passwordHash);
   if (!matches) return res.status(401).json({ error: "Invalid credentials" });
 
-  const result = await issueOtp(email, "vendor_login");
+  const result = await issueOtp(email, "corporate_login");
   if (result.throttled) {
     return res
       .status(429)
@@ -216,32 +216,32 @@ async function vendorLogin(req, res) {
   res.json({ message: "OTP sent." });
 }
 // Step 2: the actual token issuance, once the OTP sent above checks out.
-async function vendorVerifyOtp(req, res) {
+async function corporateVerifyOtp(req, res) {
   const { email, code } = req.body;
   if (!email || !code)
     return res.status(400).json({ error: "email and code are required" });
 
-  const result = await verifyOtp(email, "vendor_login", code);
+  const result = await verifyOtp(email, "corporate_login", code);
   if (!result.ok) return res.status(401).json({ error: result.reason });
 
-  const vendorUser = await prisma.vendorUser.findUnique({
+  const corporateUser = await prisma.corporateUser.findUnique({
     where: { email },
-    include: { vendor: true },
+    include: { corporate: true },
   });
-  if (!vendorUser) return res.status(404).json({ error: "Account not found" });
+  if (!corporateUser) return res.status(404).json({ error: "Account not found" });
 
   const token = signAccessToken({
-    sub: vendorUser.id,
-    role: "vendor",
-    vendorId: vendorUser.vendorId,
+    sub: corporateUser.id,
+    role: "corporate",
+    corporateId: corporateUser.corporateId,
   });
   const refreshToken = signRefreshToken({
-    sub: vendorUser.id,
-    role: "vendor",
-    vendorId: vendorUser.vendorId,
+    sub: corporateUser.id,
+    role: "corporate",
+    corporateId: corporateUser.corporateId,
   });
-  const { passwordHash: _omit, ...safeVendorUser } = vendorUser;
-  res.json({ token, refreshToken, vendorUser: safeVendorUser });
+  const { passwordHash: _omit, ...safeCorporateUser } = corporateUser;
+  res.json({ token, refreshToken, corporateUser: safeCorporateUser });
 }
 //
 async function refreshAccessToken(req, res) {
@@ -259,7 +259,7 @@ async function refreshAccessToken(req, res) {
   const claims = {
     sub: payload.sub,
     role: payload.role,
-    ...(payload.vendorId != null && { vendorId: payload.vendorId }),
+    ...(payload.corporateId != null && { corporateId: payload.corporateId }),
   };
   const token = signAccessToken(claims);
   const newRefreshToken = signRefreshToken(claims);
@@ -267,15 +267,15 @@ async function refreshAccessToken(req, res) {
 }
 //the function for getting  the profile page
 async function getMe(req, res) {
-  if (req.user.role === "vendor") {
-    const vendorUser = await prisma.vendorUser.findUnique({
+  if (req.user.role === "corporate") {
+    const corporateUser = await prisma.corporateUser.findUnique({
       where: { id: req.user.id },
-      include: { vendor: true },
+      include: { corporate: true },
     });
-    if (!vendorUser)
+    if (!corporateUser)
       return res.status(404).json({ error: "Account not found" });
-    const { passwordHash: _omit, ...safeVendorUser } = vendorUser;
-    return res.json({ vendorUser: safeVendorUser });
+    const { passwordHash: _omit, ...safeCorporateUser } = corporateUser;
+    return res.json({ corporateUser: safeCorporateUser });
   }
 
   const user = await prisma.user.findUnique({ where: { id: req.user.id } });
@@ -329,15 +329,15 @@ async function savePushToken(req, res) {
   res.json({ message: "Push token saved." });
 }
 
-// Vendor accounts still use a password, so "forgot password" only applies to them —
+// Corporate accounts still use a password, so "forgot password" only applies to them —
 // patients authenticate via OTP and have nothing to reset.
 async function requestPasswordReset(req, res) {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "email is required" });
 
-  const vendorUser = await prisma.vendorUser.findUnique({ where: { email } });
-  if (vendorUser) {
-    const result = await issueOtp(email, "vendor_password_reset");
+  const corporateUser = await prisma.corporateUser.findUnique({ where: { email } });
+  if (corporateUser) {
+    const result = await issueOtp(email, "corporate_password_reset");
     if (result.throttled) {
       return res
         .status(429)
@@ -350,7 +350,7 @@ async function requestPasswordReset(req, res) {
   // Same response whether or not the account exists, so we don't reveal which emails are registered.
   res.json({
     message:
-      "If a vendor account exists for that email, a reset code has been sent.",
+      "If a corporate account exists for that email, a reset code has been sent.",
   });
 }
 
@@ -367,15 +367,15 @@ async function resetPassword(req, res) {
       .json({ error: "Password must be at least 8 characters" });
   }
 
-  const result = await verifyOtp(email, "vendor_password_reset", code);
+  const result = await verifyOtp(email, "corporate_password_reset", code);
   if (!result.ok) return res.status(401).json({ error: result.reason });
 
-  const vendorUser = await prisma.vendorUser.findUnique({ where: { email } });
-  if (!vendorUser) return res.status(404).json({ error: "Account not found" });
+  const corporateUser = await prisma.corporateUser.findUnique({ where: { email } });
+  if (!corporateUser) return res.status(404).json({ error: "Account not found" });
 
   const passwordHash = await hashPassword(newPassword);
-  await prisma.vendorUser.update({
-    where: { id: vendorUser.id },
+  await prisma.corporateUser.update({
+    where: { id: corporateUser.id },
     data: { passwordHash },
   });
   res.json({
@@ -383,7 +383,7 @@ async function resetPassword(req, res) {
   });
 }
 
-// For a vendor who's already logged in and knows their current password — different
+// For a corporate who's already logged in and knows their current password — different
 // from resetPassword above, which is for someone locked out who verifies via OTP instead.
 async function changePassword(req, res) {
   const { currentPassword, newPassword } = req.body;
@@ -398,20 +398,20 @@ async function changePassword(req, res) {
       .json({ error: "Password must be at least 8 characters" });
   }
 
-  const vendorUser = await prisma.vendorUser.findUnique({ where: { id: req.user.id } });
-  if (!vendorUser) return res.status(404).json({ error: "Account not found" });
+  const corporateUser = await prisma.corporateUser.findUnique({ where: { id: req.user.id } });
+  if (!corporateUser) return res.status(404).json({ error: "Account not found" });
 
-  const matches = await comparePassword(currentPassword, vendorUser.passwordHash);
+  const matches = await comparePassword(currentPassword, corporateUser.passwordHash);
   if (!matches) return res.status(400).json({ error: "Current password is incorrect." });
 
   const passwordHash = await hashPassword(newPassword);
-  await prisma.vendorUser.update({ where: { id: vendorUser.id }, data: { passwordHash } });
+  await prisma.corporateUser.update({ where: { id: corporateUser.id }, data: { passwordHash } });
   res.json({ message: "Password updated." });
 }
 
 // JWTs are stateless — there's no server-side session to end, so this is just a
 // well-known endpoint for the frontend to call that always succeeds.
-async function vendorLogout(req, res) {
+async function corporateLogout(req, res) {
   res.json({ message: "Logged out." });
 }
 
@@ -422,8 +422,8 @@ module.exports = {
   loginVerifyOtp,
   googleLogin,
   appleLogin,
-  vendorLogin,
-  vendorVerifyOtp,
+  corporateLogin,
+  corporateVerifyOtp,
   refreshAccessToken,
   getMe,
   updateMe,
@@ -431,5 +431,5 @@ module.exports = {
   requestPasswordReset,
   resetPassword,
   changePassword,
-  vendorLogout,
+  corporateLogout,
 };

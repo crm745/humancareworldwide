@@ -1,13 +1,13 @@
 const {
-  listCasesForVendor,
+  listCasesForCorporate,
   getCaseById,
-  createCaseByVendor,
+  createCaseByCorporate,
 } = require('./cases.service');
 const { addDocumentToCase } = require('../documents/documents.service');
 
 async function listMyCases(req, res, next) {
   try {
-    const cases = await listCasesForVendor(req.user.vendorId, { status: req.query.status });
+    const cases = await listCasesForCorporate(req.user.corporateId, { status: req.query.status });
     res.json({ cases });
   } catch (err) {
     next(err);
@@ -17,7 +17,7 @@ async function listMyCases(req, res, next) {
 async function getCase(req, res, next) {
   try {
     const caseRecord = await getCaseById(req.params.id);
-    if (caseRecord.vendorId !== req.user.vendorId) {
+    if (caseRecord.corporateId !== req.user.corporateId) {
       return res.status(403).json({ error: 'This case was not submitted by your organization.' });
     }
     res.json({ case: caseRecord });
@@ -32,7 +32,7 @@ async function createCase(req, res, next) {
     if (!patientName || !serviceType || !origin || !destination) {
       return res.status(400).json({ error: 'patientName, serviceType, origin and destination are required' });
     }
-    const caseRecord = await createCaseByVendor(req.user.vendorId, req.body);
+    const caseRecord = await createCaseByCorporate(req.user.corporateId, req.body);
     res.status(201).json({ case: caseRecord });
   } catch (err) {
     next(err);
@@ -43,7 +43,7 @@ async function uploadCaseDocument(req, res, next) {
   try {
     if (!req.file) return res.status(400).json({ error: 'file is required' });
     const caseRecord = await getCaseById(req.params.id);
-    if (caseRecord.vendorId !== req.user.vendorId) {
+    if (caseRecord.corporateId !== req.user.corporateId) {
       return res.status(403).json({ error: 'This case was not submitted by your organization.' });
     }
     const document = await addDocumentToCase(caseRecord.id, {

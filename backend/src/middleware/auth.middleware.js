@@ -23,7 +23,7 @@ function requireAuth(allowedRoles) {
       return res.status(403).json({ error: 'Not authorized for this action' });
     }
 
-    req.user = { id: payload.sub, role: payload.role, vendorId: payload.vendorId ?? null };
+    req.user = { id: payload.sub, role: payload.role, corporateId: payload.corporateId ?? null };
     next();
   };
 }

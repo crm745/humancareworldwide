@@ -1,13 +1,19 @@
 const {
   loginAdmin,
-  listVendors,
-  createVendor,
-  createVendorUser,
+  listCorporates,
+  createCorporate,
+  createCorporateUser,
   listAllCases,
   reassignCase,
   searchPatients,
+  VALID_TICKET_STATUSES,
+  listAllTickets,
+  getTicketById,
+  replyToTicket,
+  updateTicketStatus,
 } = require('./admin.service');
 const { updateCaseStage, getCaseById, VALID_CASE_STATUSES } = require('../cases/cases.service');
+const { prisma } = require('../../db/prisma');
 
 async function login(req, res, next) {
   try {
@@ -21,33 +27,33 @@ async function login(req, res, next) {
   }
 }
 
-async function getVendors(req, res, next) {
+async function getCorporates(req, res, next) {
   try {
-    const vendors = await listVendors();
-    res.json({ vendors });
+    const corporates = await listCorporates();
+    res.json({ corporates });
   } catch (err) {
     next(err);
   }
 }
 
-async function postVendor(req, res, next) {
+async function postCorporate(req, res, next) {
   try {
     const { companyName, type } = req.body;
     if (!companyName || !type) return res.status(400).json({ error: 'companyName and type are required' });
-    const vendor = await createVendor({ companyName, type });
-    res.status(201).json({ vendor });
+    const corporate = await createCorporate({ companyName, type });
+    res.status(201).json({ corporate });
   } catch (err) {
     next(err);
   }
 }
 
-async function postVendorUser(req, res, next) {
+async function postCorporateUser(req, res, next) {
   try {
     const { email, password, role } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'email and password are required' });
     if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
-    const vendorUser = await createVendorUser(req.params.id, { email, password, role });
-    res.status(201).json({ vendorUser });
+    const corporateUser = await createCorporateUser(req.params.id, { email, password, role });
+    res.status(201).json({ corporateUser });
   } catch (err) {
     next(err);
   }
@@ -55,15 +61,15 @@ async function postVendorUser(req, res, next) {
 
 async function getCases(req, res, next) {
   try {
-    const cases = await listAllCases({ status: req.query.status, vendorId: req.query.vendorId });
+    const cases = await listAllCases({ status: req.query.status, corporateId: req.query.corporateId });
     res.json({ cases });
   } catch (err) {
     next(err);
   }
 }
 
-// Unlike the vendor-facing getCase, admin can view any case regardless of which
-// vendor it belongs to — no ownership check.
+// Unlike the corporate-facing getCase, admin can view any case regardless of which
+// corporate it belongs to — no ownership check.
 async function getCase(req, res, next) {
   try {
     const caseRecord = await getCaseById(req.params.id);
@@ -75,9 +81,9 @@ async function getCase(req, res, next) {
 
 async function patchCaseAssign(req, res, next) {
   try {
-    const { vendorId } = req.body;
-    if (!vendorId) return res.status(400).json({ error: 'vendorId is required' });
-    const caseRecord = await reassignCase(req.params.id, vendorId);
+    const { corporateId } = req.body;
+    if (!corporateId) return res.status(400).json({ error: 'corporateId is required' });
+    const caseRecord = await reassignCase(req.params.id, corporateId);
     res.json({ case: caseRecord });
   } catch (err) {
     next(err);
@@ -106,4 +112,59 @@ async function patchCaseStage(req, res, next) {
   }
 }
 
-module.exports = { login, getVendors, postVendor, postVendorUser, getCases, getCase, patchCaseAssign, getPatients, patchCaseStage };
+async function getTickets(req, res, next) {
+  try {
+    const tickets = await listAllTickets({ status: req.query.status });
+    res.json({ tickets });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getTicket(req, res, next) {
+  try {
+    const ticket = await getTicketById(req.params.id);
+    res.json({ ticket });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function postTicketReply(req, res, next) {
+  try {
+    const { body } = req.body;
+    if (!body || !body.trim()) return res.status(400).json({ error: 'body is required' });
+    const admin = await prisma.adminUser.findUnique({ where: { id: req.user.id }, select: { name: true } });
+    const ticket = await replyToTicket(req.params.id, admin?.name || 'HumanCare Support', body.trim());
+    res.json({ ticket });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function patchTicketStatus(req, res, next) {
+  try {
+    const { status } = req.body;
+    if (!status) return res.status(400).json({ error: `status is required. Use one of: ${VALID_TICKET_STATUSES.join(', ')}` });
+    const ticket = await updateTicketStatus(req.params.id, status);
+    res.json({ ticket });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = {
+  login,
+  getCorporates,
+  postCorporate,
+  postCorporateUser,
+  getCases,
+  getCase,
+  patchCaseAssign,
+  getPatients,
+  patchCaseStage,
+  getTickets,
+  getTicket,
+  postTicketReply,
+  patchTicketStatus,
+};

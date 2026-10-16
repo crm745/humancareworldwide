@@ -30,7 +30,7 @@ model OtpCode {
   id         Int       @id @default(autoincrement())
   identifier String    // mobile number or email, depending on purpose
   codeHash   String    @map("code_hash")
-  purpose    String    // "patient_register" | "patient_login" | "vendor_password_reset"
+  purpose    String    // "patient_register" | "patient_login" | "corporate_password_reset"
   expiresAt  DateTime  @map("expires_at")
   consumedAt DateTime? @map("consumed_at")
   attempts   Int       @default(0)
@@ -64,12 +64,12 @@ model Service {
   @@map("services")
 }
 
-model Vendor {
+model Corporate {
   id                 Int      @id @default(autoincrement())
   companyName        String   @map("company_name")
   type               String   // "insurance" | "government" | "tpa" | "corporate"
-  // Company-profile fields the vendor-portal web app's Profile page edits. All
-  // optional since existing/admin-created vendors won't have these filled in yet.
+  // Company-profile fields the corporate-portal web app's Profile page edits. All
+  // optional since existing/admin-created corporates won't have these filled in yet.
   registrationNumber String?  @map("registration_number")
   companyType        String?  @map("company_type")
   country            String?
@@ -85,26 +85,26 @@ model Vendor {
   contactEmail       String?  @map("contact_email")
   contactPhone       String?  @map("contact_phone")
   createdAt          DateTime @default(now()) @map("created_at")
-  users              VendorUser[]
+  users              CorporateUser[]
   cases              Case[]
   tickets            SupportTicket[]
 
-  @@map("vendors")
+  @@map("corporates")
 }
 
 model SupportTicket {
-  id        Int      @id @default(autoincrement())
-  vendorId  Int      @map("vendor_id")
-  vendor    Vendor   @relation(fields: [vendorId], references: [id])
-  subject   String
-  category  String?
-  priority  String   @default("Medium") // "Low" | "Medium" | "High" | "Urgent"
-  status    String   @default("open") // "open" | "in_progress" | "resolved" | "closed"
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  messages  SupportTicketMessage[]
+  id          Int       @id @default(autoincrement())
+  corporateId Int       @map("corporate_id")
+  corporate   Corporate @relation(fields: [corporateId], references: [id])
+  subject     String
+  category    String?
+  priority    String    @default("Medium") // "Low" | "Medium" | "High" | "Urgent"
+  status      String    @default("open") // "open" | "in_progress" | "resolved" | "closed"
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  messages    SupportTicketMessage[]
 
-  @@index([vendorId])
+  @@index([corporateId])
   @@map("support_tickets")
 }
 
@@ -113,6 +113,7 @@ model SupportTicketMessage {
   ticketId   Int           @map("ticket_id")
   ticket     SupportTicket @relation(fields: [ticketId], references: [id])
   authorName String?       @map("author_name")
+  authorRole String        @default("corporate") @map("author_role") // "corporate" | "admin"
   body       String        @db.Text
   createdAt  DateTime      @default(now()) @map("created_at")
 
@@ -120,21 +121,21 @@ model SupportTicketMessage {
   @@map("support_ticket_messages")
 }
 
-model VendorUser {
-  id           Int      @id @default(autoincrement())
-  vendorId     Int      @map("vendor_id")
-  vendor       Vendor   @relation(fields: [vendorId], references: [id])
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  role         String   @default("viewer") // "admin" | "viewer"
-  // Free-form preferences bag for the vendor-portal web app's Settings page
+model CorporateUser {
+  id           Int       @id @default(autoincrement())
+  corporateId  Int       @map("corporate_id")
+  corporate    Corporate @relation(fields: [corporateId], references: [id])
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         String    @default("viewer") // "admin" | "viewer"
+  // Free-form preferences bag for the corporate-portal web app's Settings page
   // (notification channels, language, timezone, date format, two-factor toggle) — a
   // JSON column since this is a flexible, evolving per-login preference set, not
   // something that needs to be queried/filtered on.
   settings     Json?
-  createdAt    DateTime @default(now()) @map("created_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
-  @@map("vendor_users")
+  @@map("corporate_users")
 }
 
 model ServiceRequest {
@@ -167,15 +168,15 @@ model ServiceRequest {
   @@map("service_requests")
 }
 
-// A Case is the vendor/ops-side tracking record for a request once it's being worked.
-// Most Cases originate from a patient's ServiceRequest, but a vendor can also open one
+// A Case is the corporate/ops-side tracking record for a request once it's being worked.
+// Most Cases originate from a patient's ServiceRequest, but a corporate can also open one
 // directly (e.g. a TPA filing on a member's behalf) — hence serviceRequestId is optional.
 model Case {
   id                  Int       @id @default(autoincrement())
   serviceRequestId    Int?      @unique @map("service_request_id")
   serviceRequest      ServiceRequest? @relation(fields: [serviceRequestId], references: [id])
-  vendorId            Int?      @map("vendor_id")
-  vendor              Vendor?   @relation(fields: [vendorId], references: [id])
+  corporateId         Int?      @map("corporate_id")
+  corporate           Corporate? @relation(fields: [corporateId], references: [id])
   referenceNumber     String    @unique @map("reference_number")
   patientName         String    @map("patient_name")
   patientContact      String?   @map("patient_contact")
@@ -197,14 +198,14 @@ model Case {
   documents           Document[]
   communications      CaseCommunication[]
 
-  @@index([vendorId, status])
+  @@index([corporateId, status])
   @@map("cases")
 }
 
-// A log of a vendor's contact with the patient about this case (a call, an email, a
-// portal note) — the vendor-portal web app calls this a "patient communication," but
+// A log of a corporate's contact with the patient about this case (a call, an email, a
+// portal note) — the corporate-portal web app calls this a "patient communication," but
 // since each of its "patients" is really just the patient-facing view of one Case
-// (see vendor-portal.service.js), it's keyed directly off caseId, not a separate
+// (see corporate-portal.service.js), it's keyed directly off caseId, not a separate
 // patient entity.
 model CaseCommunication {
   id         Int      @id @default(autoincrement())
@@ -246,7 +247,7 @@ model Document {
 
 model Notification {
   id            Int       @id @default(autoincrement())
-  recipientType String    @map("recipient_type") // "patient" | "vendor_user"
+  recipientType String    @map("recipient_type") // "patient" | "corporate_user"
   recipientId   Int       @map("recipient_id")
   kind          String    @default("system") // "stage_update" | "quotation_ready" | "document" | "system"
   title         String

@@ -1,6 +1,6 @@
 export const DEFAULT_FILTERS = { service: 'all', date: 'all', from: '', to: '', sort: 'newest' };
 
-// Date-range + service + sort filtering shared by My Requests and the vendor case list.
+// Date-range + service + sort filtering shared by My Requests and the corporate case list.
 // `today` is the mock data's anchor date (see REQUESTS_TODAY / CASES_TODAY).
 export function applyFilters(items, filters, today) {
   const now = new Date(today);
