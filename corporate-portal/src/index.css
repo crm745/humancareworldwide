@@ -14,6 +14,13 @@
   input[type='date'] {
     @apply font-sans;
   }
+  /* Edge/IE add their own built-in show/hide-password eye icon inside password
+     fields, which stacks on top of our custom PasswordInput toggle. Hide the
+     native one so only ours shows. */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
   ::selection {
     @apply bg-brand-100 text-brand-900;
   }

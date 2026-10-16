@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BadgeCheck, Building2, CalendarDays, Globe, KeyRound, Landmark, Mail, MapPin, Pencil, Phone, UserRound } from 'lucide-react';
+import { ArrowRight, Building2, CalendarDays, Globe, KeyRound, Landmark, Mail, MapPin, Pencil, Phone, UserRound } from 'lucide-react';
 import { countryName } from '@/data/constants';
 import { corporateService } from '@/services/corporateService';
 import { useAsync } from '@/hooks/useAsync';
@@ -12,7 +12,6 @@ import { StatusBadge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { PageLoader } from '@/components/ui/Loading';
 import { ErrorState } from '@/components/ui/EmptyState';
-import { StatusTimeline } from '@/components/ui/StatusTimeline';
 import { PageHeader, SecureNote } from '@/components/ui/Misc';
 import { useToast } from '@/components/ui/Toast';
 import { CompanyDetailsForm } from '@/components/forms/CompanyDetailsForm';
@@ -38,7 +37,6 @@ export default function CompanyProfilePage() {
     );
   const [profile, docs] = data;
   const c = profile.company;
-  const docCount = (s) => docs.filter((d) => d.status === s).length;
 
   return (
     <div>
@@ -69,7 +67,7 @@ export default function CompanyProfilePage() {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <h2 className="text-xl font-semibold text-slate-900">{c.companyName}</h2>
-              <StatusBadge status={profile.verificationStatus} />
+              {profile.verificationStatus && <StatusBadge status={profile.verificationStatus} />}
             </div>
             <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-slate-500">
               <span className="font-mono">{profile.corporateId}</span>
@@ -128,7 +126,7 @@ export default function CompanyProfilePage() {
               <InfoGrid
                 items={[
                   {
-                    label: 'Official Email',
+                    label: 'Billing Email',
                     value: (
                       <span className="inline-flex items-center gap-1.5">
                         <Mail className="h-3.5 w-3.5 text-slate-400" />
@@ -137,7 +135,7 @@ export default function CompanyProfilePage() {
                     ),
                   },
                   {
-                    label: 'Official Phone',
+                    label: 'Billing Phone',
                     value: (
                       <span className="inline-flex items-center gap-1.5">
                         <Phone className="h-3.5 w-3.5 text-slate-400" />
@@ -207,27 +205,12 @@ export default function CompanyProfilePage() {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader
-              title={
-                <span className="flex items-center gap-2">
-                  <BadgeCheck className="h-4 w-4 text-brand-600" /> Verification Status
-                </span>
-              }
-            />
-            <div className="p-5">
-              <StatusTimeline items={profile.verification.map((v) => ({ title: v.label, status: v.status, date: v.date }))} />
-            </div>
-          </Card>
-          <Card>
             <CardHeader title="Documents" />
-            <div className="grid grid-cols-2 gap-3 p-5">
-              {['Verified', 'Pending', 'Expired', 'Rejected'].map((s) => (
-                <div key={s} className="rounded-lg bg-slate-50 p-3">
-                  <p className="text-xl font-semibold text-slate-900">{docCount(s)}</p>
-                  <StatusBadge status={s} className="mt-1" />
-                </div>
-              ))}
-              <Link to="/documents" className={buttonClasses({ variant: 'secondary', fullWidth: true, className: 'col-span-2 mt-1' })}>
+            <div className="p-5">
+              <p className="text-sm text-slate-600">
+                <span className="text-xl font-semibold text-slate-900">{docs.length}</span> document{docs.length === 1 ? '' : 's'} uploaded
+              </p>
+              <Link to="/documents" className={buttonClasses({ variant: 'secondary', fullWidth: true, className: 'mt-4' })}>
                 Manage documents <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

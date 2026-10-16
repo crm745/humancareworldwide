@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowRight, Download, LifeBuoy, MapPin, Navigation, Receipt, UserRound } from 'lucide-react';
+import { ArrowRight, Download, Eye, FileText, LifeBuoy, MapPin, Navigation, Receipt, Upload, UserRound } from 'lucide-react';
 
 import { corporateService } from '@/services/corporateService';
 import { useAsync } from '@/hooks/useAsync';
@@ -10,8 +11,10 @@ import { StatusBadge } from '@/components/ui/Badge';
 import { StatusTimeline } from '@/components/ui/StatusTimeline';
 import { PageLoader } from '@/components/ui/Loading';
 import { EmptyState, ErrorState } from '@/components/ui/EmptyState';
+import { FilePreviewModal } from '@/components/ui/FileUpload';
 import { Avatar, PageHeader } from '@/components/ui/Misc';
 import { useToast } from '@/components/ui/Toast';
+import { AddCaseDocumentModal } from '@/components/forms/AddCaseDocumentModal';
 import { downloadCaseSummary } from '@/utils/exports';
 import { formatCurrency, formatDate, formatDateTime } from '@/utils/format';
 
@@ -38,7 +41,33 @@ export default function CaseDetailPage() {
   const { caseId = '' } = useParams();
   useDocumentTitle(caseId);
   const toast = useToast();
-  const { data, loading, error, reload } = useAsync(() => corporateService.getCase(caseId), [caseId]);
+  const { data, loading, error, reload, setData } = useAsync(() => corporateService.getCase(caseId), [caseId]);
+  const [addDocOpen, setAddDocOpen] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [file, setFile] = useState({ url: null, type: '', loading: false });
+
+  // Fetches the actual file (as a blob, since the download route needs auth headers a
+  // plain <img>/<iframe> src can't send) whenever a document is opened for preview.
+  useEffect(() => {
+    if (!preview) return;
+    let cancelled = false;
+    let objectUrl = null;
+    setFile({ url: null, type: '', loading: true });
+    corporateService
+      .getCaseDocumentFile(preview.id)
+      .then((res) => {
+        if (cancelled) return;
+        objectUrl = res?.url ?? null;
+        setFile({ url: objectUrl, type: res?.type || '', loading: false });
+      })
+      .catch(() => {
+        if (!cancelled) setFile({ url: null, type: '', loading: false });
+      });
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [preview]);
 
   if (loading) return <PageLoader label="Loading case…" />;
   if (error || !data) {
@@ -70,7 +99,6 @@ export default function CaseDetailPage() {
           <span className="flex flex-wrap items-center gap-3">
             <span className="font-mono">{c.id}</span>
             <StatusBadge status={c.status} />
-            <StatusBadge status={c.priority} />
           </span>
         }
         description={`${c.service} · requested ${formatDateTime(c.requestDate)}`}
@@ -122,9 +150,7 @@ export default function CaseDetailPage() {
                 items={[
                   { label: 'Service', value: c.service },
                   { label: 'Request Date', value: formatDateTime(c.requestDate) },
-                  { label: 'Scheduled', value: formatDateTime(c.scheduledDate) },
                   { label: 'Assigned Team', value: c.assignedTeam },
-                  { label: 'Priority', value: <StatusBadge status={c.priority} /> },
                   { label: 'Status', value: <StatusBadge status={c.status} /> },
                 ]}
               />
@@ -133,6 +159,38 @@ export default function CaseDetailPage() {
                   <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Notes</p>
                   <p className="mt-1 text-sm text-slate-700">{c.notes}</p>
                 </div>
+              )}
+            </div>
+          </Card>
+
+          <Card>
+            <CardHeader title="Documents" action={
+              <Button size="sm" leftIcon={<Upload className="h-3.5 w-3.5" />} onClick={() => setAddDocOpen(true)}>
+                Add Document
+              </Button>
+            } />
+            <div className="p-5">
+              {c.documents?.length ? (
+                <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
+                  {c.documents.map((d) => (
+                    <li key={d.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                        <FileText className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-slate-900">{d.name}</p>
+                        <p className="text-xs text-slate-500">
+                          {d.type} · {d.fileExt} · {formatDate(d.date)}
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline" leftIcon={<Eye className="h-3.5 w-3.5" />} onClick={() => setPreview(d)}>
+                        View
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <EmptyState icon={FileText} title="No documents" description="Documents shared for this case will appear here." />
               )}
             </div>
           </Card>
@@ -200,6 +258,20 @@ export default function CaseDetailPage() {
           </Card>
         </div>
       </div>
+      <FilePreviewModal
+        open={!!preview}
+        onClose={() => setPreview(null)}
+        name={preview?.name ?? ''}
+        type={file.type}
+        url={file.url}
+        loading={file.loading}
+      />
+      <AddCaseDocumentModal
+        open={addDocOpen}
+        onClose={() => setAddDocOpen(false)}
+        caseId={c.id}
+        onAdded={(doc) => setData((prev) => ({ ...prev, case: { ...prev.case, documents: [doc, ...(prev.case.documents || [])] } }))}
+      />
     </div>
   );
 }

@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Eye, EyeOff, FileText, Mail, MessageCircle, Phone, Send, ShieldAlert } from 'lucide-react';
+import { Eye, EyeOff, FileText, Mail, MessageCircle, Phone, Send, ShieldAlert, Upload } from 'lucide-react';
 
 import { corporateService } from '@/services/corporateService';
 import { useAsync } from '@/hooks/useAsync';
 import { useDocumentTitle } from '@/hooks/useUtils';
-import { Card, InfoGrid } from '@/components/ui/Card';
+import { Card, CardHeader, InfoGrid } from '@/components/ui/Card';
 import { Button, buttonClasses } from '@/components/ui/Button';
 import { Badge, StatusBadge } from '@/components/ui/Badge';
 import { Textarea } from '@/components/ui/Input';
@@ -14,6 +14,7 @@ import { EmptyState, ErrorState } from '@/components/ui/EmptyState';
 import { FilePreviewModal } from '@/components/ui/FileUpload';
 import { Alert, Avatar, PageHeader, Tabs } from '@/components/ui/Misc';
 import { useToast } from '@/components/ui/Toast';
+import { AddCaseDocumentModal } from '@/components/forms/AddCaseDocumentModal';
 import { formatDate, formatDateTime } from '@/utils/format';
 import { maskPhone } from '@/utils/mask';
 import { cn } from '@/utils/cn';
@@ -138,9 +139,35 @@ function CommunicationTab({ p, onAdded }) {
 export default function PatientProfilePage() {
   const { patientId = '' } = useParams();
   useDocumentTitle('Patient Profile');
-  const [tab, setTab] = useState('personal');
+  const [tab, setTab] = useState('documents');
   const [preview, setPreview] = useState(null);
+  const [addDocOpen, setAddDocOpen] = useState(false);
+  const [file, setFile] = useState({ url: null, type: '', loading: false });
   const { data: p, loading, error, reload, setData } = useAsync(() => corporateService.getPatient(patientId), [patientId]);
+
+  // Fetches the actual file (as a blob, since the download route needs auth headers a
+  // plain <img>/<iframe> src can't send) whenever a document is opened for preview, and
+  // revokes the object URL again on close/unmount so it doesn't leak memory.
+  useEffect(() => {
+    if (!preview) return;
+    let cancelled = false;
+    let objectUrl = null;
+    setFile({ url: null, type: '', loading: true });
+    corporateService
+      .getCaseDocumentFile(preview.id)
+      .then((res) => {
+        if (cancelled) return;
+        objectUrl = res?.url ?? null;
+        setFile({ url: objectUrl, type: res?.type || '', loading: false });
+      })
+      .catch(() => {
+        if (!cancelled) setFile({ url: null, type: '', loading: false });
+      });
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [preview]);
 
   if (loading) return <PageLoader label="Loading patient…" />;
   if (error || !p) {
@@ -163,12 +190,13 @@ export default function PatientProfilePage() {
     );
   }
 
-  // Medical Information and Travel Information tabs are left out — nothing in the
+  // Medical Information and Travel Information are left out entirely — nothing in the
   // current data model collects diagnosis, blood group, travel mode, etc., so there's
   // nothing real to show there (see toPortalPatientDetail() in corporateService.js).
+  // Personal/Case Information are short enough now to show as stacked sections instead
+  // of tabs; Documents and Communication History stay as tabs since those are lists
+  // that can grow long.
   const tabs = [
-    { key: 'personal', label: 'Personal Information' },
-    { key: 'case', label: 'Case Information' },
     { key: 'documents', label: 'Documents', count: p.documents.length },
     { key: 'communication', label: 'Communication History', count: p.communications.length },
   ];
@@ -186,7 +214,9 @@ export default function PatientProfilePage() {
               <StatusBadge status={p.status} />
             </div>
             <p className="mt-1 text-sm text-slate-500">
-              <span className="font-mono">{p.id}</span> · {p.age} yrs · {p.gender} · {p.country}
+              <span className="font-mono">{p.id}</span>
+              {p.age ? ` · ${p.age} yrs` : ''}
+              {p.gender ? ` · ${p.gender}` : ''}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -197,66 +227,73 @@ export default function PatientProfilePage() {
         </div>
       </Card>
 
+      <Card className="mb-6">
+        <CardHeader title="Personal Information" />
+        <div className="p-5 sm:p-6">
+          <InfoGrid
+            cols={3}
+            items={[
+              { label: 'Full Name', value: p.name },
+              { label: 'Age / Gender', value: p.age || p.gender ? `${p.age || '—'} · ${p.gender || '—'}` : '—' },
+              { label: 'Phone', value: maskPhone(p.phone) },
+            ]}
+          />
+        </div>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader title="Case Information" />
+        <div className="p-5 sm:p-6">
+          <InfoGrid
+            cols={3}
+            items={[
+              { label: 'Case ID', value: <span className="font-mono">{p.caseId}</span> },
+              { label: 'Service', value: p.service },
+              { label: 'Status', value: <StatusBadge status={p.status} /> },
+            ]}
+          />
+          <Link to={`/cases/${p.caseId}`} className={buttonClasses({ variant: 'secondary', className: 'mt-6' })}>
+            Open full case
+          </Link>
+        </div>
+      </Card>
+
       <Card>
         <div className="px-5 pt-2">
           <Tabs tabs={tabs} value={tab} onChange={setTab} />
         </div>
         <div className="p-5 sm:p-6">
-          {tab === 'personal' && (
-            <InfoGrid
-              cols={3}
-              items={[
-                { label: 'Full Name', value: p.name },
-                { label: 'Date of Birth', value: formatDate(p.dateOfBirth) },
-                { label: 'Age / Gender', value: `${p.age} · ${p.gender}` },
-                { label: 'Nationality', value: p.nationality },
-                { label: 'Country of Residence', value: p.country },
-                { label: 'Passport', value: p.passportLast4 ? `XXXXX${p.passportLast4}` : '—' },
-                { label: 'Phone', value: maskPhone(p.phone) },
-                { label: 'Email', value: p.email },
-                { label: 'Emergency Contact', value: `${p.emergencyContact.name} (${p.emergencyContact.relation}) · ${maskPhone(p.emergencyContact.phone)}` },
-              ]}
-            />
-          )}
-          {tab === 'case' && (
+          {tab === 'documents' && (
             <div>
-              <InfoGrid
-                cols={3}
-                items={[
-                  { label: 'Case ID', value: <span className="font-mono">{p.caseId}</span> },
-                  { label: 'Service', value: p.service },
-                  { label: 'Status', value: <StatusBadge status={p.status} /> },
-                ]}
-              />
-              <Link to={`/cases/${p.caseId}`} className={buttonClasses({ variant: 'secondary', className: 'mt-6' })}>
-                Open full case
-              </Link>
+              <div className="mb-4 flex justify-end">
+                <Button size="sm" leftIcon={<Upload className="h-3.5 w-3.5" />} onClick={() => setAddDocOpen(true)}>
+                  Add Document
+                </Button>
+              </div>
+              {p.documents.length ? (
+                <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
+                  {p.documents.map((d) => (
+                    <li key={d.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                        <FileText className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-slate-900">{d.name}</p>
+                        <p className="text-xs text-slate-500">
+                          {d.type} · {d.fileExt} · {formatDate(d.date)}
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline" leftIcon={<Eye className="h-3.5 w-3.5" />} onClick={() => setPreview(d)}>
+                        View
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <EmptyState icon={FileText} title="No documents" description="Medical documents shared for this patient will appear here." />
+              )}
             </div>
           )}
-          {tab === 'documents' &&
-            (p.documents.length ? (
-              <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
-                {p.documents.map((d) => (
-                  <li key={d.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600">
-                      <FileText className="h-4 w-4" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-slate-900">{d.name}</p>
-                      <p className="text-xs text-slate-500">
-                        {d.type} · {formatDate(d.date)}
-                      </p>
-                    </div>
-                    <StatusBadge status={d.status} />
-                    <Button size="sm" variant="outline" leftIcon={<Eye className="h-3.5 w-3.5" />} onClick={() => setPreview(d.name)}>
-                      View
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <EmptyState icon={FileText} title="No documents" description="Medical documents shared for this patient will appear here." />
-            ))}
           {tab === 'communication' && <CommunicationTab p={p} onAdded={(e) => setData((prev) => ({ ...prev, communications: [...prev.communications, e] }))} />}
         </div>
       </Card>
@@ -264,7 +301,20 @@ export default function PatientProfilePage() {
       <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
         <ShieldAlert className="h-3.5 w-3.5" /> Patient data is protected under HumanCare’s data-privacy policy.
       </div>
-      <FilePreviewModal open={!!preview} onClose={() => setPreview(null)} name={preview ?? ''} type="application/pdf" />
+      <FilePreviewModal
+        open={!!preview}
+        onClose={() => setPreview(null)}
+        name={preview?.name ?? ''}
+        type={file.type}
+        url={file.url}
+        loading={file.loading}
+      />
+      <AddCaseDocumentModal
+        open={addDocOpen}
+        onClose={() => setAddDocOpen(false)}
+        caseId={p.caseId}
+        onAdded={(doc) => setData((prev) => ({ ...prev, documents: [doc, ...prev.documents] }))}
+      />
     </div>
   );
 }

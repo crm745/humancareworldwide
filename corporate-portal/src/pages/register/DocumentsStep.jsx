@@ -28,8 +28,9 @@ export default function DocumentsStep() {
   if (!state.bank) return <Navigate to="/register/bank" replace />;
   const { company, bank } = state;
 
-  const missing = REGISTRATION_DOCUMENTS.filter((d) => d.required && !state.documents[d.key]);
-  const uploadedCount = REGISTRATION_DOCUMENTS.filter((d) => state.documents[d.key]).length;
+  const documents = REGISTRATION_DOCUMENTS.filter((d) => !d.when || d.when(company));
+  const missing = documents.filter((d) => d.required && !state.documents[d.key]);
+  const uploadedCount = documents.filter((d) => state.documents[d.key]).length;
 
   const submit = async (e) => {
     e.preventDefault();
@@ -38,7 +39,7 @@ export default function DocumentsStep() {
     if (missing.length || !declared) return;
     setSubmitting(true);
     try {
-      const docs = REGISTRATION_DOCUMENTS.flatMap((d) => {
+      const docs = documents.flatMap((d) => {
         const f = state.documents[d.key];
         return f ? [{ key: d.key, label: d.label, fileName: f.name, size: f.size, status: 'Uploaded' }] : [];
       });
@@ -60,14 +61,14 @@ export default function DocumentsStep() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Document Upload</h2>
-            <p className="mt-1 text-sm text-slate-500">Upload clear scans. Accepted formats: PDF, JPG, PNG — maximum 5 MB each.</p>
+            <p className="mt-1 text-sm text-slate-500">Upload clear scans. Accepted formats: PDF, JPG, PNG, WEBP, DOC, DOCX — maximum 10 MB each.</p>
           </div>
           <p className="text-sm font-medium text-slate-600">
-            <span className="text-brand-600">{uploadedCount}</span> / {REGISTRATION_DOCUMENTS.length} uploaded
+            <span className="text-brand-600">{uploadedCount}</span> / {documents.length} uploaded
           </p>
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
-          {REGISTRATION_DOCUMENTS.map((d) => (
+          {documents.map((d) => (
             <FileUpload
               key={d.key}
               label={d.label}
@@ -115,7 +116,7 @@ export default function DocumentsStep() {
                 </dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-slate-500">Official email</dt>
+                <dt className="text-slate-500">Billing email</dt>
                 <dd className="truncate font-medium text-slate-800">{company.officialEmail}</dd>
               </div>
             </dl>

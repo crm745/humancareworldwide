@@ -14,7 +14,7 @@ async function ensureDemoUser() {
   const users = listUsers();
   if (users.some((u) => u.username === MOCK_DEMO_ACCOUNT.username)) return;
   users.push({
-    corporateId: 'HCW-VND-00125',
+    corporateId: 'HCW-COR-00125',
     username: MOCK_DEMO_ACCOUNT.username,
     email: 'ananya.mehta@medicorpglobal.com',
     passwordHash: await sha256(MOCK_DEMO_ACCOUNT.password),
@@ -37,7 +37,7 @@ const toUser = (u) => ({
 // there's no `username` or `contactName` field on CorporateUser itself; contactName lives
 // on the company profile (Corporate.contactName) and may not be filled in yet.
 const toUserFromBackend = (corporateUser) => ({
-  corporateId: corporateUser.corporateId,
+  corporateId: `HCW-COR-${String(corporateUser.corporateId).padStart(5, '0')}`,
   username: corporateUser.email,
   email: corporateUser.email,
   companyName: corporateUser.corporate?.companyName ?? '',

@@ -1,11 +1,12 @@
 // Zod schemas for every form. Country-aware rules (phone, PIN code) live in superRefine.
 import { z } from 'zod';
 
-import { COMPANY_TYPES, CURRENCIES } from '@/data/constants';
+import { CARE_LEVEL_SERVICES, COMPANY_TYPES, COUNTRIES, CURRENCIES } from '@/data/constants';
 import {
   EMAIL_RE,
   IFSC_RE,
   SWIFT_RE,
+  UAM_RE,
   URL_RE,
   USERNAME_RE,
   digitsOnly,
@@ -24,14 +25,18 @@ export const companySchema = z
     companyName: req('Company name').min(3, 'Company name must be at least 3 characters').max(120),
     registrationNumber: z.string().trim().max(30),
     companyType: z.enum(['', ...COMPANY_TYPES]).refine((v) => v !== '', 'Select a company type'),
-    country: z.enum(['', 'IN', 'AE', 'OM', 'SA', 'QA', 'GB', 'US', 'OTHER']).refine((v) => v !== '', 'Select a country'),
+    country: z
+      .string()
+      .refine((v) => COUNTRIES.some((c) => c.code === v), 'Select a country'),
     countryOther: z.string().trim(),
+    msmeRegistered: z.enum(['', 'Yes', 'No']),
+    uamNumber: z.string().trim(),
     state: req('State / region'),
     city: req('City').regex(/^[\p{L} .'-]+$/u, 'Enter a valid city name'),
     address: req('Office address').min(10, 'Enter the full office address'),
     pincode: z.string().trim(),
-    officialEmail: email('Official email'),
-    officialPhone: req('Official phone number'),
+    officialEmail: email('Billing email'),
+    officialPhone: req('Billing phone number'),
     website: z
       .string()
       .trim()
@@ -44,6 +49,13 @@ export const companySchema = z
   .superRefine((d, ctx) => {
     const country = d.country;
     if (country === 'OTHER' && !d.countryOther) ctx.addIssue({ code: 'custom', path: ['countryOther'], message: 'Enter the country name' });
+    if (country === 'IN') {
+      if (!d.msmeRegistered) ctx.addIssue({ code: 'custom', path: ['msmeRegistered'], message: 'Select whether the company is MSME-registered' });
+      if (d.msmeRegistered === 'Yes') {
+        if (!d.uamNumber) ctx.addIssue({ code: 'custom', path: ['uamNumber'], message: 'UAM (Udyam Registration) number is required' });
+        else if (!UAM_RE.test(d.uamNumber)) ctx.addIssue({ code: 'custom', path: ['uamNumber'], message: 'Enter a valid UAM number, e.g. UDYAM-MH-01-1234567' });
+      }
+    }
     const reg = registrationRule(d.companyType, country);
     if (reg) {
       if (reg.required && !d.registrationNumber) ctx.addIssue({ code: 'custom', path: ['registrationNumber'], message: `${reg.label} is required` });
@@ -149,22 +161,34 @@ export const changePasswordSchema = z
   })
   .refine((d) => d.password === d.confirmPassword, { path: ['confirmPassword'], message: 'Passwords do not match' });
 
-export const serviceRequestSchema = z.object({
-  patientName: req('Patient name').regex(/^[\p{L} .'-]+$/u, 'Use letters only'),
-  age: req('Age')
-    .regex(/^\d{1,3}$/, 'Enter the age in years')
-    .refine((v) => Number(v) <= 120, 'Enter a valid age'),
-  gender: z.enum(['Male', 'Female', 'Other']),
-  pickup: req('Pickup location').min(3, 'Enter the pickup hospital / address'),
-  destination: req('Destination').min(3, 'Enter the destination'),
-  preferredDate: req('Preferred date').refine((v) => new Date(v).setHours(23, 59) >= Date.now(), 'Date cannot be in the past'),
-  priority: z.enum(['Low', 'Medium', 'High', 'Emergency']),
-  contactPhone: req('Contact phone').refine(
-    (v) => digitsOnly(v).length >= 7 && digitsOnly(v).length <= 15 && /^[+\d\s()-]+$/.test(v),
-    'Enter a valid phone number',
-  ),
-  notes: z.string().trim().max(500, 'Keep notes under 500 characters'),
-});
+// Field set and requiredness mirror the mobile app's request flow (request/step1.js,
+// step2.js) exactly, so a request means the same thing and asks the same questions
+// whichever app it was submitted from.
+export const serviceRequestSchema = z
+  .object({
+    service: z.string(),
+    patientName: req('Patient name').regex(/^[\p{L} .'-]+$/u, 'Use letters only'),
+    age: req('Age')
+      .regex(/^\d{1,3}$/, 'Enter the age in years')
+      .refine((v) => Number(v) <= 120, 'Enter a valid age'),
+    gender: z.enum(['Male', 'Female', 'Other']),
+    pickup: req('Pickup location').min(3, 'Enter the pickup hospital / address'),
+    destination: req('Destination').min(3, 'Enter the destination'),
+    preferredDate: req('Preferred date').refine((v) => new Date(v).setHours(23, 59) >= Date.now(), 'Date cannot be in the past'),
+    careLevel: z.array(z.string()),
+    contactCountryCode: z.string(),
+    // Optional, like mobile — only validated for format if the requester gives one.
+    contactPhone: z
+      .string()
+      .trim()
+      .refine((v) => !v || (digitsOnly(v).length >= 6 && digitsOnly(v).length <= 12 && /^[\d\s()-]+$/.test(v)), 'Enter a valid phone number'),
+    description: z.string().trim().max(500, 'Keep this under 500 characters'),
+    notes: z.string().trim().max(500, 'Keep notes under 500 characters'),
+  })
+  .refine((d) => !CARE_LEVEL_SERVICES.includes(d.service) || d.careLevel.length > 0, {
+    path: ['careLevel'],
+    message: 'Select at least one option',
+  });
 
 export const ticketSchema = z.object({
   subject: req('Subject').min(5, 'Subject must be at least 5 characters').max(120),

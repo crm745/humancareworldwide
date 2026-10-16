@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Eye, FileImage, FileText, RefreshCw, Trash2, UploadCloud } from 'lucide-react';
+import { Download, Eye, FileImage, FileText, RefreshCw, Trash2, UploadCloud } from 'lucide-react';
 import { ACCEPTED_EXTENSIONS, ACCEPTED_FILE_TYPES, MAX_UPLOAD_MB } from '@/data/constants';
 import { formatBytes } from '@/utils/format';
 import { randomId } from '@/utils/crypto';
 import { cn } from '@/utils/cn';
 import { StatusBadge } from './Badge';
+import { buttonClasses } from './Button';
 import { Modal } from './Modal';
 
 const isImage = (type) => type.startsWith('image/');
@@ -26,7 +27,7 @@ export function FileUpload({ label, description, required, value, onChange, maxS
   const accept = (file) => {
     setLocalError('');
     if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-      setLocalError('Unsupported file type. Upload a PDF, JPG or PNG file.');
+      setLocalError('Unsupported file type. Upload a PDF, JPG, PNG, WEBP, DOC or DOCX file.');
       return;
     }
     if (file.size > maxSizeMB * 1024 * 1024) {
@@ -183,7 +184,7 @@ export function FileUpload({ label, description, required, value, onChange, maxS
           <p className="mt-3 text-sm text-slate-700">
             <span className="font-semibold text-brand-600">Browse files</span> or drag and drop
           </p>
-          <p className="mt-1 text-xs text-slate-500">PDF, JPG or PNG · up to {maxSizeMB} MB</p>
+          <p className="mt-1 text-xs text-slate-500">PDF, JPG, PNG, WEBP, DOC, DOCX · up to {maxSizeMB} MB</p>
         </div>
       )}
 
@@ -209,21 +210,44 @@ export function FileUpload({ label, description, required, value, onChange, maxS
   );
 }
 
-export function FilePreviewModal({ open, onClose, name, type, url }) {
+export function FilePreviewModal({ open, onClose, name, type, url, loading }) {
+  const canDownload = !loading && url;
   return (
-    <Modal open={open} onClose={onClose} title={name} description="Document preview" size="xl">
-      {!url ? (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={name}
+      description="Document preview"
+      size="xl"
+      footer={
+        canDownload && (
+          <a href={url} download={name} className={buttonClasses({ variant: 'outline' })}>
+            <Download className="h-4 w-4" /> Download
+          </a>
+        )
+      }
+    >
+      {loading ? (
+        <div className="flex h-72 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-center">
+          <FileText className="h-10 w-10 animate-pulse text-slate-300" />
+          <p className="mt-3 text-sm font-medium text-slate-700">Loading preview…</p>
+        </div>
+      ) : !url ? (
         <div className="flex h-72 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-center">
           <FileText className="h-10 w-10 text-slate-300" />
           <p className="mt-3 text-sm font-medium text-slate-700">Preview not available</p>
-          <p className="mt-1 max-w-xs text-xs text-slate-500">This file is stored on the HumanCare server. Use Download to open it.</p>
+          <p className="mt-1 max-w-xs text-xs text-slate-500">This file could not be loaded from the HumanCare server.</p>
         </div>
       ) : isImage(type) ? (
         <img src={url} alt={name} className="mx-auto max-h-[70vh] rounded-lg object-contain" />
       ) : type === 'application/pdf' ? (
         <iframe src={url} title={name} className="h-[70vh] w-full rounded-lg border border-slate-200" />
       ) : (
-        <p className="text-sm text-slate-600">Preview is not supported for this file type.</p>
+        <div className="flex h-72 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-center">
+          <FileText className="h-10 w-10 text-slate-300" />
+          <p className="mt-3 text-sm font-medium text-slate-700">Preview is not supported for this file type.</p>
+          <p className="mt-1 max-w-xs text-xs text-slate-500">Use Download below to open it.</p>
+        </div>
       )}
     </Modal>
   );

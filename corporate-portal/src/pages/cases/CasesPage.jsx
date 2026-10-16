@@ -16,6 +16,7 @@ import { EmptyState, ErrorState } from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/ui/Misc';
 import { useToast } from '@/components/ui/Toast';
 import { downloadCSV } from '@/utils/download';
+import { RANGES, rangeStart } from '@/utils/dateRange';
 import { downloadCaseSummary } from '@/utils/exports';
 import { formatDate } from '@/utils/format';
 
@@ -23,7 +24,9 @@ const STATUS_OPTIONS = [
   { value: 'active', label: 'Active (Scheduled + In Progress)' },
   ...['Submitted', 'Scheduled', 'In Progress', 'Completed', 'Cancelled'].map((s) => ({ value: s, label: s })),
 ];
-const PRIORITY_RANK = { Low: 0, Medium: 1, High: 2, Emergency: 3 };
+// "All Time" is left out — an empty selection already means "no date filter",
+// same convention as the other filters below.
+const RANGE_OPTIONS = RANGES.filter((r) => r.key !== 'all').map((r) => ({ value: r.key, label: r.label }));
 
 /** "Rashid Hospital, Dubai" → city on top, facility below (truncated, full text on hover). */
 function Place({ value }) {
@@ -47,8 +50,11 @@ export default function CasesPage() {
 
   const q = params.get('q') ?? '';
   const status = params.get('status') ?? '';
-  const priority = params.get('priority') ?? '';
   const service = params.get('service') ?? '';
+  // 'all' means "no date filter" — same as not having the param at all — so it's
+  // normalized to '' here (keeps the Select showing its "All Time" placeholder).
+  const rawRange = params.get('range') ?? '';
+  const range = rawRange === 'all' ? '' : rawRange;
 
   // Filters live in the URL so dashboard tiles can deep-link and the back button restores them.
   const setParam = (key, value) =>
@@ -63,14 +69,15 @@ export default function CasesPage() {
 
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase();
+    const from = range ? rangeStart(range).getTime() : null;
     return (data ?? []).filter(
       (c) =>
         (!term || [c.id, c.patientName, c.pickup, c.destination, c.assignedTeam].some((v) => v.toLowerCase().includes(term))) &&
         (!status || (status === 'active' ? c.status === 'Scheduled' || c.status === 'In Progress' : c.status === status)) &&
-        (!priority || c.priority === priority) &&
-        (!service || c.service === service),
+        (!service || c.service === service) &&
+        (from == null || new Date(c.requestDate).getTime() >= from),
     );
-  }, [data, q, status, priority, service]);
+  }, [data, q, status, service, range]);
 
   const columns = [
     {
@@ -100,19 +107,18 @@ export default function CasesPage() {
       render: (c) => <span className={c.assignedTeam === 'Unassigned' ? 'text-slate-400' : ''}>{c.assignedTeam}</span>,
     },
     { key: 'status', header: 'Status', sortable: true, render: (c) => <StatusBadge status={c.status} /> },
-    { key: 'priority', header: 'Priority', sortable: true, sortValue: (c) => PRIORITY_RANK[c.priority], render: (c) => <StatusBadge status={c.priority} /> },
   ];
 
   const exportCsv = () => {
     downloadCSV(
       `hcw-cases-${new Date().toISOString().slice(0, 10)}.csv`,
-      ['Case ID', 'Patient Name', 'Service', 'Pickup Location', 'Destination', 'Request Date', 'Assigned Team', 'Status', 'Priority'],
-      rows.map((c) => [c.id, c.patientName, c.service, c.pickup, c.destination, formatDate(c.requestDate), c.assignedTeam, c.status, c.priority]),
+      ['Case ID', 'Patient Name', 'Service', 'Pickup Location', 'Destination', 'Request Date', 'Assigned Team', 'Status'],
+      rows.map((c) => [c.id, c.patientName, c.service, c.pickup, c.destination, formatDate(c.requestDate), c.assignedTeam, c.status]),
     );
     toast.success('Export ready', `${rows.length} case${rows.length === 1 ? '' : 's'} exported to CSV.`);
   };
 
-  const filtered = !!(q || status || priority || service);
+  const filtered = !!(q || status || service || range);
 
   return (
     <div>
@@ -147,20 +153,20 @@ export default function CasesPage() {
             onChange={(e) => setParam('status', e.target.value)}
           />
           <Select
-            aria-label="Priority"
-            className="sm:w-40"
-            placeholder="All priorities"
-            options={['Low', 'Medium', 'High', 'Emergency']}
-            value={priority}
-            onChange={(e) => setParam('priority', e.target.value)}
-          />
-          <Select
             aria-label="Service"
             className="col-span-2 sm:w-56"
             placeholder="All services"
             options={SERVICE_TYPES}
             value={service}
             onChange={(e) => setParam('service', e.target.value)}
+          />
+          <Select
+            aria-label="Date range"
+            className="sm:w-40"
+            placeholder="All Time"
+            options={RANGE_OPTIONS}
+            value={range}
+            onChange={(e) => setParam('range', e.target.value)}
           />
         </FilterBar>
         {error ? (

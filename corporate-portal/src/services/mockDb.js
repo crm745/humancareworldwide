@@ -9,7 +9,7 @@ const keyFor = (corporateId) => `hcw_mockdb_${corporateId}`;
 let cache = null;
 
 function currentCorporateId() {
-  return getSession()?.user.corporateId ?? 'HCW-VND-00125';
+  return getSession()?.user.corporateId ?? 'HCW-COR-00125';
 }
 
 function load() {

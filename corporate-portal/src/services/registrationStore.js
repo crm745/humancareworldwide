@@ -17,9 +17,9 @@ export function upsertRegistration(rec) {
 export const listUsers = () => readJSON(USERS_KEY, []);
 export const saveUsers = (list) => writeJSON(USERS_KEY, list);
 
-/** Reference IDs continue from HCW-VND-2026-00125. */
+/** Reference IDs continue from HCW-COR-2026-00125. */
 export function nextCorporateId() {
   const seq = readJSON(SEQ_KEY, 125) + 1;
   writeJSON(SEQ_KEY, seq);
-  return `HCW-VND-${new Date().getFullYear()}-${String(seq).padStart(5, '0')}`;
+  return `HCW-COR-${new Date().getFullYear()}-${String(seq).padStart(5, '0')}`;
 }

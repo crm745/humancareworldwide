@@ -132,7 +132,9 @@ export function RegistrationLayout() {
           )}
 
           <Suspense fallback={<PageLoader />}>
-            <Outlet />
+            <div key={location.pathname} className="animate-slide-up">
+              <Outlet />
+            </div>
           </Suspense>
 
           {formStep && (

@@ -30,7 +30,7 @@ export default function LoginPage() {
 
   const { register, handleSubmit, setValue, formState } = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: { identifier: prefill, password: '', remember: true },
+    defaultValues: { identifier: prefill, password: '', remember: false },
   });
   const { errors, isSubmitting } = formState;
 
@@ -42,7 +42,7 @@ export default function LoginPage() {
         navigate('/verify-otp', { state: { identifier, remember, from } });
         return;
       }
-      toast.success(`Welcome back, ${result.user.contactName.split(' ')[0]}`, result.user.companyName);
+      toast.success('Welcome', result.user.companyName);
       navigate(from, { replace: true });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Login failed. Please try again.');

@@ -1,5 +1,7 @@
 export const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i;
 export const IFSC_RE = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+// Udyam Registration Number (current MSME format, replaced the older UAM number in 2020).
+export const UAM_RE = /^UDYAM-[A-Z]{2}-\d{2}-\d{7}$/;
 export const SWIFT_RE = /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
 export const USERNAME_RE = /^[a-z0-9](?:[a-z0-9._-]{2,28})[a-z0-9]$/;
 export const URL_RE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/[^\s]*)?$/i;

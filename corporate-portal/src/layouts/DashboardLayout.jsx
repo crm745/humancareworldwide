@@ -56,7 +56,11 @@ export function DashboardLayout() {
           <Header onOpenMenu={() => setMobileOpen(true)} onLogout={() => setConfirmLogout(true)} />
           <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 pb-24 pt-6 sm:px-6 md:pb-10 lg:px-8">
             <Suspense fallback={<PageLoader />}>
-              <Outlet />
+              {/* Keyed by path so each navigation re-triggers the entrance animation —
+                  sidebar/header stay mounted, only this content fades in. */}
+              <div key={location.pathname} className="animate-slide-up">
+                <Outlet />
+              </div>
             </Suspense>
           </main>
         </div>

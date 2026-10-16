@@ -1,5 +1,6 @@
 import { INR_RATE, SERVICE_TYPES } from '@/data/constants';
 import { randomId } from '@/utils/crypto';
+import { rangeStart } from '@/utils/dateRange';
 import { ApiError, USE_MOCK_API, mockDelay } from './config';
 import { http } from './http';
 import { mockDb } from './mockDb';
@@ -12,7 +13,6 @@ const get = async (url, params) => (await http.get(url, { params })).data;
 // this app's "case row" shape — this reshapes one into the other so every page that
 // consumes a case (list, detail, create) doesn't need its own mapping logic.
 const CASE_STATUS_LABEL = { submitted: 'Submitted', scheduled: 'Scheduled', in_progress: 'In Progress', completed: 'Completed', cancelled: 'Cancelled' };
-const CASE_PRIORITY_LABEL = { routine: 'Medium', urgent: 'High', critical: 'Emergency' };
 
 function toPortalCase(c) {
   return {
@@ -25,18 +25,24 @@ function toPortalCase(c) {
     requestDate: c.createdAt,
     assignedTeam: 'Unassigned', // no case-assignment concept exists on the backend yet
     status: CASE_STATUS_LABEL[c.status] || c.status,
-    priority: CASE_PRIORITY_LABEL[c.urgency] || 'Medium',
     notes: c.notes,
+    // Only present when the backend actually included them (GET /corporate/cases/:id
+    // does; the list endpoint doesn't) — same shape as toPortalPatientDetail()'s below.
+    documents: c.documents?.map((d) => ({
+      id: d.id,
+      name: d.name,
+      type: d.type || 'Other',
+      fileExt: (d.name?.split('.').pop() || 'file').toUpperCase(),
+      date: d.uploadedAt,
+    })),
   };
 }
 
-// PatientProfilePage expects a lot of demographic/medical/travel detail (DOB,
-// nationality, passport, emergency contact, blood group, allergies, travel mode...)
-// that nothing in the current data model collects — these fields are filled with
-// safe placeholders ('—' / empty) so the page can't crash on them (maskPhone(undefined)
-// was the actual bug reported), and the Medical/Travel tabs that would need the rest
-// of that data are hidden entirely in PatientProfilePage.jsx rather than shown full of
-// dashes.
+// PatientProfilePage also expects demographic/medical/travel detail (nationality,
+// passport, emergency contact, blood group, allergies, travel mode...) that nothing
+// in the current data model collects — the Medical/Travel tabs that would need that
+// data are hidden entirely in PatientProfilePage.jsx, and the Personal Information
+// tab only shows the fields actually collected on the request form (age, gender, phone).
 function toPortalPatientDetail(p) {
   return {
     id: p.id,
@@ -44,45 +50,18 @@ function toPortalPatientDetail(p) {
     status: p.status,
     caseId: p.caseId,
     service: p.service,
-    age: '—',
-    gender: '—',
-    country: '—',
-    dateOfBirth: null,
-    nationality: '—',
-    passportLast4: null,
+    age: p.age ?? null,
+    gender: p.gender || '',
     phone: p.contact || '',
-    email: '',
-    emergencyContact: { name: '—', relation: '—', phone: '' },
     documents: (p.documents || []).map((d) => ({
       id: d.id,
       name: d.name,
-      type: (d.name?.split('.').pop() || 'file').toUpperCase(),
+      type: d.type || 'Other',
+      fileExt: (d.name?.split('.').pop() || 'file').toUpperCase(),
       date: d.uploadedAt,
-      status: 'Verified',
     })),
     communications: p.communications || [],
   };
-}
-
-function rangeStart(range) {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  switch (range) {
-    case 'today':
-      return d;
-    case 'week': {
-      const day = (d.getDay() + 6) % 7; // Monday-based week
-      d.setDate(d.getDate() - day);
-      return d;
-    }
-    case 'month':
-      d.setDate(1);
-      return d;
-    case 'quarter':
-      return new Date(Date.now() - 90 * DAY);
-    case 'year':
-      return new Date(d.getFullYear(), 0, 1);
-  }
 }
 
 /** Buckets for the Completed vs Pending chart, sized to the selected range. */
@@ -101,15 +80,13 @@ function buckets(range) {
       const d = new Date(t);
       out.push({ label: range === 'week' ? d.toLocaleDateString('en-GB', { weekday: 'short' }) : String(d.getDate()), start: t, end: t + DAY });
     }
-  } else if (range === 'quarter') {
-    for (let t = start.getTime(); t <= now; t += 7 * DAY) {
-      const d = new Date(t);
-      out.push({ label: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }), start: t, end: t + 7 * DAY });
-    }
   } else {
+    // 'year' and 'all' both land here — 'all' shows the current year's monthly
+    // breakdown rather than every year since inception.
+    const thisYear = new Date().getFullYear();
     for (let m = 0; m <= new Date().getMonth(); m++) {
-      const s = new Date(start.getFullYear(), m, 1);
-      const e = new Date(start.getFullYear(), m + 1, 1);
+      const s = new Date(thisYear, m, 1);
+      const e = new Date(thisYear, m + 1, 1);
       out.push({ label: s.toLocaleDateString('en-GB', { month: 'short' }), start: s.getTime(), end: e.getTime() });
     }
   }
@@ -174,6 +151,15 @@ export const corporateService = {
     };
   },
 
+  // ---------- services ----------
+  // This hits the real, public /services endpoint directly (not mocked) in both modes —
+  // it's the same admin-managed catalog the mobile app reads from, so "Request a Service"
+  // always matches what's actually configured instead of a hardcoded, drift-prone list.
+  async listServices() {
+    const { services } = await get('/services');
+    return services;
+  },
+
   // ---------- cases ----------
   async listCases() {
     if (!USE_MOCK_API) {
@@ -204,15 +190,39 @@ export const corporateService = {
     };
   },
 
-  // NOTE: the backend expects { patientName, patientContact, serviceType, origin,
-  // destination, urgency, policyReference, notes } — if the New Case form's field
-  // names don't line up with that, this will need the same kind of reshaping as
-  // toPortalCase() above, just in the other direction. Not yet verified against the
-  // actual form (only list/detail have been tested so far).
+  // Reshapes the form's field names into what the backend's createCaseByCorporate
+  // expects (see backend/src/modules/cases/cases.service.js) — the field set matches
+  // the mobile app's own request flow (request/step1.js, step2.js) field-for-field,
+  // including the care-level checkboxes and the optional referral source + document.
   async createCase(input) {
     if (!USE_MOCK_API) {
-      const { case: c } = await http.post('/corporate/cases', input).then((r) => r.data);
-      return toPortalCase(c);
+      const payload = {
+        patientName: input.patientName.trim(),
+        patientAge: Number(input.age),
+        patientGender: input.gender,
+        patientContact: input.contactPhone?.trim() ? `${input.contactCountryCode} ${input.contactPhone.trim()}` : undefined,
+        serviceType: input.service,
+        origin: input.pickup.trim(),
+        destination: input.destination.trim(),
+        careLevel: input.careLevel?.length ? input.careLevel.join(', ') : undefined,
+        description: input.description?.trim() || undefined,
+        notes: input.notes?.trim() || undefined,
+      };
+      const { case: c } = (await http.post('/corporate/cases', payload)).data;
+      const created = toPortalCase(c);
+      if (input.file) {
+        const form = new FormData();
+        form.append('type', 'Medical Report'); // this is specifically the "Upload Medical Report" field
+        form.append('file', input.file);
+        try {
+          // Case is already saved at this point — a failed attachment shouldn't block the
+          // request, same as the mobile app's own upload-after-create behaviour.
+          await http.post(`/corporate/cases/${created.id}/documents`, form, { headers: { 'Content-Type': undefined } });
+        } catch {
+          /* ignore */
+        }
+      }
+      return created;
     }
     await mockDelay(800, 400);
     const cases = mockDb.get('cases');
@@ -231,11 +241,11 @@ export const corporateService = {
       scheduledDate: null,
       assignedTeam: 'Unassigned',
       status: 'Submitted',
-      priority: input.priority,
-      notes: input.notes.trim() || 'Requested via corporate portal.',
+      notes: input.notes?.trim() || 'Requested via corporate portal.',
     };
     mockDb.set('cases', [record, ...cases]);
     const contact = mockDb.get('profile').company.contactName;
+    const contactFull = input.contactPhone?.trim() ? `${input.contactCountryCode} ${input.contactPhone.trim()}` : '';
     const patient = {
       id: patientId,
       name: record.patientName,
@@ -247,20 +257,20 @@ export const corporateService = {
       caseId: id,
       status: 'Submitted',
       dateOfBirth: new Date(new Date().getFullYear() - input.age, 0, 1).toISOString(),
-      phone: input.contactPhone,
+      phone: contactFull,
       email: '—',
       passportLast4: '',
-      emergencyContact: { name: '—', relation: '—', phone: input.contactPhone },
+      emergencyContact: { name: '—', relation: '—', phone: contactFull },
       medical: {
         diagnosis: 'To be confirmed by HumanCare medical team',
-        condition: input.priority === 'Emergency' ? 'Critical' : 'Stable',
+        condition: input.careLevel?.includes('care_icu') ? 'Critical' : 'Stable',
         bloodGroup: '—',
         allergies: '—',
         medications: [],
         mobility: '—',
         oxygenRequired: false,
         attendingDoctor: '—',
-        notes: input.notes,
+        notes: input.description,
       },
       travel: {
         from: record.pickup,
@@ -317,30 +327,66 @@ export const corporateService = {
     return entry;
   },
 
+  // A file uploaded against a case (medical report, etc. — not the separate "compliance
+  // documents" feature below). Fetched as a blob through the authenticated axios client
+  // because the real /documents/:id/file route requires a Bearer token, which a plain
+  // <img>/<iframe> src can't send. The caller owns the returned object URL and must
+  // revoke it when done (e.g. on modal close) to avoid leaking memory.
+  async getCaseDocumentFile(documentId) {
+    if (!USE_MOCK_API) {
+      const res = await http.get(`/documents/${documentId}/file`, { responseType: 'blob' });
+      return { url: URL.createObjectURL(res.data), type: res.data.type };
+    }
+    return null;
+  },
+
+  // Adds a document to a case that's already been created — the "Upload Medical
+  // Report" field on the request form only covers the one file attached at submission
+  // time; this is for whatever shows up afterward (passport, insurance, lab report...).
+  async addCaseDocument(caseId, { type, file }) {
+    if (!USE_MOCK_API) {
+      const form = new FormData();
+      form.append('type', type);
+      form.append('file', file);
+      const { document } = (await http.post(`/corporate/cases/${caseId}/documents`, form, { headers: { 'Content-Type': undefined } })).data;
+      return { id: document.id, name: document.name, type: document.type, fileExt: (document.name?.split('.').pop() || 'file').toUpperCase(), date: document.uploadedAt };
+    }
+    await mockDelay(600);
+    return { id: randomId('doc_'), name: file.name, type, fileExt: (file.name?.split('.').pop() || 'file').toUpperCase(), date: new Date().toISOString() };
+  },
+
   // ---------- documents ----------
-  // Compliance documents (company registration cert, GST, etc.) are deferred along
-  // with corporate self-registration — the endpoint doesn't exist on the backend yet.
-  // Returning [] instead of throwing means pages that fetch this alongside other,
-  // real data (CompanyProfilePage does both in one Promise.all) don't fail entirely
-  // just because this one piece isn't built — remove this fallback once it is.
+  // Company-level compliance documents (registration cert, GST, etc.) — real now, but
+  // deliberately simple: no Verified/Pending/Expired/Rejected status, since there's no
+  // review workflow behind it (nobody actually sets that status). Just upload and list.
   async listDocuments() {
     if (!USE_MOCK_API) {
-      try {
-        return await get('/corporate/documents');
-      } catch {
-        return [];
-      }
+      const docs = await get('/corporate/documents');
+      return docs.map((d) => ({
+        id: d.id,
+        name: d.name,
+        type: d.type,
+        fileName: d.fileUrl.split('/').pop().replace(/^\d+-/, ''),
+        size: d.fileSizeBytes,
+        uploadedAt: d.uploadedAt,
+      }));
     }
     await mockDelay();
     return [...mockDb.get('documents')];
   },
 
-  async uploadDocument(input, replaceId) {
-    if (!USE_MOCK_API) return (await http.post('/corporate/documents', { ...input, replaceId })).data;
+  async uploadDocument({ type, name, file }) {
+    if (!USE_MOCK_API) {
+      const form = new FormData();
+      form.append('type', type);
+      if (name) form.append('name', name);
+      form.append('file', file);
+      const d = (await http.post('/corporate/documents', form, { headers: { 'Content-Type': undefined } })).data;
+      return { id: d.id, name: d.name, type: d.type, fileName: file.name, size: d.fileSizeBytes, uploadedAt: d.uploadedAt };
+    }
     await mockDelay(600);
-    const doc = { id: randomId('DOC-'), ...input, uploadedAt: new Date().toISOString(), status: 'Pending' };
-    const rest = mockDb.get('documents').filter((d) => d.id !== replaceId);
-    mockDb.set('documents', [doc, ...rest]);
+    const doc = { id: randomId('DOC-'), type, name, fileName: file.name, size: file.size, uploadedAt: new Date().toISOString() };
+    mockDb.set('documents', [doc, ...mockDb.get('documents')]);
     return doc;
   },
 
@@ -354,6 +400,17 @@ export const corporateService = {
       'documents',
       mockDb.get('documents').filter((d) => d.id !== id),
     );
+  },
+
+  // Same reasoning as getCaseDocumentFile() above — fetched as a blob through the
+  // authenticated axios client since the file route needs a Bearer token. Caller owns
+  // the returned object URL and must revoke it when done.
+  async getCorporateDocumentFile(documentId) {
+    if (!USE_MOCK_API) {
+      const res = await http.get(`/corporate/documents/${documentId}/file`, { responseType: 'blob' });
+      return { url: URL.createObjectURL(res.data), type: res.data.type };
+    }
+    return null;
   },
 
   // ---------- billing ----------

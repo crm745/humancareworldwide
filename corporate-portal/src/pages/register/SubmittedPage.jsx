@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Clock, Copy, Download, Mail, ShieldCheck } from 'lucide-react';
-import { Card, CardHeader } from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { StatusBadge } from '@/components/ui/Badge';
-import { StatusTimeline } from '@/components/ui/StatusTimeline';
 import { PageLoader } from '@/components/ui/Loading';
 import { useToast } from '@/components/ui/Toast';
 import { useDocumentTitle } from '@/hooks/useUtils';
-import { countryName } from '@/data/constants';
+import { SUPPORT_EMAIL, countryName } from '@/data/constants';
 import { buildDocumentHtml, downloadFile } from '@/utils/download';
 import { formatDateTime } from '@/utils/format';
 import { maskAccount } from '@/utils/mask';
-import { registrationTimeline, useCurrentRegistration } from './useCurrentRegistration';
+import { useCurrentRegistration } from './useCurrentRegistration';
 
 export default function SubmittedPage() {
   useDocumentTitle('Registration Submitted');
@@ -51,7 +50,7 @@ export default function SubmittedPage() {
           ['Company name', reg.company.companyName],
           ['Company type', reg.company.companyType],
           ['Location', `${reg.company.city}, ${countryName(reg.company.country, reg.company.countryOther)}`],
-          ['Official email', reg.company.officialEmail],
+          ['Billing email', reg.company.officialEmail],
         ],
       },
       {
@@ -67,8 +66,8 @@ export default function SubmittedPage() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-5">
-      <Card className="p-6 sm:p-8 lg:col-span-3">
+    <div className="mx-auto max-w-2xl">
+      <Card className="p-6 sm:p-8">
         <div className="flex flex-col items-center text-center">
           <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/60">
             <CheckCircle2 className="h-9 w-9 text-emerald-600" />
@@ -87,7 +86,6 @@ export default function SubmittedPage() {
               {copied ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
             </button>
           </div>
-          <p className="mt-1 text-xs text-slate-500">Temporary reference — confirmed once verification is complete</p>
         </div>
 
         <dl className="mt-6 grid gap-4 sm:grid-cols-3">
@@ -121,13 +119,13 @@ export default function SubmittedPage() {
             Continue to Email Verification
           </Button>
         </div>
-      </Card>
 
-      <Card className="lg:col-span-2">
-        <CardHeader title="Verification Status" description={`Submitted ${formatDateTime(reg.submittedAt)}`} />
-        <div className="p-5">
-          <StatusTimeline items={registrationTimeline(reg)} />
-        </div>
+        <p className="mt-6 text-center text-xs text-slate-500">
+          Questions about your registration? Email{' '}
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-brand-600 hover:underline">
+            {SUPPORT_EMAIL}
+          </a>
+        </p>
       </Card>
     </div>
   );

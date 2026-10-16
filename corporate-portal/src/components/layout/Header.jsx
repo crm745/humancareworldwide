@@ -208,7 +208,7 @@ export function Header({ onOpenMenu, onLogout }) {
           <Menu className="h-5 w-5" />
         </button>
         <Link to="/dashboard" className="md:hidden" aria-label="Dashboard">
-          <Logo className="h-8" />
+          <Logo className="h-9" />
         </Link>
 
         <div className="hidden max-w-md flex-1 sm:block">

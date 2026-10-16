@@ -16,14 +16,7 @@ import { PageHeader, Segmented } from '@/components/ui/Misc';
 import { Select } from '@/components/ui/Select';
 import { CompletedPendingChart, MonthlyCasesChart, ServiceWiseChart, StatusDonut } from '@/components/dashboard/Charts';
 import { formatCompactINR, formatDate, greeting, relativeTime } from '@/utils/format';
-
-const RANGES = [
-  { key: 'today', label: 'Today' },
-  { key: 'week', label: 'This Week' },
-  { key: 'month', label: 'This Month' },
-  { key: 'quarter', label: 'Last 3 Months' },
-  { key: 'year', label: 'This Year' },
-];
+import { RANGES } from '@/utils/dateRange';
 
 export default function DashboardPage() {
   useDocumentTitle('Dashboard');
@@ -38,7 +31,7 @@ export default function DashboardPage() {
     <div>
       <PageHeader
         title={`${greeting()}, ${user?.companyName || 'there'}`}
-        description={`Here’s what’s happening with your account ${rangeLabel === 'today' ? 'today' : rangeLabel}.`}
+        description={`Here’s what’s happening with your account ${range === 'today' ? 'today' : range === 'all' ? 'overall' : rangeLabel}.`}
         actions={
           <>
             <Segmented className="hidden xl:inline-flex" options={RANGES} value={range} onChange={setRange} />
@@ -66,22 +59,35 @@ export default function DashboardPage() {
             <CardsSkeleton count={8} />
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-              <StatCard label="Total Cases" value={data.stats.totalCases} icon={ClipboardList} tone="blue" to="/cases" hint={`Requested ${rangeLabel}`} />
+              <StatCard
+                label={`Cases (${RANGES.find((r) => r.key === range)?.label})`}
+                value={data.stats.totalCases}
+                icon={ClipboardList}
+                tone="blue"
+                to={`/cases?range=${range}`}
+                hint="Click to see these cases"
+              />
               <StatCard
                 label="Active Cases"
                 value={data.stats.activeCases}
                 icon={Activity}
                 tone="violet"
-                to="/cases?status=active"
+                to={`/cases?status=active&range=${range}`}
                 hint="Scheduled + in progress"
               />
-              <StatCard label="Completed Cases" value={data.stats.completedCases} icon={CheckCircle2} tone="green" to="/cases?status=Completed" />
+              <StatCard
+                label="Completed Cases"
+                value={data.stats.completedCases}
+                icon={CheckCircle2}
+                tone="green"
+                to={`/cases?status=Completed&range=${range}`}
+              />
               <StatCard
                 label="Pending Cases"
                 value={data.stats.pendingCases}
                 icon={Hourglass}
                 tone="amber"
-                to="/cases?status=Submitted"
+                to={`/cases?status=Submitted&range=${range}`}
                 hint="Awaiting scheduling"
               />
               <StatCard label="Total Patients" value={data.stats.totalPatients} icon={Users} tone="teal" to="/patients" />
@@ -119,25 +125,6 @@ export default function DashboardPage() {
           )}
 
           <div className="mt-6 grid gap-6 xl:grid-cols-5">
-            <Card className="xl:col-span-2">
-              <CardHeader title="Case Status Overview" description={`Cases requested ${rangeLabel}`} />
-              <div className="p-5">{loading || !data ? <Skeleton className="h-[200px]" /> : <StatusDonut data={data.statusBreakdown} />}</div>
-            </Card>
-            <Card className="xl:col-span-3">
-              <CardHeader title="Monthly Cases" description="Requests over the last 12 months" />
-              <div className="p-5 pt-4">{loading || !data ? <Skeleton className="h-[260px]" /> : <MonthlyCasesChart data={data.monthly} />}</div>
-            </Card>
-            <Card className="xl:col-span-3">
-              <CardHeader title="Completed vs Pending Cases" description={`Breakdown for ${rangeLabel}`} />
-              <div className="p-5 pt-4">{loading || !data ? <Skeleton className="h-[260px]" /> : <CompletedPendingChart data={data.completedVsPending} />}</div>
-            </Card>
-            <Card className="xl:col-span-2">
-              <CardHeader title="Service-wise Cases" description={`Cases by service, ${rangeLabel}`} />
-              <div className="p-5 pt-4">{loading || !data ? <Skeleton className="h-[260px]" /> : <ServiceWiseChart data={data.serviceWise} />}</div>
-            </Card>
-          </div>
-
-          <div className="mt-6 grid gap-6 xl:grid-cols-5">
             <Card className="xl:col-span-3">
               <CardHeader
                 title="Recent Cases"
@@ -172,7 +159,6 @@ export default function DashboardPage() {
                             <span className="font-mono">{c.id}</span> · {formatDate(c.requestDate)}
                           </p>
                         </div>
-                        <StatusBadge status={c.priority} className="hidden sm:inline-flex" />
                         <StatusBadge status={c.status} />
                       </button>
                     </li>
@@ -205,6 +191,25 @@ export default function DashboardPage() {
                 ))}
                 {!notifications.length && <li className="px-5 py-8 text-center text-sm text-slate-500">No updates yet.</li>}
               </ul>
+            </Card>
+          </div>
+
+          <div className="mt-6 grid gap-6 xl:grid-cols-5">
+            <Card className="xl:col-span-2">
+              <CardHeader title="Case Status Overview" description={`Cases requested ${rangeLabel}`} />
+              <div className="p-5">{loading || !data ? <Skeleton className="h-[200px]" /> : <StatusDonut data={data.statusBreakdown} />}</div>
+            </Card>
+            <Card className="xl:col-span-3">
+              <CardHeader title="Monthly Cases" description="Requests over the last 12 months" />
+              <div className="p-5 pt-4">{loading || !data ? <Skeleton className="h-[260px]" /> : <MonthlyCasesChart data={data.monthly} />}</div>
+            </Card>
+            <Card className="xl:col-span-3">
+              <CardHeader title="Completed vs Pending Cases" description={`Breakdown for ${rangeLabel}`} />
+              <div className="p-5 pt-4">{loading || !data ? <Skeleton className="h-[260px]" /> : <CompletedPendingChart data={data.completedVsPending} />}</div>
+            </Card>
+            <Card className="xl:col-span-2">
+              <CardHeader title="Service-wise Cases" description={`Cases by service, ${rangeLabel}`} />
+              <div className="p-5 pt-4">{loading || !data ? <Skeleton className="h-[260px]" /> : <ServiceWiseChart data={data.serviceWise} />}</div>
             </Card>
           </div>
         </>

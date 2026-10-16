@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2, Contact, MapPin, Phone } from 'lucide-react';
+import { Building2, Contact, MapPin, Receipt } from 'lucide-react';
 
 import { COMPANY_TYPES, COUNTRIES, STATES } from '@/data/constants';
 import { companySchema } from '@/utils/schemas';
 import { pincodeRule, registrationRule } from '@/utils/validators';
-import { Field, Input } from '@/components/ui/Input';
+import { Field, Input, Textarea } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 
 export const EMPTY_COMPANY = {
@@ -15,6 +15,8 @@ export const EMPTY_COMPANY = {
   companyType: '',
   country: '',
   countryOther: '',
+  msmeRegistered: '',
+  uamNumber: '',
   state: '',
   city: '',
   address: '',
@@ -69,6 +71,7 @@ export function CompanyDetailsForm({ defaultValues, onSubmit, footer, onDirtyCha
   const pin = pincodeRule(country);
   const companyType = watch('companyType');
   const reg = registrationRule(companyType, country);
+  const msmeRegistered = watch('msmeRegistered');
 
   // Changing the country invalidates the state picked from the previous country's list.
   const countryField = register('country', { onChange: () => setValue('state', '') });
@@ -111,6 +114,40 @@ export function CompanyDetailsForm({ defaultValues, onSubmit, footer, onDirtyCha
             >
               <Input id="registrationNumber" placeholder="Not applicable" disabled />
             </Field>
+          )}
+          {country === 'IN' && (
+            <>
+              <Field label="MSME Registered?" required error={errors.msmeRegistered?.message} htmlFor="msmeRegistered">
+                <Select
+                  id="msmeRegistered"
+                  placeholder="Select an option"
+                  options={[
+                    { value: 'Yes', label: 'Yes' },
+                    { value: 'No', label: 'No' },
+                  ]}
+                  invalid={!!errors.msmeRegistered}
+                  {...register('msmeRegistered')}
+                />
+              </Field>
+              {msmeRegistered === 'Yes' && (
+                <Field
+                  label="UAM (Udyam Registration) Number"
+                  required
+                  error={errors.uamNumber?.message}
+                  hint="As on your Udyam Registration Certificate"
+                  htmlFor="uamNumber"
+                >
+                  <Input
+                    id="uamNumber"
+                    placeholder="e.g. UDYAM-MH-01-1234567"
+                    maxLength={19}
+                    className="uppercase placeholder:normal-case"
+                    invalid={!!errors.uamNumber}
+                    {...register('uamNumber')}
+                  />
+                </Field>
+              )}
+            </>
           )}
         </Section>
 
@@ -155,6 +192,16 @@ export function CompanyDetailsForm({ defaultValues, onSubmit, footer, onDirtyCha
         </Section>
 
         <Section icon={MapPin} title="Registered Address" description="Head-office address used for contracts and invoices.">
+          <Field label="Office Address" required error={errors.address?.message} htmlFor="address" className="md:col-span-2">
+            <Textarea
+              id="address"
+              rows={2}
+              placeholder="Building / floor, street, area"
+              autoComplete="street-address"
+              invalid={!!errors.address}
+              {...register('address')}
+            />
+          </Field>
           <Field label="Country" required error={errors.country?.message} htmlFor="country">
             <Select
               id="country"
@@ -196,19 +243,10 @@ export function CompanyDetailsForm({ defaultValues, onSubmit, footer, onDirtyCha
               {...register('pincode')}
             />
           </Field>
-          <Field label="Office Address" required error={errors.address?.message} htmlFor="address" className="md:col-span-2">
-            <Input
-              id="address"
-              placeholder="Building / floor, street, area"
-              autoComplete="street-address"
-              invalid={!!errors.address}
-              {...register('address')}
-            />
-          </Field>
         </Section>
 
-        <Section icon={Phone} title="Official Contact" description="Where HumanCare sends verification and billing communication.">
-          <Field label="Official Email" required error={errors.officialEmail?.message} htmlFor="officialEmail" hint="Verification email is sent here">
+        <Section icon={Receipt} title="Billing Contact" description="Where HumanCare sends verification and billing communication.">
+          <Field label="Billing Email" required error={errors.officialEmail?.message} htmlFor="officialEmail" hint="Verification email is sent here">
             <Input
               id="officialEmail"
               type="email"
@@ -218,7 +256,7 @@ export function CompanyDetailsForm({ defaultValues, onSubmit, footer, onDirtyCha
               {...register('officialEmail')}
             />
           </Field>
-          <Field label="Official Phone Number" required error={errors.officialPhone?.message} htmlFor="officialPhone">
+          <Field label="Billing Phone Number" required error={errors.officialPhone?.message} htmlFor="officialPhone">
             <Input
               id="officialPhone"
               type="tel"

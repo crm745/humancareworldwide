@@ -39,7 +39,7 @@ export default function VerifyOtpPage() {
     setSubmitting(true);
     try {
       const session = await verifyOtp(identifier, code.trim(), remember);
-      toast.success(`Welcome back, ${session.user.contactName.split(' ')[0]}`, session.user.companyName);
+      toast.success('Welcome', session.user.companyName);
       navigate(from ?? '/dashboard', { replace: true });
     } catch (e2) {
       setError(e2 instanceof Error ? e2.message : 'Verification failed. Please try again.');

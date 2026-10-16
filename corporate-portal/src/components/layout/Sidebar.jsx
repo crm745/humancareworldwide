@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { ChevronsLeft, ChevronsRight, LogOut, ShieldCheck, X } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, LogOut, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Logo } from '@/components/ui/Misc';
 import { useNotifications } from '@/hooks/useNotifications';
@@ -72,10 +72,7 @@ function CorporateChip({ collapsed }) {
   if (collapsed || !user) return null;
   return (
     <div className="m-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
-      <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700">
-        <ShieldCheck className="h-4 w-4" /> Verified Corporate
-      </div>
-      <p className="mt-1.5 truncate text-[13px] font-medium text-slate-800">{user.companyName}</p>
+      <p className="truncate text-[13px] font-medium text-slate-800">{user.companyName}</p>
       <p className="font-mono text-[11px] text-slate-500">{user.corporateId}</p>
     </div>
   );
@@ -91,11 +88,11 @@ export function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMobile
           collapsed ? 'w-[76px]' : 'w-64',
         )}
       >
-        <div className={cn('flex h-16 items-center border-b border-slate-100', collapsed ? 'justify-center px-2' : 'px-5')}>
+        <div className={cn('flex h-20 items-center border-b border-slate-100', collapsed ? 'justify-center px-2' : 'px-5')}>
           {collapsed ? (
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white">HC</span>
           ) : (
-            <Logo className="h-10" />
+            <Logo className="h-14 w-auto" />
           )}
         </div>
         <NavContent collapsed={collapsed} onLogout={onLogout} />
@@ -122,7 +119,7 @@ export function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMobile
           <div className="absolute inset-0 animate-fade-in bg-slate-900/45" onClick={onCloseMobile} />
           <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] animate-slide-in-left flex-col bg-white shadow-elevated">
             <div className="flex h-16 items-center justify-between border-b border-slate-100 px-4">
-              <Logo className="h-9" />
+              <Logo className="h-10" />
               <button type="button" onClick={onCloseMobile} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Close menu">
                 <X className="h-5 w-5" />
               </button>
