@@ -147,13 +147,16 @@ export function FieldLabel({ children, large, required, className = '' }) {
   );
 }
 
-export function Input({ large, multiline, className = '', ...props }) {
+// bare drops the border/background/radius so the input can sit inside a custom
+// grouped container (e.g. login's stacked country+number card) instead of looking
+// like its own separate field.
+export function Input({ large, multiline, bare, className = '', ...props }) {
   return (
     <TextInput
       placeholderTextColor="#97A4B8"
       multiline={multiline}
       textAlignVertical={multiline ? 'top' : 'center'}
-      className={cx(`min-w-0 font-inter bg-input border-[1.5px] border-field rounded-[10px] text-ink ${large ? 'text-[16.5px] px-3 py-3.5' : 'text-[15px] px-3 py-3'} ${multiline ? 'min-h-[84px]' : ''}`, className)}
+      className={cx(`min-w-0 font-inter text-ink ${bare ? '' : 'bg-input border-[1.5px] border-field rounded-[10px]'} ${large ? 'text-[16.5px] px-3 py-3.5' : 'text-[15px] px-3 py-3'} ${multiline ? 'min-h-[84px]' : ''}`, className)}
       {...props}
     />
   );

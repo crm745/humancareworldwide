@@ -1,9 +1,12 @@
 // Mock data mirroring interactive-prototype/app.html. Replace with API calls
 // (see ROADMAP.md §3) once the mobile app is wired to the backend.
 
-// Home / Select Service grid. `route` is either the air sub-menu or a service key.
+// Home / Select Service grid. Private Charter and Commercial Escort used to be
+// combined under one "Air Ambulance" tile that opened a sub-menu picking between the
+// two — now shown as their own top-level tiles instead, one tap to either.
 export const SERVICE_TILES = [
-  { key: 'air', img: 'IMG_AIR', title: 'svc_air', sub: 'svc_air_sub', route: '/air-ambulance-options' },
+  { key: 'privatecharter', img: 'IMG_AIR', title: 'air_opt_charter_title', sub: 'air_opt_charter_sub' },
+  { key: 'commercialair', img: 'IMG_COMMERCIALAIR', title: 'air_opt_commercial_title', sub: 'air_opt_commercial_sub' },
   { key: 'ground', img: 'IMG_GROUND', title: 'svc_ground', sub: 'svc_ground_sub' },
   { key: 'hospital', img: 'IMG_HOSPITAL', title: 'svc_hospital', sub: 'svc_hospital_sub' },
   { key: 'mortal', img: 'IMG_MORTAL', title: 'svc_mortal', sub: 'svc_mortal_sub' },
@@ -121,6 +124,7 @@ export const COUNTRY_CODES = [
   '+973', '+974', '+975', '+976', '+977',
   '+992', '+993', '+994', '+995', '+996', '+998',
 ];
+
 // 24/7 emergency line used by the Home SOS button and Help & Support "Call Alarm Desk".
 export const EMERGENCY_TEL = '+919699999065';
 export const EMERGENCY_DISPLAY = '+91 96999 99065';

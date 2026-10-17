@@ -1,12 +1,8 @@
 import { View } from 'react-native';
-import { router } from 'expo-router';
 import { useApp } from '../state/AppContext';
 import { BackButton, Body, Screen } from '../components/layout';
-import { Heading, Text } from '../components/ui';
-import { PhotoCard } from '../components/widgets';
+import { Heading } from '../components/ui';
 import { ServiceGrid } from '../components/ServiceGrid';
-
-const SHADOW = { textShadowColor: 'rgba(0,0,0,0.5)', textShadowRadius: 5, textShadowOffset: { width: 0, height: 1 } };
 
 export default function SelectService() {
   const { t } = useApp();
@@ -18,10 +14,6 @@ export default function SelectService() {
       </View>
       <Body contentClassName="px-[18px] pb-[18px]">
         <ServiceGrid />
-        <PhotoCard img="IMG_CARE_BANNER" height={130} className="mt-4" onPress={() => router.push('/help-support')}>
-          <Text className="text-[12px] text-white opacity-95" style={SHADOW}>{t('care_banner_line1')}</Text>
-          <Text className="font-inter-black text-[16.5px] text-white" style={SHADOW}>{t('care_banner_line2')}</Text>
-        </PhotoCard>
       </Body>
     </Screen>
   );

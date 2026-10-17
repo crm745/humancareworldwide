@@ -3,7 +3,6 @@ const {
   isValidEmail,
   isValidPhone,
   isValidPhoneForCountry,
-  isValidLoginIdentifier,
   isValidDateString,
   isValidAge,
 } = require('../validators');
@@ -40,12 +39,6 @@ describe('isValidPhoneForCountry', () => {
     expect(isValidPhoneForCountry('123456789012', '+998')).toBe(true);
     expect(isValidPhoneForCountry('12345', '+998')).toBe(false);
   });
-});
-
-describe('isValidLoginIdentifier', () => {
-  it('validates as an email when it looks like one', () => expect(isValidLoginIdentifier('a@b.com')).toBe(true));
-  it('validates as a phone number otherwise', () => expect(isValidLoginIdentifier('9876543210')).toBe(true));
-  it('rejects empty input', () => expect(isValidLoginIdentifier('')).toBe(false));
 });
 
 describe('isValidDateString', () => {

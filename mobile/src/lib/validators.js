@@ -7,9 +7,8 @@ export function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((value || '').trim());
 }
 
-// Used only where there's no country context (e.g. login's free-text "mobile or
-// email" field, which has no country-code selector next to it) — a loose sanity
-// range covering real numbers worldwide, not any one country's exact length.
+// Fallback for countries isValidPhoneForCountry doesn't have an exact length for — a
+// loose sanity range covering real numbers worldwide, not any one country's exact length.
 export function isValidPhone(value) {
   const len = (value || '').replace(/\D/g, '').length;
   return len >= 7 && len <= 15;
@@ -30,14 +29,6 @@ export function isValidPhoneForCountry(value, countryCode) {
   const len = (value || '').replace(/\D/g, '').length;
   const expected = PHONE_LENGTH_BY_CC[countryCode];
   return expected ? len === expected : isValidPhone(value);
-}
-
-// Login's "mobile or email" field — valid email format if it looks like one,
-// otherwise needs to look like a real phone number.
-export function isValidLoginIdentifier(value) {
-  const v = (value || '').trim();
-  if (!v) return false;
-  return v.includes('@') ? isValidEmail(v) : isValidPhone(v);
 }
 
 export function isValidDateString(value) {

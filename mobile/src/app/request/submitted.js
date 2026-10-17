@@ -53,7 +53,7 @@ const STEPS = [
 
 export default function RequestSubmitted() {
   const { t } = useApp();
-  const { id, service } = useLocalSearchParams();
+  const { id, requestId, service } = useLocalSearchParams();
   return (
     <Screen>
       <TopBar title={t('request_submitted_title')} onBack={() => navReplace('/home')} />
@@ -91,7 +91,7 @@ export default function RequestSubmitted() {
         </Pressable>
 
         <Spacer />
-        <Button title={t('view_my_request_btn')} onPress={() => navReplace('/my-requests')} className="w-full" />
+        <Button title={t('view_my_request_btn')} onPress={() => navReplace({ pathname: '/request-details', params: { id: requestId } })} className="w-full" />
         <Button variant="ghost" title={t('btn_return_home')} onPress={() => navReplace('/home')} className="mt-2.5 w-full" />
       </Body>
     </Screen>

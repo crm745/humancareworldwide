@@ -7,7 +7,6 @@ export const IMAGES = {
   IMG_TELE: require('../../assets/images/tele.webp'),
   IMG_HOMECARE: require('../../assets/images/homecare.jpg'),
   IMG_CORPORATE: require('../../assets/images/corporate.jpg'),
-  IMG_CARE_BANNER: require('../../assets/images/care_banner.jpg'),
   IMG_MORTAL: require('../../assets/images/mortal.jpg'),
   IMG_COMMERCIALAIR: require('../../assets/images/commercialair.webp'),
 };

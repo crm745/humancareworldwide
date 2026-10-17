@@ -69,7 +69,7 @@ export default function Home() {
 
       <Body withNav contentClassName="px-[18px] pt-5">
         <View className="mb-5">
-          <Text className="font-inter-black text-[20.5px] text-navy">{t('greeting')} {isCorporate ? CORPORATE_IDENTITY.name : firstName} 👋</Text>
+          <Text className="font-inter-black text-[20.5px] text-navy">{t('greeting')} {isCorporate ? CORPORATE_IDENTITY.name : firstName}</Text>
           <Text className="mt-[3px] text-[14px] text-muted">{t('greetingSub')}</Text>
         </View>
 

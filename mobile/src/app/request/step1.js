@@ -124,9 +124,8 @@ function UploadBox({ file, onPick, onRemove }) {
 // Step 1 of 3: patient details and request details on one page.
 export default function RequestStep1() {
   const { t, draft, updateDraft } = useApp();
-  const careOk = !needsCareLevel(draft.service) || draft.care.length > 0;
-  const ready = isValidName(draft.name) && isValidAge(draft.age) && draft.location.trim()
-    && (!draft.phone || isValidPhoneForCountry(draft.phone, draft.cc)) && careOk
+  const ready = isValidName(draft.name) && draft.age.trim() !== '' && isValidAge(draft.age) && draft.gender
+    && draft.location.trim() && isValidPhoneForCountry(draft.phone, draft.cc)
     && draft.dest.trim() && isValidDateString(draft.date);
   // Flips true the first time Next is tapped while something required is still
   // blank — before that, an untouched required field shows no error (nobody wants
@@ -142,41 +141,41 @@ export default function RequestStep1() {
       />
       <View className="flex-row gap-2.5">
         <Field
-          className="flex-1" label={t('field_age')} keyboardType="number-pad" value={draft.age} onChangeText={(age) => updateDraft({ age })}
-          error={draft.age && !isValidAge(draft.age) ? 'Enter a valid age.' : undefined}
+          required className="flex-1" label={t('field_age')} keyboardType="number-pad" value={draft.age} onChangeText={(age) => updateDraft({ age })}
+          error={(attempted || draft.age) && (!draft.age.trim() || !isValidAge(draft.age)) ? 'Enter a valid age.' : undefined}
         />
         <View className="flex-1">
-          <FieldLabel>{t('field_gender')}</FieldLabel>
+          <FieldLabel required>{t('field_gender')}</FieldLabel>
           <Select value={draft.gender} options={['Male', 'Female', 'Other']} onChange={(gender) => updateDraft({ gender })} title={t('field_gender')} />
+          {attempted && !draft.gender ? <Text className="mt-1 text-[12px] text-danger">This field is required.</Text> : null}
         </View>
       </View>
       <Field
         required label={t('field_location')} value={draft.location} onChangeText={(location) => updateDraft({ location })}
         error={attempted && !draft.location.trim() ? 'This field is required.' : undefined}
       />
+      <Field
+        required label={t('field_destination')} placeholder="City, Country" value={draft.dest} onChangeText={(dest) => updateDraft({ dest })}
+        error={attempted && !draft.dest.trim() ? 'This field is required.' : undefined}
+      />
       <View>
-        <FieldLabel>{t('field_contact_number')}</FieldLabel>
+        <FieldLabel required>{t('field_contact_number')}</FieldLabel>
         <View className="flex-row gap-2">
           <Select value={draft.cc} options={COUNTRY_CODES} onChange={(cc) => updateDraft({ cc })} title={t('field_contact_number')} className="w-20" />
           <Input className="flex-1" placeholder="Enter number" keyboardType="phone-pad" value={draft.phone} onChangeText={(phone) => updateDraft({ phone })} />
         </View>
-        {draft.phone && !isValidPhoneForCountry(draft.phone, draft.cc) ? <Text className="mt-1 text-[12px] text-danger">Enter a valid number for the selected country.</Text> : null}
+        {(attempted || draft.phone) && !isValidPhoneForCountry(draft.phone, draft.cc) ? <Text className="mt-1 text-[12px] text-danger">{draft.phone ? 'Enter a valid number for the selected country.' : 'This field is required.'}</Text> : null}
       </View>
       {needsCareLevel(draft.service) && (
         <View>
-          <FieldLabel required>{t('field_care_level')}</FieldLabel>
+          <FieldLabel>{t('field_care_level')}</FieldLabel>
           <Text className="mb-2.5 text-[11.5px] text-faint">{t('care_level_hint')}</Text>
           <CareLevelGrid value={draft.care} onChange={(care) => updateDraft({ care })} />
-          {!careOk ? <Text className="mt-1 text-[12px] text-danger">Select at least one option.</Text> : null}
         </View>
       )}
 
       <SectionHeading>{t('step2_heading')}</SectionHeading>
       <Field multiline label={t('field_requirement_desc')} placeholder="e.g. Patient needs a stable transfer to a cardiac hospital" value={draft.desc} onChangeText={(desc) => updateDraft({ desc })} />
-      <Field
-        required label={t('field_destination')} placeholder="City, Country" value={draft.dest} onChangeText={(dest) => updateDraft({ dest })}
-        error={attempted && !draft.dest.trim() ? 'This field is required.' : undefined}
-      />
       <DateField
         required label={t('field_preferred_date')} value={draft.date} onChange={(date) => updateDraft({ date })}
         error={(attempted || draft.date) && !isValidDateString(draft.date) ? 'Enter a valid date.' : undefined}

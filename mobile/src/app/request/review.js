@@ -72,7 +72,7 @@ export default function RequestReview() {
         }
       }
 
-      navReplace({ pathname: '/request/submitted', params: { id: request.referenceNumber, service: serviceTitle } });
+      navReplace({ pathname: '/request/submitted', params: { id: request.referenceNumber, requestId: request.id, service: serviceTitle } });
     } catch (err) {
       toast(err.message);
     } finally {

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Image, ImageBackground, Modal, Pressable, TextInput, View } from 'react-native';
+import { Image, ImageBackground, Modal, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Check, ChevronDown, Download, Eye, EyeOff, FileText, X } from 'lucide-react-native';
@@ -21,7 +21,11 @@ export function Sheet({ visible, onClose, title, children }) {
             <Text className="font-inter-black text-[16px] text-navy">{title}</Text>
             <IconButton onPress={onClose} className="h-[30px] w-[30px]"><X size={16} color="#45526B" /></IconButton>
           </View>
-          {children}
+          {/* Short lists (Gender, filters) just render at their natural height; long ones
+              (country codes) now scroll within the sheet instead of overflowing off-screen. */}
+          <ScrollView style={{ maxHeight: '70%' }} showsVerticalScrollIndicator={false}>
+            {children}
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -29,13 +33,16 @@ export function Sheet({ visible, onClose, title, children }) {
 }
 
 // Stand-in for the prototype's <select>: looks like an input, opens a sheet of options.
-export function Select({ value, options, onChange, title, large, className = '' }) {
+// bare drops the border/background/radius so the select can sit inside a custom
+// grouped container (e.g. login's stacked country+number card) instead of looking
+// like its own separate field.
+export function Select({ value, options, onChange, title, large, bare, className = '' }) {
   const [open, setOpen] = useState(false);
   return (
     <>
       <Pressable
         onPress={() => setOpen(true)}
-        className={`flex-row items-center justify-between gap-1 rounded-[10px] border-[1.5px] border-field bg-input ${large ? 'px-3 py-3.5' : 'px-3 py-3'} ${className}`}
+        className={`flex-row items-center justify-between gap-1 ${bare ? '' : 'rounded-[10px] border-[1.5px] border-field bg-input'} ${large ? 'px-3 py-3.5' : 'px-3 py-3'} ${className}`}
       >
         <Text className={large ? 'text-[16.5px]' : 'text-[15px]'} numberOfLines={1}>{value}</Text>
         <ChevronDown size={16} color="#97A4B8" />
