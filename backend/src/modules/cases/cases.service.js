@@ -1,5 +1,6 @@
 const { prisma } = require('../../db/prisma');
 const { sendExpoPush } = require('../../lib/expo-push.service');
+const { createLead } = require('../bitrix/bitrix.service');
 
 const VALID_CASE_STATUSES = ['submitted', 'scheduled', 'in_progress', 'completed', 'cancelled'];
 const CASE_INCLUDE = {
@@ -93,6 +94,29 @@ async function createCaseByCorporate(corporateId, data) {
   await prisma.caseStageEvent.create({
     data: { caseId: caseRecord.id, stage: 'submitted', note: 'Case opened by corporate.' },
   });
+
+  // Bitrix24 is best-effort: a CRM hiccup must never fail the corporate's submission,
+  // which has already been saved above by this point. Same pattern as the patient
+  // app's own request flow (requests.service.js#createRequest) — on failure this is
+  // persisted (not just logged) so the background retry sweep in
+  // bitrix-retry.service.js can pick it back up.
+  try {
+    const leadId = await createLead({
+      name: caseRecord.patientName,
+      mobile: caseRecord.patientContact,
+      serviceType: caseRecord.serviceType,
+      origin: caseRecord.origin,
+      destination: caseRecord.destination,
+      referenceNumber: caseRecord.referenceNumber,
+    });
+    await prisma.case.update({ where: { id: caseRecord.id }, data: { bitrixLeadId: leadId } });
+  } catch (err) {
+    console.error(`Bitrix24 lead creation failed for ${caseRecord.referenceNumber}:`, err.message);
+    await prisma.case.update({
+      where: { id: caseRecord.id },
+      data: { bitrixSyncAttempts: 1, bitrixLastError: err.message, bitrixSyncFailedAt: new Date() },
+    });
+  }
 
   return caseRecord;
 }

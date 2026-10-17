@@ -32,7 +32,11 @@ async function createLead({ name, mobile, email, serviceType, origin, destinatio
     PHONE: mobile ? [{ VALUE: mobile, VALUE_TYPE: 'WORK' }] : undefined,
     EMAIL: email ? [{ VALUE: email, VALUE_TYPE: 'WORK' }] : undefined,
     COMMENTS: `Origin: ${origin || '—'}\nDestination: ${destination || '—'}\nReference: ${referenceNumber}`,
-    SOURCE_ID: 'WEB', // TODO: confirm the right Lead Source ID with whoever manages Bitrix24
+    // "Other" in this Bitrix24 account's own Source list — confirmed via a live
+    // crm.status.list(SOURCE) lookup, not Bitrix's generic default code, since this
+    // account's source list is fully custom. Revisit once dedicated sources exist
+    // for mobile-app and corporate-portal leads (see bitrix.service.js discussion).
+    SOURCE_ID: 'UC_8HLHOF',
   };
   return callBitrix('crm.lead.add', { fields });
 }

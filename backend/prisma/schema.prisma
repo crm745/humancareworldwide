@@ -206,6 +206,13 @@ model Case {
   aircraft            String?
   hospitalFacility    String?   @map("hospital_facility")
   hospitalContact     String?   @map("hospital_contact")
+  // Same Bitrix24 sync tracking as ServiceRequest, for cases the corporate-portal
+  // submits directly (those never go through ServiceRequest, so they need their own
+  // copy of these columns rather than sharing that model's).
+  bitrixLeadId        Int?      @map("bitrix_lead_id")
+  bitrixSyncAttempts  Int       @default(0) @map("bitrix_sync_attempts")
+  bitrixLastError     String?   @db.Text @map("bitrix_last_error")
+  bitrixSyncFailedAt  DateTime? @map("bitrix_sync_failed_at")
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime  @updatedAt @map("updated_at")
   stageEvents         CaseStageEvent[]
