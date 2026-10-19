@@ -73,12 +73,13 @@ export default function LoginPage() {
       )}
 
       <form onSubmit={onSubmit} noValidate className="mt-7 space-y-4">
-        <Field label="Username or Email" htmlFor="identifier" error={errors.identifier?.message}>
+        <Field label="Email" htmlFor="identifier" error={errors.identifier?.message}>
           <Input
             id="identifier"
-            autoComplete="username"
+            type="email"
+            autoComplete="email"
             autoCapitalize="none"
-            placeholder="username or name@company.com"
+            placeholder="name@company.com"
             leftIcon={<User className="h-4 w-4" />}
             invalid={!!errors.identifier}
             {...register('identifier')}

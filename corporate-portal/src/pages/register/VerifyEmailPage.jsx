@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight, BadgeCheck, MailCheck, MousePointerClick, PencilLine, RotateCw } from 'lucide-react';
@@ -24,13 +24,31 @@ export default function VerifyEmailPage() {
   useDocumentTitle('Email Verification');
   const navigate = useNavigate();
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: reg, loading, setData } = useCurrentRegistration();
   const { left, done, restart } = useCountdown(RESEND_SECONDS);
   const [resending, setResending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [changeOpen, setChangeOpen] = useState(false);
+  const triedToken = useRef(false);
 
   const emailForm = useForm({ resolver: zodResolver(emailOnlySchema), defaultValues: { email: '' } });
+
+  // The link in the verification email lands here with ?token=... — confirm it once,
+  // then drop it from the URL so refreshing/going back doesn't replay a used token.
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (!token || triedToken.current) return;
+    triedToken.current = true;
+    registrationService
+      .verifyEmailToken(token)
+      .then((updated) => {
+        setData(updated);
+        toast.success('Email verified', 'Your registration has been verified.');
+      })
+      .catch((e) => toast.error('Verification failed', e instanceof Error ? e.message : undefined))
+      .finally(() => setSearchParams({}, { replace: true }));
+  }, [searchParams, setSearchParams, setData, toast]);
 
   if (loading || !reg) return <PageLoader label="Loading…" />;
 

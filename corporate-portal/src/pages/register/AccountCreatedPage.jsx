@@ -19,9 +19,10 @@ export default function AccountCreatedPage() {
   if (!reg.credentialsCreated) return <Navigate to="/register/credentials" replace />;
 
   const goToLogin = () => {
-    const username = reg.username ?? '';
     registrationService.clearCurrentId();
-    navigate(`/login?username=${encodeURIComponent(username)}`, { replace: true });
+    // LoginPage's "username" query param just prefills its identifier field — login
+    // itself only ever authenticates by email, so that's what we hand it here.
+    navigate(`/login?username=${encodeURIComponent(reg.email)}`, { replace: true });
   };
 
   return (
@@ -37,8 +38,7 @@ export default function AccountCreatedPage() {
           {[
             ['Corporate ID', <span className="font-mono">{reg.corporateId}</span>],
             ['Account Status', <StatusBadge status="Active" />],
-            ['Username', reg.username],
-            ['Registered Email', maskEmail(reg.email)],
+            ['Registered Email (your login)', maskEmail(reg.email)],
           ].map(([k, v]) => (
             <div key={String(k)} className="rounded-xl border border-slate-200 p-3.5">
               <dt className="text-xs font-medium text-slate-500">{k}</dt>

@@ -41,7 +41,7 @@ export default function DocumentsStep() {
     try {
       const docs = documents.flatMap((d) => {
         const f = state.documents[d.key];
-        return f ? [{ key: d.key, label: d.label, fileName: f.name, size: f.size, status: 'Uploaded' }] : [];
+        return f ? [{ key: d.key, label: d.label, file: f.file }] : [];
       });
       const record = await registrationService.submit(company, bank, docs);
       registrationService.setCurrentId(record.id);

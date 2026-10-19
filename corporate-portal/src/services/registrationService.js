@@ -3,7 +3,7 @@ import { lastDigits } from '@/utils/mask';
 import { readJSON, removeKey, writeJSON } from '@/utils/storage';
 import { ApiError, USE_MOCK_API, mockDelay } from './config';
 import { http } from './http';
-import { getRegistration, listUsers, nextCorporateId, saveUsers, upsertRegistration } from './registrationStore';
+import { getRegistration, nextCorporateId, upsertRegistration } from './registrationStore';
 
 const DRAFT_KEY = 'hcw_registration_draft';
 const CURRENT_KEY = 'hcw_registration_current';
@@ -50,10 +50,15 @@ export const registrationService = {
   setCurrentId: (id) => writeJSON(CURRENT_KEY, id, 'session'),
   clearCurrentId: () => removeKey(CURRENT_KEY, 'session'),
 
-  async submit(company, bank, documents) {
+  // documentFiles: [{ key, label, file }] — file is the real File object the person
+  // picked, not just its name/size, so compliance can actually open what was uploaded.
+  async submit(company, bank, documentFiles) {
     if (!USE_MOCK_API) {
-      // Real API receives the full bank details over HTTPS and files via multipart upload.
-      const { data } = await http.post('/corporates/register', { company, bank, documents });
+      const form = new FormData();
+      form.append('company', JSON.stringify(company));
+      form.append('bank', JSON.stringify(bank));
+      documentFiles.forEach((d) => form.append(d.key, d.file));
+      const { data } = await http.post('/corporates/register', form);
       return data;
     }
     await mockDelay(1200, 600);
@@ -62,7 +67,7 @@ export const registrationService = {
       corporateId: nextCorporateId(),
       company,
       bank: maskBank(bank),
-      documents: documents.map((d) => ({ ...d, status: 'Pending Verification' })),
+      documents: documentFiles.map((d) => ({ key: d.key, label: d.label, fileName: d.file.name, size: d.file.size, status: 'Uploaded' })),
       submittedAt: new Date().toISOString(),
       email: company.officialEmail.trim().toLowerCase(),
       emailVerified: false,
@@ -100,6 +105,14 @@ export const registrationService = {
     return updated;
   },
 
+  // Called when the registrant clicks the link in their email — VerifyEmailPage reads
+  // the ?token= query param and calls this on mount.
+  async verifyEmailToken(token) {
+    if (!USE_MOCK_API) return (await http.get('/corporates/verify-email', { params: { token } })).data;
+    await mockDelay(600, 300);
+    throw new ApiError('Email links only work against the real backend — use "Simulate clicking the verification link" below in mock mode.', 400);
+  },
+
   /**
    * Mock only: stands in for the user clicking the link in the email AND HumanCare's
    * compliance team approving documents + bank details (up to 48 hours in production).
@@ -121,31 +134,14 @@ export const registrationService = {
     return updated;
   },
 
-  async isUsernameAvailable(username) {
-    if (!USE_MOCK_API) return (await http.get('/corporates/username-available', { params: { username } })).data.available;
-    await mockDelay(300, 200);
-    const reserved = ['admin', 'support', 'humancare', 'root', 'demo.corporate'];
-    return !reserved.includes(username) && !listUsers().some((u) => u.username === username);
-  },
-
-  async createCredentials(id, username, password) {
-    if (!USE_MOCK_API) return (await http.post(`/corporates/registrations/${id}/credentials`, { username, password })).data;
+  async createCredentials(id, password) {
+    if (!USE_MOCK_API) return (await http.post(`/corporates/registrations/${id}/credentials`, { password })).data;
     await mockDelay(1000, 400);
     const rec = getRegistration(id);
     if (!rec) throw new ApiError('Registration not found.', 404);
     if (!rec.emailVerified || !rec.approved) throw new ApiError('Your registration has not been verified yet.', 409);
-    const users = listUsers();
-    if (users.some((u) => u.username === username)) throw new ApiError('That username is already taken.', 409);
-    users.push({
-      corporateId: rec.corporateId,
-      username,
-      email: rec.email,
-      passwordHash: await sha256(password),
-      companyName: rec.company.companyName,
-      contactName: rec.company.contactName,
-    });
-    saveUsers(users);
-    const updated = { ...rec, credentialsCreated: true, username, status: 'Active' };
+    await sha256(password); // mirrors the real backend hashing a password, for mock-mode parity only
+    const updated = { ...rec, credentialsCreated: true, status: 'Active' };
     upsertRegistration(updated);
     return updated;
   },
