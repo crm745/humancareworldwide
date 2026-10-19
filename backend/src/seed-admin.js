@@ -20,11 +20,13 @@ async function main() {
 
   const password = process.env.INITIAL_ADMIN_PASSWORD || randomPassword();
   const passwordHash = await bcrypt.hash(password, 10);
+  // Bootstrap account is always superadmin — otherwise nobody could create the
+  // first additional admin login.
   const admin = await prisma.adminUser.create({
-    data: { name: 'HumanCare Admin', email, passwordHash },
+    data: { name: 'HumanCare Admin', email, passwordHash, role: 'superadmin' },
   });
 
-  console.log('Admin login created:', { email: admin.email, password });
+  console.log('Admin login created:', { email: admin.email, password, role: admin.role });
 }
 
 main()

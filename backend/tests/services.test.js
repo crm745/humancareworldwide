@@ -35,7 +35,7 @@ describe('admin service management', () => {
   });
 
   it('creates, updates, and deletes a service', async () => {
-    const { token } = await createAdminAndLogin();
+    const { token } = await createAdminAndLogin({ role: 'superadmin' });
     const slug = uniqueSlug();
 
     const createRes = await request(app)

@@ -45,6 +45,10 @@ model AdminUser {
   name         String
   email        String   @unique
   passwordHash String   @map("password_hash")
+  // "admin" handles day-to-day ops (cases, patients, corporates, tickets); "superadmin"
+  // additionally manages other admin accounts and sensitive settings (the services
+  // catalog today, billing later) — see requireSuperAdmin in auth.middleware.js.
+  role         String   @default("admin")
   createdAt    DateTime @default(now()) @map("created_at")
 
   @@map("admin_users")
@@ -62,6 +66,37 @@ model Service {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("services")
+}
+
+// A pending corporate-partner application — the corporate-portal's /register wizard
+// (company → bank → documents → email verify → HumanCare approval → credentials).
+// company/bank are stored as submitted (not yet a real Corporate row); once a
+// superadmin approves and the applicant sets their password, a real Corporate +
+// CorporateUser are created and linked back here via corporateId/corporateUserId.
+// The row is kept permanently afterwards as the record of how/when they registered
+// and their verified bank details — there's no separate bank-details store yet.
+model CorporateRegistration {
+  id                   Int       @id @default(autoincrement())
+  corporateRefId       String    @unique @map("corporate_ref_id")
+  company              Json
+  bank                 Json
+  documents            Json
+  email                String
+  emailVerified        Boolean   @default(false) @map("email_verified")
+  emailVerifyToken     String?   @unique @map("email_verify_token")
+  emailVerifyExpiresAt DateTime? @map("email_verify_expires_at")
+  approved             Boolean   @default(false)
+  approvedBy           Int?      @map("approved_by")
+  approvedAt           DateTime? @map("approved_at")
+  rejectedAt           DateTime? @map("rejected_at")
+  rejectionReason      String?   @db.Text @map("rejection_reason")
+  credentialsCreated   Boolean   @default(false) @map("credentials_created")
+  corporateId          Int?      @map("corporate_id")
+  corporateUserId      Int?      @map("corporate_user_id")
+  submittedAt          DateTime  @default(now()) @map("submitted_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  @@map("corporate_registrations")
 }
 
 model Corporate {
@@ -213,6 +248,16 @@ model Case {
   bitrixSyncAttempts  Int       @default(0) @map("bitrix_sync_attempts")
   bitrixLastError     String?   @db.Text @map("bitrix_last_error")
   bitrixSyncFailedAt  DateTime? @map("bitrix_sync_failed_at")
+  // Billing — step 1 of a real billing system: a plain record Ops/Finance fills in by
+  // hand per case. There's no payment gateway yet, so "paid" just means Finance marked
+  // it so after actually getting paid outside the app (bank transfer against the
+  // invoice) — see corporate-registration's bank details for where that money lands.
+  billingAmount       Decimal?  @db.Decimal(10, 2) @map("billing_amount")
+  billingCurrency     String?   @map("billing_currency") // ISO 4217, e.g. "INR", "AED", "USD"
+  billingStatus       String    @default("pending") @map("billing_status") // "pending" | "invoiced" | "paid" | "overdue"
+  billingInvoicedAt   DateTime? @map("billing_invoiced_at")
+  billingPaidAt       DateTime? @map("billing_paid_at")
+  billingNotes        String?   @db.Text @map("billing_notes")
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime  @updatedAt @map("updated_at")
   stageEvents         CaseStageEvent[]

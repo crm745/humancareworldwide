@@ -2,6 +2,7 @@ const { prisma } = require('../../db/prisma');
 const { hashPassword, comparePassword, signAccessToken, signRefreshToken } = require('../auth/auth.service');
 const { VALID_CASE_STATUSES } = require('../cases/cases.service');
 const { ticketIdFor, ticketDbIdFrom, TICKET_STATUS_LABEL } = require('../corporate-portal/corporate-portal.service');
+const { getRegistrationOr404, toAdminRegistration } = require('../corporate-registration/corporate-registration.service');
 
 async function loginAdmin(email, password) {
   const admin = await prisma.adminUser.findUnique({ where: { email } });
@@ -9,10 +10,98 @@ async function loginAdmin(email, password) {
   const matches = await comparePassword(password, admin.passwordHash);
   if (!matches) return null;
 
-  const token = signAccessToken({ sub: admin.id, role: 'admin' });
-  const refreshToken = signRefreshToken({ sub: admin.id, role: 'admin' });
+  // role stays the generic 'admin' tier for requireAuth(['admin']) — adminRole carries
+  // the actual admin/superadmin distinction, checked separately by requireSuperAdmin.
+  const token = signAccessToken({ sub: admin.id, role: 'admin', adminRole: admin.role });
+  const refreshToken = signRefreshToken({ sub: admin.id, role: 'admin', adminRole: admin.role });
   const { passwordHash: _omit, ...safeAdmin } = admin;
   return { token, refreshToken, admin: safeAdmin };
+}
+
+const VALID_ADMIN_ROLES = ['admin', 'superadmin'];
+
+async function listAdmins() {
+  return prisma.adminUser.findMany({
+    select: { id: true, name: true, email: true, role: true, createdAt: true },
+    orderBy: { createdAt: 'asc' },
+  });
+}
+
+async function createAdmin({ name, email, password, role }) {
+  if (role && !VALID_ADMIN_ROLES.includes(role)) {
+    const err = new Error(`role must be one of: ${VALID_ADMIN_ROLES.join(', ')}`);
+    err.statusCode = 400;
+    throw err;
+  }
+  const existing = await prisma.adminUser.findUnique({ where: { email } });
+  if (existing) {
+    const err = new Error('An admin with that email already exists.');
+    err.statusCode = 409;
+    throw err;
+  }
+  const passwordHash = await hashPassword(password);
+  const admin = await prisma.adminUser.create({
+    data: { name, email, passwordHash, role: role || 'admin' },
+  });
+  const { passwordHash: _omit, ...safeAdmin } = admin;
+  return safeAdmin;
+}
+
+// A superadmin can't demote/delete themselves — otherwise the last person able to
+// manage admin accounts could accidentally lock themselves (and everyone else) out.
+async function deleteAdmin(adminId, requestingAdminId) {
+  if (Number(adminId) === Number(requestingAdminId)) {
+    const err = new Error('You cannot remove your own admin account.');
+    err.statusCode = 400;
+    throw err;
+  }
+  const admin = await prisma.adminUser.findUnique({ where: { id: Number(adminId) } });
+  if (!admin) {
+    const err = new Error('Admin not found');
+    err.statusCode = 404;
+    throw err;
+  }
+  await prisma.adminUser.delete({ where: { id: admin.id } });
+}
+
+// ---------- corporate registration approvals ----------
+// New corporate partners are onboarded through corporate-portal's /register wizard,
+// then reviewed here before they can set a password and actually log in. This
+// "approved" flag is what represents HumanCare's own compliance/bank-verification
+// review (up to 48 hours) — distinct from the registrant's own email verification.
+async function listPendingRegistrations() {
+  const regs = await prisma.corporateRegistration.findMany({
+    where: { credentialsCreated: false, rejectedAt: null },
+    orderBy: { submittedAt: 'asc' },
+  });
+  return regs.map(toAdminRegistration);
+}
+
+async function getRegistrationForAdmin(id) {
+  return toAdminRegistration(await getRegistrationOr404(id));
+}
+
+async function approveRegistration(id, adminId) {
+  const reg = await getRegistrationOr404(id);
+  if (reg.rejectedAt) {
+    const err = new Error('This registration was already rejected.');
+    err.statusCode = 409;
+    throw err;
+  }
+  const updated = await prisma.corporateRegistration.update({
+    where: { id: reg.id },
+    data: { approved: true, approvedBy: Number(adminId), approvedAt: new Date() },
+  });
+  return toAdminRegistration(updated);
+}
+
+async function rejectRegistration(id, reason) {
+  const reg = await getRegistrationOr404(id);
+  const updated = await prisma.corporateRegistration.update({
+    where: { id: reg.id },
+    data: { approved: false, rejectedAt: new Date(), rejectionReason: reason || null },
+  });
+  return toAdminRegistration(updated);
 }
 
 // Corporate logins don't have a password-value history (never store old passwords —
@@ -104,6 +193,79 @@ async function reassignCase(caseId, corporateId) {
     data: { caseId: caseRecord.id, stage: caseRecord.status, note: `Reassigned to ${corporate.companyName} by admin.` },
   });
   return updated;
+}
+
+// ---------- billing (step 1: a plain record Ops/Finance fills in by hand — no
+// payment gateway yet, see the schema comment on Case) ----------
+const VALID_BILLING_STATUSES = ['pending', 'invoiced', 'paid', 'overdue'];
+
+function toBillingCase(c) {
+  return {
+    id: c.id,
+    referenceNumber: c.referenceNumber,
+    patientName: c.patientName,
+    serviceType: c.serviceType,
+    status: c.status,
+    corporate: c.corporate ? { id: c.corporate.id, companyName: c.corporate.companyName } : null,
+    createdAt: c.createdAt,
+    billingAmount: c.billingAmount == null ? null : Number(c.billingAmount),
+    billingCurrency: c.billingCurrency,
+    billingStatus: c.billingStatus,
+    billingInvoicedAt: c.billingInvoicedAt,
+    billingPaidAt: c.billingPaidAt,
+    billingNotes: c.billingNotes,
+  };
+}
+
+async function listBillableCases({ status } = {}) {
+  const where = {};
+  if (status && status !== 'all') {
+    if (!VALID_BILLING_STATUSES.includes(status)) {
+      const err = new Error(`Invalid status filter. Use one of: ${VALID_BILLING_STATUSES.join(', ')}`);
+      err.statusCode = 400;
+      throw err;
+    }
+    where.billingStatus = status;
+  }
+  const cases = await prisma.case.findMany({
+    where,
+    include: { corporate: { select: { id: true, companyName: true } } },
+    orderBy: { createdAt: 'desc' },
+  });
+  return cases.map(toBillingCase);
+}
+
+async function updateCaseBilling(caseId, { amount, currency, status, notes }) {
+  if (status && !VALID_BILLING_STATUSES.includes(status)) {
+    const err = new Error(`billingStatus must be one of: ${VALID_BILLING_STATUSES.join(', ')}`);
+    err.statusCode = 400;
+    throw err;
+  }
+  const caseRecord = await prisma.case.findUnique({ where: { id: Number(caseId) } });
+  if (!caseRecord) {
+    const err = new Error('Case not found');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const data = {};
+  if (amount !== undefined) data.billingAmount = amount === null || amount === '' ? null : amount;
+  if (currency !== undefined) data.billingCurrency = currency || null;
+  if (notes !== undefined) data.billingNotes = notes || null;
+  if (status) {
+    data.billingStatus = status;
+    // Stamp the transition date the first time a case enters that status — an admin
+    // correcting a status back and forth later doesn't keep overwriting it.
+    if (status === 'invoiced' && !caseRecord.billingInvoicedAt) data.billingInvoicedAt = new Date();
+    if (status === 'paid' && !caseRecord.billingPaidAt) data.billingPaidAt = new Date();
+  }
+
+  const updated = await prisma.case.update({
+    where: { id: caseRecord.id },
+    data,
+    include: { corporate: { select: { id: true, companyName: true } } },
+  });
+  return toBillingCase(updated);
 }
 
 // No login-activity tracking exists for patients (OTP auth doesn't stamp a "last seen").
@@ -227,11 +389,20 @@ async function updateTicketStatus(ticketId, status) {
 
 module.exports = {
   loginAdmin,
+  listAdmins,
+  createAdmin,
+  deleteAdmin,
+  listPendingRegistrations,
+  getRegistrationForAdmin,
+  approveRegistration,
+  rejectRegistration,
   listCorporates,
   createCorporate,
   createCorporateUser,
   listAllCases,
   reassignCase,
+  listBillableCases,
+  updateCaseBilling,
   searchPatients,
   VALID_TICKET_STATUSES,
   listAllTickets,

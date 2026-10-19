@@ -34,9 +34,19 @@ function requireAuth(allowedRoles) {
       return res.status(403).json({ error: 'Not authorized for this action' });
     }
 
-    req.user = { id: payload.sub, role: payload.role, corporateId: payload.corporateId ?? null };
+    req.user = { id: payload.sub, role: payload.role, corporateId: payload.corporateId ?? null, adminRole: payload.adminRole ?? null };
     next();
   };
 }
 
-module.exports = { requireAuth };
+// Chain after requireAuth(['admin']): admin-account management and sensitive settings
+// (the services catalog today) are superadmin-only — a regular admin's day-to-day
+// access (cases, patients, corporates, tickets) is untouched by this.
+function requireSuperAdmin(req, res, next) {
+  if (req.user?.adminRole !== 'superadmin') {
+    return res.status(403).json({ error: 'Superadmin access required' });
+  }
+  next();
+}
+
+module.exports = { requireAuth, requireSuperAdmin };

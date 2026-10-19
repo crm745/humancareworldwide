@@ -8,6 +8,7 @@ const { servicesRouter } = require('./modules/services/services.routes');
 const { adminRouter } = require('./modules/admin/admin.routes');
 const { documentsRouter } = require('./modules/documents/documents.routes');
 const { corporatePortalRouter } = require('./modules/corporate-portal/corporate-portal.routes');
+const { corporateRegistrationRouter } = require('./modules/corporate-registration/corporate-registration.routes');
 
 const app = express();
 // `origin: true` reflects the caller's own Origin back (same effective permissiveness
@@ -26,6 +27,7 @@ app.use('/services', servicesRouter);
 app.use('/requests', requestsRouter);
 app.use('/corporate/cases', casesRouter);
 app.use('/corporate', corporatePortalRouter);
+app.use('/corporates', corporateRegistrationRouter);
 app.use('/notifications', notificationsRouter);
 app.use('/admin', adminRouter);
 app.use('/documents', documentsRouter);

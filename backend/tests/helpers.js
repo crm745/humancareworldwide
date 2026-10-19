@@ -42,10 +42,10 @@ async function createCorporateUserAndLogin({ companyName = 'Test Corporate Co', 
   return { token: res.body.token, corporateUser: res.body.corporateUser, corporate, email };
 }
 
-async function createAdminAndLogin({ password = 'TestAdminPass@123' } = {}) {
+async function createAdminAndLogin({ password = 'TestAdminPass@123', role = 'admin' } = {}) {
   const email = uniqueEmail('admin');
   const passwordHash = await bcrypt.hash(password, 10);
-  await prisma.adminUser.create({ data: { name: 'Test Admin', email, passwordHash } });
+  await prisma.adminUser.create({ data: { name: 'Test Admin', email, passwordHash, role } });
   const res = await request(app).post('/admin/login').send({ email, password });
   return { token: res.body.token, email };
 }

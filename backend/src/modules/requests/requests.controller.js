@@ -8,6 +8,7 @@ const { addDocumentToCase } = require('../documents/documents.service');
 const { streamRequestSummaryPdf } = require('./request-summary.pdf');
 
 const REQUIRED_FIELDS = ['serviceType', 'patientName', 'origin', 'destination'];
+
 //the function for submit request
 async function submitRequest(req, res, next) {
   try {
@@ -21,7 +22,8 @@ async function submitRequest(req, res, next) {
     next(err);
   }
 }
-//the function for listing my request..aana
+// the function for listing my request
+// tell me what features and functionalities are there in the admin portal and super admin..and are they in the same webapp or what..explain me how to access them differently
 async function listMyRequests(req, res, next) {
   try {
     const requests = await listRequestsForUser(req.user.id, { status: req.query.status });
@@ -36,7 +38,6 @@ async function listMyRequests(req, res, next) {
 // in_progress — 
 // completed — 
 // cancelled — 
-
 async function getMyRequestById(req, res, next) {
   try {
     const request = await getRequestForUser(req.user.id, req.params.id);
@@ -45,7 +46,7 @@ async function getMyRequestById(req, res, next) {
     next(err);
   }
 }
-//the function for listing documents it is an middleware returning document in json
+//
 async function listMyDocuments(req, res, next) {
   try {
     const documents = await listDocumentsForUser(req.user.id);
