@@ -103,6 +103,12 @@
   .pill.resolved::before{ background:var(--green); }
   .pill.closed{ background:color-mix(in srgb, var(--faint) 20%, transparent); color:var(--muted); }
   .pill.closed::before{ background:var(--faint); }
+  .pill.pending_verification{ background:color-mix(in srgb, var(--warn) 16%, transparent); color:var(--warn); }
+  .pill.pending_verification::before{ background:var(--warn); }
+  .pill.verified{ background:color-mix(in srgb, var(--blue) 15%, transparent); color:var(--blue); }
+  .pill.verified::before{ background:var(--blue); }
+  .pill.rejected{ background:color-mix(in srgb, var(--red) 14%, transparent); color:var(--red); }
+  .pill.rejected::before{ background:var(--red); }
 
   .ticket-msg{ padding:10px 12px; border-radius:10px; margin-bottom:10px; max-width:78%; }
   .ticket-msg.corporate{ background:var(--surface-2); margin-right:auto; }
@@ -147,10 +153,13 @@
     <div class="mark"><div class="mark-dot"></div><div class="mark-text">HumanCare Admin</div></div>
     <div class="nav-item active" data-page="dashboard" onclick="nav('dashboard')">Dashboard</div>
     <div class="nav-item" data-page="corporates" onclick="nav('corporates')">Corporates</div>
+    <div class="nav-item" data-page="registrations" data-superadmin-only onclick="nav('registrations')" style="display:none;">Partner Applications</div>
     <div class="nav-item" data-page="cases" onclick="nav('cases')">Cases</div>
+    <div class="nav-item" data-page="billing" onclick="nav('billing')">Billing</div>
     <div class="nav-item" data-page="services" onclick="nav('services')">Services</div>
     <div class="nav-item" data-page="patients" onclick="nav('patients')">Patients</div>
     <div class="nav-item" data-page="tickets" onclick="nav('tickets')">Support Tickets</div>
+    <div class="nav-item" data-page="admins" data-superadmin-only onclick="nav('admins')" style="display:none;">Admins</div>
     <div class="sidebar-footer">
       <button class="btn btn-secondary btn-block" onclick="logout()">Log Out</button>
     </div>
@@ -196,6 +205,27 @@
       <div id="corporates-list"></div>
     </div>
 
+    <!-- PARTNER APPLICATIONS (superadmin only — route itself is 403'd server-side for a regular admin) -->
+    <div class="page" id="page-registrations">
+      <div class="page-head"><div><h1>Partner Applications</h1><div class="page-dek">New corporates who registered themselves via the corporate-portal's sign-up form, awaiting review.</div></div></div>
+
+      <div id="registrations-list-view">
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Corporate ID</th><th>Company</th><th>Email</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
+              <tbody id="registrations-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="registration-detail-view" style="display:none;">
+        <button class="btn btn-secondary btn-sm" style="margin-bottom:14px;" onclick="closeRegistrationDetail()">&larr; Back to applications</button>
+        <div class="card" id="registration-detail-card"></div>
+      </div>
+    </div>
+
     <!-- CASES -->
     <div class="page" id="page-cases">
       <div class="page-head">
@@ -231,11 +261,33 @@
       </div>
     </div>
 
+    <!-- BILLING (step 1 — a plain manual tracker, no payment gateway yet) -->
+    <div class="page" id="page-billing">
+      <div class="page-head">
+        <div><h1>Billing</h1><div class="page-dek">Mark amounts and payment status per case by hand. There's no payment gateway yet — "Paid" just means Finance confirmed it was received outside the app.</div></div>
+        <select class="status-filter" id="billing-status-filter" onchange="loadBilling()">
+          <option value="all">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="invoiced">Invoiced</option>
+          <option value="paid">Paid</option>
+          <option value="overdue">Overdue</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reference</th><th>Patient</th><th>Corporate</th><th>Amount</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="billing-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- SERVICES -->
     <div class="page" id="page-services">
       <div class="page-head"><div><h1>Services</h1><div class="page-dek">Edit what patients see on the Select Service screen.</div></div></div>
 
-      <div class="card">
+      <div class="card" data-superadmin-only style="display:none;">
         <div class="card-title">Add a New Service</div>
         <div class="field"><label>Slug (used internally, e.g. <span class="mono">home_healthcare</span>)</label><input id="ns-slug"></div>
         <div class="row-flex" style="margin-top:10px;">
@@ -246,6 +298,7 @@
         <div class="field" style="margin-top:10px;"><label>"We Provide" bullets (comma-separated)</label><input id="ns-provides"></div>
         <button class="btn btn-primary" style="margin-top:12px;" onclick="createService()">Add Service</button>
       </div>
+      <div class="faint" data-admin-only style="display:none;margin:-4px 0 14px;">Only superadmins can edit the services catalog — you can view it below.</div>
 
       <div id="services-list"></div>
     </div>
@@ -297,6 +350,38 @@
       <div id="ticket-detail-view" style="display:none;">
         <button class="btn btn-secondary btn-sm" style="margin-bottom:14px;" onclick="closeTicketDetail()">&larr; Back to tickets</button>
         <div class="card" id="ticket-detail-card"></div>
+      </div>
+    </div>
+
+    <!-- ADMINS (superadmin only — route itself is 403'd server-side for a regular admin) -->
+    <div class="page" id="page-admins">
+      <div class="page-head"><div><h1>Admins</h1><div class="page-dek">Manage who has access to this admin portal.</div></div></div>
+
+      <div class="card">
+        <div class="card-title">Add a New Admin</div>
+        <div class="row-flex">
+          <div class="field"><label>Name</label><input id="na-name" placeholder="e.g. Shashank Uchil"></div>
+          <div class="field"><label>Email</label><input id="na-email" type="email" placeholder="name@humancareworldwide.com"></div>
+        </div>
+        <div class="row-flex" style="margin-top:10px;">
+          <div class="field"><label>Password</label><input id="na-password" type="password" placeholder="At least 8 characters"></div>
+          <div class="field"><label>Role</label>
+            <select id="na-role">
+              <option value="admin">Admin — day-to-day ops</option>
+              <option value="superadmin">Superadmin — full access</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="createAdminAccount()">Add Admin</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Added</th><th></th></tr></thead>
+            <tbody id="admins-table-body"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -400,9 +485,18 @@
     document.getElementById('login-screen').style.display = 'flex';
   }
 
-  function showApp() {
+  let currentAdmin = null;
+
+  async function showApp() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-shell').style.display = 'flex';
+    try {
+      const { admin } = await api('/admin/me');
+      currentAdmin = admin;
+      const isSuperAdmin = admin.adminRole === 'superadmin';
+      document.querySelectorAll('[data-superadmin-only]').forEach((el) => { el.style.display = isSuperAdmin ? '' : 'none'; });
+      document.querySelectorAll('[data-admin-only]').forEach((el) => { el.style.display = isSuperAdmin ? 'none' : ''; });
+    } catch (err) { /* /admin/me failing here just means the nav item stays hidden */ }
     nav('dashboard');
   }
 
@@ -414,10 +508,13 @@
     document.querySelector('.nav-item[data-page="' + page + '"]').classList.add('active');
     if (page === 'dashboard') loadDashboard();
     if (page === 'corporates') loadCorporates();
+    if (page === 'registrations') loadRegistrations();
     if (page === 'cases') loadCases();
+    if (page === 'billing') loadBilling();
     if (page === 'services') loadServices();
     if (page === 'patients') loadPatients();
     if (page === 'tickets') loadTickets();
+    if (page === 'admins') loadAdmins();
   }
 
   function statusPill(status) {
@@ -481,7 +578,7 @@
       )).join('') || '<div class="empty-state">No corporates yet — add one above.</div>';
     } catch (err) { toast(err.message, true); }
   }
-
+//
   async function createCorporate() {
     const companyName = document.getElementById('nv-name').value.trim();
     const type = document.getElementById('nv-type').value;
@@ -502,6 +599,107 @@
       await api('/admin/corporates/' + corporateId + '/users', { method: 'POST', body: { email, password } });
       toast('Login created.');
       loadCorporates();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // ---- partner applications (superadmin only) ----
+  function registrationStatusPill(status) {
+    const cls = status.toLowerCase().replace(/\s+/g, '_');
+    return '<span class="pill ' + cls + '">' + esc(status) + '</span>';
+  }
+
+  async function loadRegistrations() {
+    try {
+      const { registrations } = await api('/admin/corporate-registrations');
+      const tbody = document.getElementById('registrations-table-body');
+      tbody.innerHTML = registrations.map((r) => (
+        '<tr><td class="mono">' + esc(r.corporateId) + '</td><td>' + esc(r.company.companyName) + '</td><td>' + esc(r.email) + '</td>' +
+        '<td class="faint">' + new Date(r.submittedAt).toLocaleDateString() + '</td><td>' + registrationStatusPill(r.status) + '</td>' +
+        '<td><button class="btn btn-secondary btn-sm" onclick="viewRegistration(' + r.id + ')">Review</button></td></tr>'
+      )).join('') || '<tr><td class="empty-state" colspan="6">No pending applications.</td></tr>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function viewRegistration(id) {
+    try {
+      const { registration } = await api('/admin/corporate-registrations/' + id);
+      document.getElementById('registrations-list-view').style.display = 'none';
+      document.getElementById('registration-detail-view').style.display = 'block';
+      renderRegistrationDetail(registration);
+    } catch (err) { toast(err.message, true); }
+  }
+
+  function closeRegistrationDetail() {
+    document.getElementById('registration-detail-view').style.display = 'none';
+    document.getElementById('registrations-list-view').style.display = 'block';
+    loadRegistrations();
+  }
+
+  function renderRegistrationDetail(r) {
+    const c = r.company, b = r.bank;
+    const bankRows = b.bankType === 'Domestic'
+      ? [['IFSC', b.ifsc], ['Branch', b.branchName], ['Branch Address', b.branchAddress]]
+      : [['SWIFT', b.swift], ['IBAN', b.iban || '—'], ['Bank Country', b.bankCountry], ['Bank Address', b.bankAddress], ['Currency', b.currency]];
+
+    const docsHtml = r.documents.length
+      ? r.documents.map((d) => (
+          '<a class="btn btn-secondary btn-sm" style="margin:0 8px 8px 0;" target="_blank" href="' + API_BASE + '/admin/corporate-registrations/' + r.id + '/documents/' + d.key + '">' + esc(d.label) + ' (' + esc(d.fileName) + ')</a>'
+        )).join('')
+      : '<span class="faint">No documents uploaded.</span>';
+
+    const actions = r.credentialsCreated
+      ? '<span class="faint">Account already active — nothing left to review.</span>'
+      : r.rejectedAt
+      ? '<span class="faint">Rejected' + (r.rejectionReason ? ': ' + esc(r.rejectionReason) : '') + '</span>'
+      : r.approved
+      ? '<span class="faint">Approved — waiting on the applicant to verify their email and set a password.</span>'
+      : (
+          '<button class="btn btn-primary" onclick="approveRegistrationAction(' + r.id + ')">Approve</button> ' +
+          '<button class="btn btn-danger" onclick="rejectRegistrationAction(' + r.id + ')" style="margin-left:8px;">Reject</button>'
+        );
+
+    document.getElementById('registration-detail-card').innerHTML =
+      '<div class="page-head"><div><div class="card-title" style="margin-bottom:2px;">' + esc(c.companyName) + '</div>' +
+        '<div class="faint">' + esc(r.corporateId) + ' · submitted ' + new Date(r.submittedAt).toLocaleString() + '</div></div>' +
+        registrationStatusPill(r.status) +
+      '</div>' +
+      '<div class="row-flex" style="align-items:flex-start;gap:24px;">' +
+        '<div style="flex:1;min-width:220px;">' +
+          '<div class="card-title" style="font-size:13px;">Company</div>' +
+          '<div class="faint">Type: ' + esc(c.companyType) + '</div>' +
+          '<div class="faint">Location: ' + esc(c.city) + ', ' + esc(c.country) + '</div>' +
+          '<div class="faint">Billing email: ' + esc(c.officialEmail) + ' · ' + esc(c.officialPhone) + '</div>' +
+          '<div class="faint">Contact: ' + esc(c.contactName) + ' (' + esc(c.contactDesignation) + ') · ' + esc(c.contactEmail) + ' · ' + esc(c.contactPhone) + '</div>' +
+          (c.website ? '<div class="faint">Website: ' + esc(c.website) + '</div>' : '') +
+          (c.registrationNumber ? '<div class="faint">Registration No: ' + esc(c.registrationNumber) + '</div>' : '') +
+        '</div>' +
+        '<div style="flex:1;min-width:220px;">' +
+          '<div class="card-title" style="font-size:13px;">Bank (unmasked — verify before approving)</div>' +
+          '<div class="faint">' + esc(b.bankName) + ' · ' + esc(b.accountHolder) + '</div>' +
+          '<div class="faint mono">Account: ' + esc(b.accountNumber) + '</div>' +
+          bankRows.map(([label, val]) => '<div class="faint">' + label + ': ' + esc(val) + '</div>').join('') +
+        '</div>' +
+      '</div>' +
+      '<div style="margin-top:18px;"><div class="card-title" style="font-size:13px;">Documents</div>' + docsHtml + '</div>' +
+      '<div style="margin-top:18px;border-top:1px solid var(--border);padding-top:16px;">' + actions + '</div>';
+  }
+
+  async function approveRegistrationAction(id) {
+    if (!confirm('Approve this application? The applicant will be able to verify their email and set a password.')) return;
+    try {
+      const { registration } = await api('/admin/corporate-registrations/' + id + '/approve', { method: 'POST' });
+      toast('Application approved.');
+      renderRegistrationDetail(registration);
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function rejectRegistrationAction(id) {
+    const reason = prompt('Reason for rejecting this application (optional, shown internally only):');
+    if (reason === null) return;
+    try {
+      const { registration } = await api('/admin/corporate-registrations/' + id + '/reject', { method: 'POST', body: { reason } });
+      toast('Application rejected.');
+      renderRegistrationDetail(registration);
     } catch (err) { toast(err.message, true); }
   }
 
@@ -567,24 +765,73 @@
     } catch (err) { toast(err.message, true); }
   }
 
+  // ---- billing (step 1 — manual tracker, no payment gateway) ----
+  const BILLING_CURRENCIES = ['INR', 'USD', 'AED', 'GBP', 'OMR', 'BDT'];
+
+  async function loadBilling() {
+    try {
+      const status = document.getElementById('billing-status-filter').value;
+      const { cases } = await api('/admin/billing' + (status !== 'all' ? '?status=' + status : ''));
+      renderBilling(cases);
+    } catch (err) { toast(err.message, true); }
+  }
+
+  function renderBilling(cases) {
+    const tbody = document.getElementById('billing-table-body');
+    tbody.innerHTML = cases.map((c) => {
+      const currencyOptions = BILLING_CURRENCIES.map((cur) => (
+        '<option value="' + cur + '"' + (c.billingCurrency === cur ? ' selected' : '') + '>' + cur + '</option>'
+      )).join('');
+      const statusOptions = ['pending', 'invoiced', 'paid', 'overdue'].map((s) => (
+        '<option value="' + s + '"' + (c.billingStatus === s ? ' selected' : '') + '>' + s.charAt(0).toUpperCase() + s.slice(1) + '</option>'
+      )).join('');
+      return (
+        '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td>' + esc(c.patientName) + '</td>' +
+        '<td>' + esc(c.corporate ? c.corporate.companyName : 'Direct patient') + '</td>' +
+        '<td><div style="display:flex;gap:4px;"><select id="bill-currency-' + c.id + '" style="width:76px;">' + currencyOptions + '</select>' +
+          '<input id="bill-amount-' + c.id + '" type="number" step="0.01" min="0" value="' + (c.billingAmount ?? '') + '" style="width:100px;" placeholder="0.00"></div></td>' +
+        '<td><select id="bill-status-' + c.id + '">' + statusOptions + '</select></td>' +
+        '<td><input id="bill-notes-' + c.id + '" value="' + esc(c.billingNotes || '') + '" placeholder="Optional note" style="width:140px;"></td>' +
+        '<td><button class="btn btn-primary btn-sm" onclick="saveBilling(' + c.id + ')">Save</button></td></tr>'
+      );
+    }).join('') || '<tr><td class="empty-state" colspan="7">No cases yet.</td></tr>';
+  }
+
+  async function saveBilling(caseId) {
+    const amountRaw = document.getElementById('bill-amount-' + caseId).value;
+    const currency = document.getElementById('bill-currency-' + caseId).value;
+    const status = document.getElementById('bill-status-' + caseId).value;
+    const notes = document.getElementById('bill-notes-' + caseId).value;
+    try {
+      await api('/admin/cases/' + caseId + '/billing', {
+        method: 'PATCH',
+        body: { amount: amountRaw === '' ? null : Number(amountRaw), currency, status, notes },
+      });
+      toast('Billing updated.');
+    } catch (err) { toast(err.message, true); }
+  }
+
   // ---- services ----
   async function loadServices() {
     try {
       const { services } = await api('/admin/services');
+      const canEdit = currentAdmin && currentAdmin.adminRole === 'superadmin';
+      const ro = canEdit ? '' : 'disabled';
       const el = document.getElementById('services-list');
       el.innerHTML = services.map((s) => (
         '<div class="card">' +
           '<div class="faint" style="margin-bottom:10px;">Created ' + new Date(s.createdAt).toLocaleDateString() + '</div>' +
           '<div class="row-flex">' +
-            '<div class="field"><label>Name</label><input id="s-name-' + s.id + '" value="' + esc(s.name) + '"></div>' +
-            '<div class="field"><label>Subtitle</label><input id="s-subtitle-' + s.id + '" value="' + esc(s.subtitle || '') + '"></div>' +
+            '<div class="field"><label>Name</label><input ' + ro + ' id="s-name-' + s.id + '" value="' + esc(s.name) + '"></div>' +
+            '<div class="field"><label>Subtitle</label><input ' + ro + ' id="s-subtitle-' + s.id + '" value="' + esc(s.subtitle || '') + '"></div>' +
           '</div>' +
-          '<div class="field" style="margin-top:10px;"><label>Description</label><textarea id="s-desc-' + s.id + '">' + esc(s.description || '') + '</textarea></div>' +
-          '<div class="field" style="margin-top:10px;"><label>"We Provide" bullets (comma-separated)</label><input id="s-provides-' + s.id + '" value="' + esc((s.provides || []).join(', ')) + '"></div>' +
+          '<div class="field" style="margin-top:10px;"><label>Description</label><textarea ' + ro + ' id="s-desc-' + s.id + '">' + esc(s.description || '') + '</textarea></div>' +
+          '<div class="field" style="margin-top:10px;"><label>"We Provide" bullets (comma-separated)</label><input ' + ro + ' id="s-provides-' + s.id + '" value="' + esc((s.provides || []).join(', ')) + '"></div>' +
+          (canEdit ?
           '<div style="display:flex;gap:8px;margin-top:12px;">' +
             '<button class="btn btn-primary btn-sm" onclick="saveService(\'' + s.slug + '\',' + s.id + ')">Save</button>' +
             '<button class="btn btn-danger btn-sm" onclick="removeService(\'' + s.slug + '\')">Delete</button>' +
-          '</div>' +
+          '</div>' : '') +
         '</div>'
       )).join('') || '<div class="empty-state">No services yet — add one above.</div>';
     } catch (err) { toast(err.message, true); }
@@ -623,6 +870,48 @@
       await api('/admin/services/' + slug, { method: 'DELETE' });
       toast('Service deleted.');
       loadServices();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // ---- admins (superadmin only) ----
+  async function loadAdmins() {
+    try {
+      const { admins } = await api('/admin/admins');
+      const tbody = document.getElementById('admins-table-body');
+      tbody.innerHTML = admins.map((a) => (
+        '<tr><td>' + esc(a.name) + '</td><td>' + esc(a.email) + '</td>' +
+          '<td><span class="pill ' + (a.role === 'superadmin' ? 'active' : 'submitted') + '">' + esc(a.role) + '</span></td>' +
+          '<td class="faint">' + new Date(a.createdAt).toLocaleDateString() + '</td>' +
+          '<td>' + (currentAdmin && a.id === currentAdmin.id
+            ? '<span class="faint">You</span>'
+            : '<button class="btn btn-danger btn-sm" onclick="removeAdmin(' + a.id + ')">Remove</button>') + '</td>' +
+        '</tr>'
+      )).join('') || '<tr><td class="empty-state" colspan="5">No admins yet.</td></tr>';
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function createAdminAccount() {
+    const name = document.getElementById('na-name').value.trim();
+    const email = document.getElementById('na-email').value.trim();
+    const password = document.getElementById('na-password').value;
+    const role = document.getElementById('na-role').value;
+    if (!name || !email || !password) return toast('Name, email and password are required.', true);
+    if (password.length < 8) return toast('Password must be at least 8 characters.', true);
+    try {
+      await api('/admin/admins', { method: 'POST', body: { name, email, password, role } });
+      ['na-name', 'na-email', 'na-password'].forEach((id) => document.getElementById(id).value = '');
+      document.getElementById('na-role').value = 'admin';
+      toast('Admin added.');
+      loadAdmins();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  async function removeAdmin(id) {
+    if (!confirm('Remove this admin account? They will lose access immediately.')) return;
+    try {
+      await api('/admin/admins/' + id, { method: 'DELETE' });
+      toast('Admin removed.');
+      loadAdmins();
     } catch (err) { toast(err.message, true); }
   }
 
