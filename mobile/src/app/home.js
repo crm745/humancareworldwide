@@ -73,10 +73,10 @@ export default function Home() {
           <Text className="mt-[3px] text-[14px] text-muted">{t('greetingSub')}</Text>
         </View>
 
-        <Pressable onPress={() => router.push('/select-service')} className="mb-5 overflow-hidden rounded-[18px] active:opacity-90">
+        <Pressable onPress={() => router.push(isCorporate ? '/corporate-new-case' : '/select-service')} className="mb-5 overflow-hidden rounded-[18px] active:opacity-90">
           <LinearGradient colors={['#1A73E8', '#3E8EF7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
             <View className="flex-1">
-              <Text className="font-inter-black text-[16.5px] text-white">{t('createReq')}</Text>
+              <Text className="font-inter-black text-[16.5px] text-white">{isCorporate ? t('btn_initiate_new_case') : t('createReq')}</Text>
               <Text className="mt-[7px] text-[13.5px] text-white opacity-90">{t('createReqSub')}</Text>
             </View>
             <View className="h-9 w-9 items-center justify-center rounded-full bg-white/25"><Plus size={17} color="#fff" strokeWidth={2.4} /></View>

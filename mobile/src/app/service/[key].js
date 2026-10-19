@@ -10,7 +10,7 @@ import { Body, Screen, TopBar } from '../../components/layout';
 import { Button, Card, Heading, SectionLabel, Text } from '../../components/ui';
 
 export default function ServiceDetail() {
-  const { t, toast, resetDraft } = useApp();
+  const { t, toast, resetDraft, isCorporate } = useApp();
   const { key } = useLocalSearchParams();
   const local = SERVICES[key] || SERVICES.air;
   // stats + img aren't in the backend yet, so those stay bundled locally; everything
@@ -28,7 +28,10 @@ export default function ServiceDetail() {
   const desc = live?.description || local.desc;
   const features = live?.provides?.length ? live.provides : local.features;
 
+  // Corporates submit through their own Case form (/corporate/cases), never the
+  // patient-only /requests flow — that endpoint rejects non-patient tokens outright.
   const start = () => {
+    if (isCorporate) { router.push('/corporate-new-case'); return; }
     resetDraft(key);
     router.push('/request/step1');
   };
