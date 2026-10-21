@@ -253,7 +253,7 @@
       <div class="card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Reference</th><th>Date</th><th>Patient</th><th>Service</th><th>Status</th><th>Corporate</th><th>Reassign</th></tr></thead>
+            <thead><tr><th>Reference</th><th>Date</th><th>Patient</th><th>Service</th><th>Status</th><th>Update Stage</th><th>Corporate</th><th>Reassign</th></tr></thead>
             <tbody id="cases-table-body"></tbody>
           </table>
         </div>
@@ -726,6 +726,9 @@
   // current page (results shift), so always jump back to page 1.
   function renderCasesFromFilterChange() { casesPage = 1; renderCases(); }
 
+  const CASE_STAGES = ['submitted', 'scheduled', 'in_progress', 'completed', 'cancelled'];
+  const CASE_STAGE_LABEL = { submitted: 'Submitted', scheduled: 'Scheduled', in_progress: 'In Progress', completed: 'Completed', cancelled: 'Cancelled' };
+
   function renderCases() {
     const q = (document.getElementById('case-search').value || '').trim().toLowerCase();
     const sort = document.getElementById('case-sort').value;
@@ -744,12 +747,38 @@
     casesPage = clampedPage;
 
     const tbody = document.getElementById('cases-table-body');
+    const stageOptions = (current) => CASE_STAGES.map((s) => (
+      '<option value="' + s + '"' + (s === current ? ' selected' : '') + '>' + CASE_STAGE_LABEL[s] + '</option>'
+    )).join('');
+    // Bitrix24 sync is otherwise invisible here — a failed lead push used to show up
+    // nowhere but a server console nobody watches. A small marker is enough; the full
+    // error is in the title tooltip rather than cluttering the table with a column.
+    const bitrixMark = (c) => (
+      c.bitrixLeadId ? '<span title="Synced to Bitrix24 (Lead #' + c.bitrixLeadId + ')" style="color:#16A34A;">●</span>'
+      : c.bitrixSyncAttempts > 0 ? '<span title="Bitrix24 sync failed: ' + esc(c.bitrixLastError || 'unknown error') + '" style="color:#DC2626;cursor:help;font-weight:700;">&#9888; CRM</span>'
+      : ''
+    );
     tbody.innerHTML = pageItems.map((c) => (
-      '<tr><td class="mono">' + esc(c.referenceNumber) + '</td><td class="faint">' + new Date(c.createdAt).toLocaleDateString() + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td>' +
+      '<tr><td class="mono">' + esc(c.referenceNumber) + ' ' + bitrixMark(c) + '</td><td class="faint">' + new Date(c.createdAt).toLocaleDateString() + '</td><td>' + esc(c.patientName) + '</td><td>' + esc(c.serviceType) + '</td><td>' + statusPill(c.status) + '</td>' +
+      '<td><div style="display:flex;gap:6px;"><select id="stage-' + c.id + '">' + stageOptions(c.status) + '</select>' +
+      '<button class="btn btn-secondary btn-sm" onclick="updateStage(' + c.id + ')">Update</button></div></td>' +
       '<td>' + esc(c.corporate ? c.corporate.companyName : 'Unassigned') + '</td>' +
       '<td><div style="display:flex;gap:6px;"><select id="reassign-' + c.id + '"><option value="">Choose corporate...</option>' + options + '</select>' +
       '<button class="btn btn-secondary btn-sm" onclick="reassign(' + c.id + ')">Assign</button></div></td></tr>'
-    )).join('') || '<tr><td class="empty-state" colspan="7">No cases match this filter.</td></tr>';
+    )).join('') || '<tr><td class="empty-state" colspan="8">No cases match this filter.</td></tr>';
+  }
+
+  async function updateStage(caseId) {
+    const sel = document.getElementById('stage-' + caseId);
+    const stage = sel.value;
+    const current = casesCache.find((c) => c.id === caseId);
+    if (current && current.status === stage) return toast('Already at that stage.', true);
+    if (!confirm('Move this case to "' + CASE_STAGE_LABEL[stage] + '"? This notifies the patient.')) return;
+    try {
+      await api('/admin/cases/' + caseId + '/stage', { method: 'PATCH', body: { stage } });
+      toast('Case stage updated.');
+      loadCases();
+    } catch (err) { toast(err.message, true); }
   }
 
   async function reassign(caseId) {
