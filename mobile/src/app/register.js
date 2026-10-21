@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { useApp } from '../state/AppContext';
-import { COUNTRY_CODES } from '../data/mock';
+import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 import { BackButton, Body, Screen } from '../components/layout';
 import { Button, Consent, Field, FieldLabel, Heading, Input, Text } from '../components/ui';
 import { Select } from '../components/widgets';
@@ -18,7 +18,7 @@ export default function Register() {
   const [cc, setCc] = useState('+91');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [consents, setConsents] = useState([true, true, true]);
+  const [consents, setConsents] = useState([false, false, false]);
   // Consent 0 (terms/privacy) and 1 (medical disclaimer) are required; consent 2
   // (marketing communications) is optional, like most apps treat it — grouped last.
   const ready = isValidName(name) && isValidPhoneForCountry(phone, cc) && isValidEmail(email) && consents[0] && consents[1];
@@ -60,7 +60,7 @@ export default function Register() {
           <View>
             <FieldLabel large required>{t('field_mobile_number')}</FieldLabel>
             <View className="flex-row gap-2">
-              <Select large value={cc} options={COUNTRY_CODES} onChange={setCc} title={t('field_mobile_number')} className="w-[84px]" />
+              <Select large value={cc} options={COUNTRY_CODES} labels={COUNTRY_CODE_LABELS} onChange={setCc} title={t('field_mobile_number')} className="w-28" />
               <Input large className="flex-1" placeholder="Mobile number" keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
             </View>
             {phone && !isValidPhoneForCountry(phone, cc) ? <Text className="mt-1 text-[12px] text-danger">Enter a valid mobile number for the selected country.</Text> : null}
@@ -89,10 +89,11 @@ export default function Register() {
         </View>
         <Button large title={t('send_otp_btn')} dimmed={!ready} onPress={submit} className="mt-[26px]" />
         <Text className="my-[22px] text-center text-[14px] text-faint">{t('login_or')}</Text>
-        <View className="flex-row justify-center gap-3">
+        <View className="gap-2.5">
           {socialButtons.map(({ key, Mark, onPress, disabled }) => (
-            <Pressable key={key} onPress={onPress} disabled={disabled} className="h-12 w-[76px] items-center justify-center rounded-xl bg-soft active:opacity-70 disabled:opacity-40">
+            <Pressable key={key} onPress={onPress} disabled={disabled} className="h-12 flex-row items-center justify-center gap-2.5 rounded-xl border-[1.5px] border-field bg-white active:opacity-80 disabled:opacity-40">
               <Mark />
+              <Text className="font-inter-bold text-[14px] text-ink">{t(`continue_with_${key}`)}</Text>
             </Pressable>
           ))}
         </View>

@@ -4,7 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar, Check, FileText, Upload } from 'lucide-react-native';
 import { needsCareLevel, useApp } from '../../state/AppContext';
-import { COUNTRY_CODES } from '../../data/mock';
+import { COUNTRY_CODES, COUNTRY_CODE_LABELS, COUNTRY_NAMES } from '../../data/mock';
 import { isValidAge, isValidDateString, isValidName, isValidPhoneForCountry } from '../../lib/validators';
 import { RequestStep } from '../../components/RequestStep';
 import { CareLevelGrid, Field, FieldLabel, Input, Text } from '../../components/ui';
@@ -32,8 +32,44 @@ TODAY.setHours(0, 0, 0, 0);
 // trips the validator) with a native calendar. Android shows its own picker dialog
 // on demand; iOS has no built-in dialog chrome for the spinner, so that one is
 // wrapped in the existing Sheet component with a Done button.
+// @react-native-community/datetimepicker is native-only (no web implementation at
+// all), so on web its spinner silently renders nothing — just an empty sheet. The
+// browser already has a perfectly good native date input, so we use that there
+// instead of pulling in a whole separate calendar-widget dependency just for web.
+function WebDateField({ label, required, value, onChange, error }) {
+  return (
+    <View>
+      <FieldLabel required={required}>{label}</FieldLabel>
+      {/* eslint-disable-next-line react/no-unknown-property -- plain DOM <input>, web-only branch */}
+      <input
+        type="date"
+        required={required}
+        value={value || ''}
+        min={dateObjToString(TODAY)}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          width: '100%',
+          boxSizing: 'border-box',
+          borderRadius: 10,
+          border: '1.5px solid #E1E7F0',
+          background: '#F7F9FC',
+          padding: '12px',
+          fontSize: 15,
+          color: value ? '#17233D' : '#97A4B8',
+          fontFamily: 'inherit',
+        }}
+      />
+      {error ? <Text className="mt-1 text-[12px] text-danger">{error}</Text> : null}
+    </View>
+  );
+}
+
 function DateField({ label, required, value, onChange, error }) {
   const [open, setOpen] = useState(false);
+
+  if (Platform.OS === 'web') {
+    return <WebDateField label={label} required={required} value={value} onChange={onChange} error={error} />;
+  }
 
   const handleAndroidChange = (event, selected) => {
     setOpen(false);
@@ -96,6 +132,15 @@ function UploadBox({ file, onPick, onRemove }) {
     const result = await DocumentPicker.getDocumentAsync({ type: ALLOWED_MIME_TYPES, copyToCacheDirectory: true });
     if (result.canceled) return;
     const asset = result.assets[0];
+    // The picker's `type` filter is only a hint to the OS/browser file dialog — on
+    // web especially, picking "All Files" bypasses it entirely — so we still check
+    // the type ourselves rather than trusting the dialog to have enforced it, and
+    // catch it here instead of letting it reach the server after the request (and
+    // every other field on this form) has already been submitted.
+    if (asset.mimeType && !ALLOWED_MIME_TYPES.includes(asset.mimeType)) {
+      toast('Unsupported file type. Allowed: PDF, JPG, PNG, WEBP, DOC, DOCX.');
+      return;
+    }
     if (asset.size && asset.size > 10 * 1024 * 1024) { toast('File is too large — max 10MB.'); return; }
     onPick({ uri: asset.uri, name: asset.name, mimeType: asset.mimeType, size: asset.size });
   };
@@ -125,7 +170,7 @@ function UploadBox({ file, onPick, onRemove }) {
 export default function RequestStep1() {
   const { t, draft, updateDraft } = useApp();
   const ready = isValidName(draft.name) && draft.age.trim() !== '' && isValidAge(draft.age) && draft.gender
-    && draft.location.trim() && isValidPhoneForCountry(draft.phone, draft.cc)
+    && draft.location.trim() && draft.country && isValidPhoneForCountry(draft.phone, draft.cc)
     && draft.dest.trim() && isValidDateString(draft.date);
   // Flips true the first time Next is tapped while something required is still
   // blank — before that, an untouched required field shows no error (nobody wants
@@ -136,24 +181,29 @@ export default function RequestStep1() {
     <RequestStep step={1} ready={ready} onInvalidNext={() => setAttempted(true)}>
       <SectionHeading first>{t('step1_heading')}</SectionHeading>
       <Field
-        required label={t('field_patient_name')} value={draft.name} onChangeText={(name) => updateDraft({ name })}
+        required label={t('field_patient_name')} placeholder="Enter patient's full name" value={draft.name} onChangeText={(name) => updateDraft({ name })}
         error={(attempted || draft.name) && !isValidName(draft.name) ? 'Enter a valid name.' : undefined}
       />
       <View className="flex-row gap-2.5">
         <Field
-          required className="flex-1" label={t('field_age')} keyboardType="number-pad" value={draft.age} onChangeText={(age) => updateDraft({ age })}
+          required className="flex-1" label={t('field_age')} placeholder="Age" keyboardType="number-pad" value={draft.age} onChangeText={(age) => updateDraft({ age })}
           error={(attempted || draft.age) && (!draft.age.trim() || !isValidAge(draft.age)) ? 'Enter a valid age.' : undefined}
         />
         <View className="flex-1">
           <FieldLabel required>{t('field_gender')}</FieldLabel>
-          <Select value={draft.gender} options={['Male', 'Female', 'Other']} onChange={(gender) => updateDraft({ gender })} title={t('field_gender')} />
+          <Select value={draft.gender} options={['Male', 'Female', 'Other']} onChange={(gender) => updateDraft({ gender })} title={t('field_gender')} placeholder="Select gender" />
           {attempted && !draft.gender ? <Text className="mt-1 text-[12px] text-danger">This field is required.</Text> : null}
         </View>
       </View>
       <Field
-        required label={t('field_location')} value={draft.location} onChangeText={(location) => updateDraft({ location })}
+        required label={t('field_location')} placeholder="City, Country" value={draft.location} onChangeText={(location) => updateDraft({ location })}
         error={attempted && !draft.location.trim() ? 'This field is required.' : undefined}
       />
+      <View>
+        <FieldLabel required>{t('field_country')}</FieldLabel>
+        <Select value={draft.country} options={COUNTRY_NAMES} onChange={(country) => updateDraft({ country })} title={t('field_country')} placeholder="Select country" />
+        {attempted && !draft.country ? <Text className="mt-1 text-[12px] text-danger">This field is required.</Text> : null}
+      </View>
       <Field
         required label={t('field_destination')} placeholder="City, Country" value={draft.dest} onChangeText={(dest) => updateDraft({ dest })}
         error={attempted && !draft.dest.trim() ? 'This field is required.' : undefined}
@@ -161,11 +211,15 @@ export default function RequestStep1() {
       <View>
         <FieldLabel required>{t('field_contact_number')}</FieldLabel>
         <View className="flex-row gap-2">
-          <Select value={draft.cc} options={COUNTRY_CODES} onChange={(cc) => updateDraft({ cc })} title={t('field_contact_number')} className="w-20" />
+          <Select value={draft.cc} options={COUNTRY_CODES} labels={COUNTRY_CODE_LABELS} onChange={(cc) => updateDraft({ cc })} title={t('field_contact_number')} className="w-28" />
           <Input className="flex-1" placeholder="Enter number" keyboardType="phone-pad" value={draft.phone} onChangeText={(phone) => updateDraft({ phone })} />
         </View>
         {(attempted || draft.phone) && !isValidPhoneForCountry(draft.phone, draft.cc) ? <Text className="mt-1 text-[12px] text-danger">{draft.phone ? 'Enter a valid number for the selected country.' : 'This field is required.'}</Text> : null}
       </View>
+      <DateField
+        required label={t('field_preferred_date')} value={draft.date} onChange={(date) => updateDraft({ date })}
+        error={(attempted || draft.date) && !isValidDateString(draft.date) ? 'Enter a valid date.' : undefined}
+      />
       {needsCareLevel(draft.service) && (
         <View>
           <FieldLabel>{t('field_care_level')}</FieldLabel>
@@ -176,10 +230,6 @@ export default function RequestStep1() {
 
       <SectionHeading>{t('step2_heading')}</SectionHeading>
       <Field multiline label={t('field_requirement_desc')} placeholder="e.g. Patient needs a stable transfer to a cardiac hospital" value={draft.desc} onChangeText={(desc) => updateDraft({ desc })} />
-      <DateField
-        required label={t('field_preferred_date')} value={draft.date} onChange={(date) => updateDraft({ date })}
-        error={(attempted || draft.date) && !isValidDateString(draft.date) ? 'Enter a valid date.' : undefined}
-      />
       <View>
         <FieldLabel>{t('field_upload_report')}</FieldLabel>
         <UploadBox file={draft.uploadedFile} onPick={(uploadedFile) => updateDraft({ uploadedFile })} onRemove={() => updateDraft({ uploadedFile: null })} />

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Image, ImageBackground, Modal, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { Dimensions, Image, ImageBackground, Modal, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Check, ChevronDown, Download, Eye, EyeOff, FileText, X } from 'lucide-react-native';
@@ -22,8 +22,11 @@ export function Sheet({ visible, onClose, title, children }) {
             <IconButton onPress={onClose} className="h-[30px] w-[30px]"><X size={16} color="#45526B" /></IconButton>
           </View>
           {/* Short lists (Gender, filters) just render at their natural height; long ones
-              (country codes) now scroll within the sheet instead of overflowing off-screen. */}
-          <ScrollView style={{ maxHeight: '70%' }} showsVerticalScrollIndicator={false}>
+              (country codes) now scroll within the sheet instead of overflowing off-screen.
+              A fixed pixel maxHeight, not a percentage — this wrapper is auto-height (sized
+              to its content, bottom-anchored), and a percentage has no sized ancestor to
+              resolve against, which collapses to 0 on web instead of falling back sanely. */}
+          <ScrollView style={{ maxHeight: Dimensions.get('window').height * 0.7 }} showsVerticalScrollIndicator={false}>
             {children}
           </ScrollView>
         </View>
@@ -32,35 +35,61 @@ export function Sheet({ visible, onClose, title, children }) {
   );
 }
 
-// Stand-in for the prototype's <select>: looks like an input, opens a sheet of options.
+// A compact, centered picker — distinct from Sheet (which stays full-size for things
+// that genuinely need the room, like FilterSheet's whole form). This is just for a
+// flat list of choices, so it shouldn't take over the screen the way a bottom sheet
+// does, however many options there are.
+function Dropdown({ visible, onClose, title, children }) {
+  const { isRTL } = useApp();
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
+      <Pressable onPress={onClose} className="flex-1 items-center justify-center bg-navy/45 p-6" style={{ direction: isRTL ? 'rtl' : 'ltr' }}>
+        <Pressable className="w-full max-w-[320px] rounded-2xl bg-white p-4" onPress={(e) => e.stopPropagation()}>
+          <View className="mb-2.5 flex-row items-center justify-between">
+            <Text className="font-inter-black text-[15px] text-navy">{title}</Text>
+            <IconButton onPress={onClose} className="h-[28px] w-[28px]"><X size={14} color="#45526B" /></IconButton>
+          </View>
+          <ScrollView style={{ maxHeight: Dimensions.get('window').height * 0.5 }} showsVerticalScrollIndicator={false}>
+            {children}
+          </ScrollView>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+}
+
+// Stand-in for the prototype's <select>: looks like an input, opens a compact picker.
 // bare drops the border/background/radius so the select can sit inside a custom
 // grouped container (e.g. login's stacked country+number card) instead of looking
-// like its own separate field.
-export function Select({ value, options, onChange, title, large, bare, className = '' }) {
+// like its own separate field. labels is an optional { optionValue: displayText } map
+// (e.g. "+91" -> "IN +91") — the actual value stored/returned is unchanged, only what's
+// shown changes.
+export function Select({ value, options, onChange, title, large, bare, labels, placeholder, className = '' }) {
   const [open, setOpen] = useState(false);
+  const show = (o) => (labels && labels[o]) || o;
   return (
     <>
       <Pressable
         onPress={() => setOpen(true)}
         className={`flex-row items-center justify-between gap-1 ${bare ? '' : 'rounded-[10px] border-[1.5px] border-field bg-input'} ${large ? 'px-3 py-3.5' : 'px-3 py-3'} ${className}`}
       >
-        <Text className={large ? 'text-[16.5px]' : 'text-[15px]'} numberOfLines={1}>{value}</Text>
+        <Text className={`${value ? '' : 'text-faint'} ${labels ? 'text-[13px]' : large ? 'text-[16.5px]' : 'text-[15px]'}`} numberOfLines={1}>{value ? show(value) : placeholder || title}</Text>
         <ChevronDown size={16} color="#97A4B8" />
       </Pressable>
-      <Sheet visible={open} onClose={() => setOpen(false)} title={title}>
-        <View className="gap-2">
+      <Dropdown visible={open} onClose={() => setOpen(false)} title={title}>
+        <View className="gap-1.5">
           {options.map((o) => (
             <Pressable
               key={o}
               onPress={() => { onChange(o); setOpen(false); }}
-              className={`flex-row items-center justify-between rounded-xl border-[1.5px] px-3.5 py-3 ${o === value ? 'border-primary bg-primary-soft' : 'border-line bg-white'}`}
+              className={`flex-row items-center justify-between rounded-lg border-[1.5px] px-3 py-2.5 ${o === value ? 'border-primary bg-primary-soft' : 'border-line bg-white'}`}
             >
-              <Text className="font-inter-bold text-[14px] text-navy">{o}</Text>
-              {o === value && <Check size={18} color="#1A73E8" strokeWidth={2.5} />}
+              <Text className="font-inter-bold text-[13.5px] text-navy">{show(o)}</Text>
+              {o === value && <Check size={16} color="#1A73E8" strokeWidth={2.5} />}
             </Pressable>
           ))}
         </View>
-      </Sheet>
+      </Dropdown>
     </>
   );
 }

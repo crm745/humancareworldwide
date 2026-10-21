@@ -35,6 +35,14 @@ describe('isValidPhoneForCountry', () => {
     expect(isValidPhoneForCountry('501234567', '+971')).toBe(true);
     expect(isValidPhoneForCountry('5012345678', '+971')).toBe(false);
   });
+  it('requires exactly 8 digits for Oman (+968)', () => {
+    expect(isValidPhoneForCountry('92402959', '+968')).toBe(true);
+    expect(isValidPhoneForCountry('555555555555555', '+968')).toBe(false);
+  });
+  it('requires exactly 10 digits for Bangladesh (+880)', () => {
+    expect(isValidPhoneForCountry('1314968067', '+880')).toBe(true);
+    expect(isValidPhoneForCountry('13149680', '+880')).toBe(false);
+  });
   it('falls back to the loose 7-15 digit range for a country with no exact rule', () => {
     expect(isValidPhoneForCountry('123456789012', '+998')).toBe(true);
     expect(isValidPhoneForCountry('12345', '+998')).toBe(false);

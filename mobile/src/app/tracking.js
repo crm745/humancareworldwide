@@ -62,7 +62,6 @@ function fromRequest(request) {
     destination: request.destination,
     status: request.status,
     patientLabel: `${request.patientName}${request.patientAge ? `, ${request.patientAge}` : ''}${request.patientGender ? ` / ${request.patientGender}` : ''}`,
-    aircraft: c?.aircraft,
     stageEvents: c?.stageEvents || [],
     documents: c?.documents || [],
   };
@@ -76,7 +75,6 @@ function fromCase(c) {
     destination: c.destination,
     status: c.status,
     patientLabel: c.patientName,
-    aircraft: c.aircraft,
     stageEvents: c.stageEvents || [],
     documents: c.documents || [],
   };
@@ -123,7 +121,6 @@ export default function Tracking() {
             <InfoRow className="py-[13px]" label={t('lbl_from')} value={item.origin} />
             <InfoRow className="py-[13px]" label={t('lbl_to')} value={item.destination} />
             <InfoRow className="py-[13px]" label={t('lbl_patient')} value={item.patientLabel} />
-            {item.aircraft && <InfoRow className="py-[13px]" label={t('lbl_aircraft')} value={item.aircraft} />}
             <InfoRow className="py-[13px]" last label={t('lbl_reference_number')} value={item.referenceNumber} />
           </Card>
         </Body>

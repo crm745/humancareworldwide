@@ -13,7 +13,7 @@ export default function CorporateLogin() {
   const { t, toast } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [consents, setConsents] = useState([true, true]);
+  const [consents, setConsents] = useState([false, false]);
   const ready = isValidEmail(email) && password.length >= 8;
   const toggle = (i) => setConsents((c) => c.map((v, j) => (j === i ? !v : v)));
 

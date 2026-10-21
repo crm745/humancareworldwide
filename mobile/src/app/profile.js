@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { Check, ChevronRight, Mail, Pencil, Smartphone } from 'lucide-react-native';
 import { initialsOf, useApp } from '../state/AppContext';
-import { LANGUAGES, CORPORATE_IDENTITY } from '../data/mock';
+import { LANGUAGES } from '../data/mock';
 import { navReplace } from '../lib/nav';
 import { apiGet } from '../lib/api';
 import { clearTokens } from '../lib/session';
@@ -55,19 +55,21 @@ export default function Profile() {
   const [counts, setCounts] = useState({ total: 0, active: 0, done: 0 });
 
   useEffect(() => {
-    if (isCorporate) return;
-    apiGet('/requests/me')
-      .then(({ requests }) => {
-        const active = requests.filter((r) => r.status === 'submitted' || r.status === 'in_progress').length;
-        const done = requests.filter((r) => r.status === 'completed').length;
-        setCounts({ total: requests.length, active, done });
+    const path = isCorporate ? '/corporate/cases' : '/requests/me';
+    const key = isCorporate ? 'cases' : 'requests';
+    apiGet(path)
+      .then((data) => {
+        const rows = data[key];
+        const active = rows.filter((r) => r.status === 'submitted' || r.status === 'scheduled' || r.status === 'in_progress').length;
+        const done = rows.filter((r) => r.status === 'completed').length;
+        setCounts({ total: rows.length, active, done });
       })
       .catch((err) => toast(err.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
   }, [isCorporate]);
 
   const stats = isCorporate
-    ? { total: '24', active: '4', done: '20', totalLbl: t('lbl_total'), doneLbl: t('lbl_done') }
+    ? { total: String(counts.total), active: String(counts.active), done: String(counts.done), totalLbl: t('lbl_total'), doneLbl: t('lbl_done') }
     : { total: String(counts.total), active: String(counts.active), done: String(counts.done), totalLbl: t('lbl_total_requests'), doneLbl: t('status_completed') };
   const openStat = (status) => (isCorporate ? navReplace('/corporate-dashboard') : navReplace(`/my-requests?status=${status}`));
   const langLabel = LANGUAGES.find((l) => l.code === lang).label;
@@ -79,12 +81,12 @@ export default function Profile() {
       <Body withNav contentClassName="px-[18px] pb-10 pt-[22px]">
         <Card className="mb-5 flex-row items-center gap-3.5 p-[18px]">
           <View className="h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft">
-            <Text className="font-inter-black text-[18.5px] text-primary">{isCorporate ? CORPORATE_IDENTITY.avatar : initialsOf(profile.name)}</Text>
+            <Text className="font-inter-black text-[18.5px] text-primary">{initialsOf(profile.name)}</Text>
           </View>
           <View className="min-w-0 flex-1">
-            <Text className="font-inter-black text-[16.5px]">{isCorporate ? CORPORATE_IDENTITY.name : profile.name}</Text>
+            <Text className="font-inter-black text-[16.5px]">{profile.name}</Text>
             {isCorporate ? (
-              <Text className="mt-[5px] text-[12px] text-primary">{CORPORATE_IDENTITY.partner}</Text>
+              <Text className="mt-[5px] text-[12px] text-primary">{profile.email}</Text>
             ) : (
               <>
                 <View className="mt-[7px] flex-row items-center gap-[5px]">

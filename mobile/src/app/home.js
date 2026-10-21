@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Bell, Plus } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
 import { LOGO } from '../data/images';
-import { EMERGENCY_DISPLAY, EMERGENCY_TEL, CORPORATE_IDENTITY } from '../data/mock';
+import { EMERGENCY_DISPLAY, EMERGENCY_TEL } from '../data/mock';
 import { navReplace } from '../lib/nav';
 import { apiGet } from '../lib/api';
 import { clearTokens } from '../lib/session';
@@ -69,7 +69,7 @@ export default function Home() {
 
       <Body withNav contentClassName="px-[18px] pt-5">
         <View className="mb-5">
-          <Text className="font-inter-black text-[20.5px] text-navy">{t('greeting')} {isCorporate ? CORPORATE_IDENTITY.name : firstName}</Text>
+          <Text className="font-inter-black text-[20.5px] text-navy">{t('greeting')} {isCorporate ? profile.name : firstName}</Text>
           <Text className="mt-[3px] text-[14px] text-muted">{t('greetingSub')}</Text>
         </View>
 

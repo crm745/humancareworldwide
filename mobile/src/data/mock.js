@@ -27,49 +27,11 @@ export const SERVICE_LABELS = {
   corporate: 'filter_svc_corporate',
 };
 
-export const MY_REQUESTS = [
-  { id: 'REQ-1005', service: 'air', status: 'progress', date: '2024-05-10', display: '10 May 2024' },
-  { id: 'REQ-1004', service: 'hospital', status: 'submitted', date: '2024-05-09', display: '09 May 2024' },
-  { id: 'REQ-1003', service: 'ground', status: 'completed', date: '2024-05-05', display: '05 May 2024' },
-  { id: 'REQ-1002', service: 'escort', status: 'completed', date: '2024-05-01', display: '01 May 2024' },
-  { id: 'REQ-1001', service: 'tele', status: 'completed', date: '2024-04-25', display: '25 Apr 2024' },
-];
-// Mock requests are anchored around 10 May 2024, so that date stands in for
-// "today" in the date filters — the real date would empty every filter.
-export const REQUESTS_TODAY = '2024-05-10';
-
-export const CORPORATE_CASES = [
-  { id: '#HC-2026-107', patient: 'Klaus Weber', route: 'Munich → Berlin', stage: 'submitted', service: 'ground', date: '2026-05-12' },
-  { id: '#HC-2026-102', patient: 'Elena Rostova', route: 'Doha → London', stage: 'progress', service: 'air', date: '2026-05-02' },
-  { id: '#HC-2026-094', patient: 'Sarah Jenkins', route: 'Dubai → Mumbai', stage: 'scheduled', service: 'hospital', date: '2026-03-15' },
-  { id: '#HC-2026-089', patient: 'Robert Evans', route: 'Bangkok → Frankfurt', stage: 'progress', service: 'air', date: '2025-11-20' },
-];
-export const CASES_TODAY = '2026-05-12';
-
-export const CORPORATE_IDENTITY = { name: 'Bupa Global Assistance', avatar: 'BG', partner: 'Partner #HC-CORP-482' };
-
 export const NOTIFICATIONS = [
   { kind: 'submitted', title: 'notif_request_submitted_title', body: 'notif_request_submitted_body', ago: '2h ago' },
   { kind: 'progress', title: 'notif_request_progress_title', body: 'notif_request_progress_body', ago: '10m ago' },
   { kind: 'completed', title: 'notif_request_completed_title', body: 'notif_request_completed_body', ago: '1d ago' },
   { kind: 'cancelled', title: 'notif_request_cancelled_title', body: 'notif_request_cancelled_body', ago: '3d ago' },
-];
-
-export const TRACKING_DOCS = [
-  { label: 'doc_medical_report', meta: 'PDF · 320 KB' },
-  { label: 'doc_quotation', meta: 'PDF · 180 KB' },
-  { label: 'doc_invoice', meta: 'PDF · 210 KB' },
-];
-
-export const MY_DOCUMENTS = [
-  { section: 'lbl_identity_insurance', docs: [
-    { label: 'doc_passport_copy', meta: 'PDF · 1.2 MB', toast: 'Opening Passport…' },
-    { label: 'doc_insurance_card', meta: 'PDF · 480 KB', toast: 'Opening Insurance Card…' },
-  ] },
-  { section: 'lbl_medical_records', docs: [
-    { label: 'doc_medical_history_summary', meta: 'PDF · 640 KB', toast: 'Opening Medical History…' },
-    { label: 'doc_current_prescription', meta: 'PDF · 210 KB', toast: 'Opening Prescription…' },
-  ] },
 ];
 
 export const REGIONAL_NUMBERS = [
@@ -124,6 +86,56 @@ export const COUNTRY_CODES = [
   '+973', '+974', '+975', '+976', '+977',
   '+992', '+993', '+994', '+995', '+996', '+998',
 ];
+
+// ISO 3166-1 alpha-2 for each calling code above, so the country selector can show a
+// short, reliable text label (e.g. "IN +91") instead of a bare code — flag emoji were
+// tried here before and dropped because they don't render as flags on some platforms
+// (shows as literal letters instead), so plain text is the deliberate choice, not a
+// placeholder. A calling code can be shared by several countries (+1 is also Canada
+// and the Caribbean, +44 is also the Isle of Man, etc.) — this picks the one the code
+// is most commonly associated with, same convention every phone-number picker uses.
+const CALLING_CODE_COUNTRY = {
+  '+91': 'IN', '+971': 'AE', '+44': 'GB', '+1': 'US',
+  '+7': 'RU', '+20': 'EG', '+27': 'ZA', '+30': 'GR', '+31': 'NL', '+32': 'BE', '+33': 'FR', '+34': 'ES', '+36': 'HU', '+39': 'IT', '+40': 'RO', '+41': 'CH', '+43': 'AT',
+  '+45': 'DK', '+46': 'SE', '+47': 'NO', '+48': 'PL', '+49': 'DE', '+51': 'PE', '+52': 'MX', '+53': 'CU', '+54': 'AR', '+55': 'BR', '+56': 'CL', '+57': 'CO', '+58': 'VE',
+  '+60': 'MY', '+61': 'AU', '+62': 'ID', '+63': 'PH', '+64': 'NZ', '+65': 'SG', '+66': 'TH', '+81': 'JP', '+82': 'KR', '+84': 'VN', '+86': 'CN', '+90': 'TR', '+92': 'PK',
+  '+93': 'AF', '+94': 'LK', '+95': 'MM', '+98': 'IR',
+  '+211': 'SS', '+212': 'MA', '+213': 'DZ', '+216': 'TN', '+218': 'LY', '+220': 'GM', '+221': 'SN', '+222': 'MR', '+223': 'ML', '+224': 'GN', '+225': 'CI',
+  '+226': 'BF', '+227': 'NE', '+228': 'TG', '+229': 'BJ', '+230': 'MU', '+231': 'LR', '+232': 'SL', '+233': 'GH', '+234': 'NG', '+235': 'TD', '+236': 'CF',
+  '+237': 'CM', '+238': 'CV', '+239': 'ST', '+240': 'GQ', '+241': 'GA', '+242': 'CG', '+243': 'CD', '+244': 'AO', '+245': 'GW', '+246': 'IO', '+248': 'SC',
+  '+249': 'SD', '+250': 'RW', '+251': 'ET', '+252': 'SO', '+253': 'DJ', '+254': 'KE', '+255': 'TZ', '+256': 'UG', '+257': 'BI', '+258': 'MZ', '+260': 'ZM',
+  '+261': 'MG', '+262': 'RE', '+263': 'ZW', '+264': 'NA', '+265': 'MW', '+266': 'LS', '+267': 'BW', '+268': 'SZ', '+269': 'KM',
+  '+290': 'SH', '+291': 'ER', '+297': 'AW', '+298': 'FO', '+299': 'GL',
+  '+350': 'GI', '+351': 'PT', '+352': 'LU', '+353': 'IE', '+354': 'IS', '+355': 'AL', '+356': 'MT', '+357': 'CY', '+358': 'FI', '+359': 'BG',
+  '+370': 'LT', '+371': 'LV', '+372': 'EE', '+373': 'MD', '+374': 'AM', '+375': 'BY', '+376': 'AD', '+377': 'MC', '+378': 'SM', '+380': 'UA', '+381': 'RS',
+  '+382': 'ME', '+383': 'XK', '+385': 'HR', '+386': 'SI', '+387': 'BA', '+389': 'MK',
+  '+420': 'CZ', '+421': 'SK', '+423': 'LI',
+  '+500': 'FK', '+501': 'BZ', '+502': 'GT', '+503': 'SV', '+504': 'HN', '+505': 'NI', '+506': 'CR', '+507': 'PA', '+508': 'PM', '+509': 'HT',
+  '+590': 'GP', '+591': 'BO', '+592': 'GY', '+593': 'EC', '+594': 'GF', '+595': 'PY', '+596': 'MQ', '+597': 'SR', '+598': 'UY', '+599': 'CW',
+  '+670': 'TL', '+672': 'NF', '+673': 'BN', '+674': 'NR', '+675': 'PG', '+676': 'TO', '+677': 'SB', '+678': 'VU', '+679': 'FJ', '+680': 'PW', '+681': 'WF',
+  '+682': 'CK', '+683': 'NU', '+685': 'WS', '+686': 'KI', '+687': 'NC', '+688': 'TV', '+689': 'PF', '+690': 'TK', '+691': 'FM', '+692': 'MH',
+  '+850': 'KP', '+852': 'HK', '+853': 'MO', '+855': 'KH', '+856': 'LA', '+880': 'BD', '+886': 'TW',
+  '+960': 'MV', '+961': 'LB', '+962': 'JO', '+963': 'SY', '+964': 'IQ', '+965': 'KW', '+966': 'SA', '+967': 'YE', '+968': 'OM', '+970': 'PS', '+972': 'IL',
+  '+973': 'BH', '+974': 'QA', '+975': 'BT', '+976': 'MN', '+977': 'NP',
+  '+992': 'TJ', '+993': 'TM', '+994': 'AZ', '+995': 'GE', '+996': 'KG', '+998': 'UZ',
+};
+
+// A handful of ISO codes don't match what people actually type/look for — "AE" reads
+// as nothing to most people searching for "UAE", same for "GB" vs "UK". Override just
+// the display text for these; CALLING_CODE_COUNTRY itself stays the correct ISO data.
+const DISPLAY_OVERRIDE = { AE: 'UAE', GB: 'UK' };
+const countryLabel = (iso2) => DISPLAY_OVERRIDE[iso2] || iso2;
+
+// "+91" -> "IN +91", for any UI that wants the country label without changing what's
+// actually stored/sent as the calling code.
+export const COUNTRY_CODE_LABELS = Object.fromEntries(
+  COUNTRY_CODES.map((code) => [code, `${countryLabel(CALLING_CODE_COUNTRY[code])} ${code}`])
+);
+
+// Deduped, sorted country names — same source data as the phone country-code picker
+// above, but for the standalone "Country" field on the request form (where the
+// patient/case actually is, unrelated to anyone's phone number).
+export const COUNTRY_NAMES = [...new Set(COUNTRY_CODES.map((code) => countryLabel(CALLING_CODE_COUNTRY[code])))].sort();
 
 // 24/7 emergency line used by the Home SOS button and Help & Support "Call Alarm Desk".
 export const EMERGENCY_TEL = '+919699999065';

@@ -103,22 +103,16 @@ export function ChipGroup({ options, value, onChange, wrap = true, className = '
   );
 }
 
-// 2x2 multi-select "Care Level" grid (request form and corporate new-case form).
-// `value` is an array of keys. "Not Applicable" is exclusive: picking it clears the
-// others, and picking any other level clears it.
+// 2x2 single-select "Care Level" grid (request form and corporate new-case form).
+// A patient is only ever in one of these states at a time, so `value` is a single
+// key (or '' when none chosen yet) — tapping the already-selected one clears it.
 export const CARE_LEVELS = ['care_icu', 'care_stable', 'care_ambulatory', 'care_na'];
-export function toggleCareLevel(value, key) {
-  if (value.includes(key)) return value.filter((k) => k !== key);
-  if (key === 'care_na') return ['care_na'];
-  const next = [...value.filter((k) => k !== 'care_na'), key];
-  return CARE_LEVELS.filter((k) => next.includes(k)); // keep a stable display order
-}
 export function CareLevelGrid({ value, onChange }) {
   const { t } = useApp();
   return (
     <View className="flex-row flex-wrap justify-between gap-y-2.5">
       {CARE_LEVELS.map((k) => (
-        <Chip key={k} label={t(k)} on={value.includes(k)} onPress={() => onChange(toggleCareLevel(value, k))} className="w-[48.5%] rounded-full py-3.5" />
+        <Chip key={k} label={t(k)} on={value === k} onPress={() => onChange(value === k ? '' : k)} className="w-[48.5%] rounded-full py-3.5" />
       ))}
     </View>
   );

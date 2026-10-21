@@ -1,7 +1,7 @@
 export const DEFAULT_FILTERS = { service: 'all', date: 'all', from: '', to: '', sort: 'newest' };
 
 // Date-range + service + sort filtering shared by My Requests and the corporate case list.
-// `today` is the mock data's anchor date (see REQUESTS_TODAY / CASES_TODAY).
+// `today` is passed in by the caller (new Date().toISOString().slice(0, 10)).
 export function applyFilters(items, filters, today) {
   const now = new Date(today);
   const weekStart = new Date(now);

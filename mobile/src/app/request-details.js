@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Linking, Pressable, View } from 'react-native';
+import { Linking, Pressable, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Check, Download, Phone, Share2 } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
@@ -81,6 +81,23 @@ export default function RequestDetails() {
     }
   };
 
+  const shareRequest = async () => {
+    try {
+      await Share.share({
+        title: `HumanCare WorldWide — ${request.referenceNumber}`,
+        message:
+          `HumanCare WorldWide request ${request.referenceNumber}\n` +
+          `${request.serviceType} — ${request.origin} to ${request.destination}\n` +
+          `Status: ${t('status_' + toUiStatus(request.status))}`,
+      });
+    } catch (err) {
+      // On web, browsers without the Web Share API reject here (desktop Firefox,
+      // older Chrome) — on native, cancelling the share sheet itself is not an
+      // error (it resolves normally), so this only fires for a real failure.
+      toast(err.message || 'Sharing is not supported on this browser.');
+    }
+  };
+
   return (
     <Screen>
       <TopBar title={t('request_details_title')} />
@@ -92,7 +109,7 @@ export default function RequestDetails() {
         </View>
         <View className="mb-6 flex-row gap-2.5">
           <Action Icon={Download} label={t('btn_download_summary')} onPress={downloadSummary} />
-          <Action Icon={Share2} label={t('btn_share')} onPress={() => toast('Share link copied.')} />
+          <Action Icon={Share2} label={t('btn_share')} onPress={shareRequest} />
           <Action Icon={Phone} label={t('btn_contact_team')} onPress={() => Linking.openURL('tel:+919699999065')} />
         </View>
         <Card>

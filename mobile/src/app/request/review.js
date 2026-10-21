@@ -53,8 +53,9 @@ export default function RequestReview() {
         patientContact: d.phone ? `${d.cc} ${d.phone}` : undefined,
         origin: d.location,
         destination: d.dest,
+        country: d.country || undefined,
         preferredDate: d.date || undefined,
-        careLevel: needsCareLevel(d.service) ? d.care.join(', ') : undefined,
+        careLevel: needsCareLevel(d.service) && d.care ? t(d.care) : undefined,
         description: d.desc || undefined,
         specialRequirements: d.special || undefined,
         referralSource: source || undefined,
@@ -92,8 +93,9 @@ export default function RequestReview() {
             [t('lbl_name'), d.name],
             [t('lbl_age_gender'), `${d.age || '—'} Y / ${d.gender}`],
             [t('lbl_location'), d.location],
+            [t('field_country'), d.country],
             [t('field_contact_number'), d.phone && `${d.cc} ${d.phone}`],
-            ...(needsCareLevel(d.service) ? [[t('field_care_level'), d.care.map(t).join(', ')]] : []),
+            ...(needsCareLevel(d.service) ? [[t('field_care_level'), d.care ? t(d.care) : '']] : []),
           ]}
         />
         <Section

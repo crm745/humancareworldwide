@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
-import { Mail } from 'lucide-react-native';
+import { Mail, Phone } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
 import { Body, Screen } from '../components/layout';
 import { Button, FieldLabel, Heading, Input, Text } from '../components/ui';
@@ -11,7 +11,7 @@ import { apiPost } from '../lib/api';
 import { saveTokens } from '../lib/session';
 import { useSocialAuth } from '../lib/useSocialAuth';
 import { isValidEmail, isValidPhoneForCountry } from '../lib/validators';
-import { COUNTRY_CODES } from '../data/mock';
+import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 
 export default function Login() {
   const { t, toast, setSession, setProfile } = useApp();
@@ -60,7 +60,7 @@ export default function Login() {
           <>
             <FieldLabel large required>{t('field_mobile_number')}</FieldLabel>
             <View className="flex-row gap-2">
-              <Select large value={cc} options={COUNTRY_CODES} onChange={setCc} title={t('field_mobile_number')} className="w-20" />
+              <Select large value={cc} options={COUNTRY_CODES} labels={COUNTRY_CODE_LABELS} onChange={setCc} title={t('field_mobile_number')} className="w-28" />
               <Input large className="flex-1" placeholder="Mobile number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
             </View>
             {phone && !valid ? <Text className="mt-1 text-[12px] text-danger">Enter a valid number for the selected country.</Text> : null}
@@ -80,7 +80,7 @@ export default function Login() {
             onPress={() => setMode(mode === 'phone' ? 'email' : 'phone')}
             className="h-12 flex-row items-center justify-center gap-2.5 rounded-xl border-[1.5px] border-field bg-white active:opacity-80"
           >
-            <Mail size={20} color="#45526B" />
+            {mode === 'phone' ? <Mail size={20} color="#45526B" /> : <Phone size={20} color="#45526B" />}
             <Text className="font-inter-bold text-[14px] text-ink">{t(mode === 'phone' ? 'continue_with_email' : 'continue_with_phone')}</Text>
           </Pressable>
           {socialButtons.map(({ key, Mark, onPress, disabled }) => (

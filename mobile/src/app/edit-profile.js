@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import { initialsOf, useApp } from '../state/AppContext';
-import { COUNTRY_CODES } from '../data/mock';
+import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 import { goBack } from '../lib/nav';
 import { apiPatch } from '../lib/api';
 import { isValidEmail, isValidName, isValidPhoneForCountry } from '../lib/validators';
@@ -50,7 +50,7 @@ export default function EditProfile() {
           <View>
             <FieldLabel large required>{t('field_mobile_number')}</FieldLabel>
             <View className="flex-row gap-2">
-              <Select large value={form.cc} options={COUNTRY_CODES} onChange={(cc) => set({ cc })} title={t('field_mobile_number')} className="w-[84px]" />
+              <Select large value={form.cc} options={COUNTRY_CODES} labels={COUNTRY_CODE_LABELS} onChange={(cc) => set({ cc })} title={t('field_mobile_number')} className="w-28" />
               <Input large className="flex-1" keyboardType="phone-pad" value={form.phone} onChangeText={(phone) => set({ phone })} />
             </View>
             {form.phone && !isValidPhoneForCountry(form.phone, form.cc) ? <Text className="mt-1 text-[12px] text-danger">Enter a valid mobile number for the selected country.</Text> : null}

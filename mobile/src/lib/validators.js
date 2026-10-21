@@ -16,11 +16,14 @@ export function isValidPhone(value) {
 
 // Mobile number length (national significant number, i.e. not counting the country
 // code) for each country this app's country-code selectors offer. Digit counts
-// genuinely differ by country — India and the UK and US/Canada are 10, the UAE is 9 —
-// so a single "10 digits" rule was wrong for 1 of our 4 supported countries.
+// genuinely differ by country — confirmed against HumanCare's own real regional
+// numbers (see REGIONAL_NUMBERS in data/mock.js) for the 5 countries we actually
+// operate in, not just assumed from general convention.
 const PHONE_LENGTH_BY_CC = {
   '+91': 10, // India
   '+971': 9, // UAE
+  '+968': 8, // Oman
+  '+880': 10, // Bangladesh
   '+44': 10, // UK
   '+1': 10, // US/Canada
 };

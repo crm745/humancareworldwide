@@ -1,23 +1,37 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import I18N from '../data/i18n.json';
+import { apiGet } from '../lib/api';
+import { getAccessToken } from '../lib/session';
 
 const AppContext = createContext(null);
 
-const INITIAL_PROFILE = { name: 'Rakesh Sharma', cc: '+91', phone: '98765 43210', email: 'rakesh.sharma@example.com' };
+const INITIAL_PROFILE = { name: '', cc: '+91', phone: '', email: '' };
 
-// Pre-filled the same way the prototype's request form is, so a demo run-through is quick.
+// `/auth/me` returns either `{ user }` (patient) or `{ corporateUser }` (corporate),
+// shaped by the role baked into the JWT — same split login.js/corporate-otp.js already
+// make when they set the profile right after a fresh login.
+function profileFromMe(data) {
+  if (data.corporateUser) {
+    const c = data.corporateUser;
+    return { session: 'corporate', profile: { name: c.corporate?.companyName || c.email, cc: '+91', phone: '', email: c.email } };
+  }
+  const u = data.user;
+  return { session: 'patient', profile: { name: u.name, cc: u.countryCode || '+91', phone: u.mobile || '', email: u.email } };
+}
+
 export const INITIAL_DRAFT = {
   service: 'air',
-  name: 'Rakesh Sharma',
-  age: '45',
-  gender: 'Male',
-  location: 'Mumbai, India',
+  name: '',
+  age: '',
+  gender: '',
+  location: '',
+  country: '',
   cc: '+91',
   phone: '',
-  care: ['care_stable'], // multi-select; only asked for air & ground ambulance (see needsCareLevel)
+  care: '', // single-select; only asked for air & ground ambulance (see needsCareLevel)
   desc: '',
-  dest: 'Dubai, UAE',
-  date: '2026-09-25',
+  dest: '',
+  date: '',
   uploadedFile: null, // { uri, name, mimeType, size } from expo-document-picker, or null
   extra: '',
   special: '',
@@ -50,6 +64,26 @@ export function AppProvider({ children }) {
   }, []);
 
   const updateDraft = useCallback((patch) => setDraft((d) => ({ ...d, ...patch })), []);
+
+  // Runs on every app/provider mount — not just the splash screen's — so a saved
+  // session still gets a real name/email loaded even when the browser is reloaded
+  // (or the app re-launched) directly on an already-authenticated screen like Home,
+  // not just when the user walks through Splash first.
+  useEffect(() => {
+    (async () => {
+      const token = await getAccessToken();
+      if (!token) return;
+      try {
+        const data = await apiGet('/auth/me');
+        const restored = profileFromMe(data);
+        setProfile(restored.profile);
+        setSession(restored.session);
+      } catch {
+        // Invalid/expired session — apiFetch already clears the tokens and redirects
+        // to Welcome on an unrecoverable 401, nothing more to do here.
+      }
+    })();
+  }, []);
 
   const value = useMemo(
     () => ({
