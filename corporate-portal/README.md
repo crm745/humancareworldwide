@@ -74,10 +74,10 @@ src/
 
 ## Connecting the Node.js / Express backend
 
-1. Copy `.env.example` to `.env` and set:
+1. Copy `.env.example` to `.env` and set (this is now also the default with no `.env` at all):
    ```
    VITE_USE_MOCK_API=false
-   VITE_API_BASE_URL=https://your-api.example.com/api
+   VITE_API_BASE_URL=https://your-api.example.com
    ```
 2. Every method in `src/services/*Service.js` already has the matching REST call next to its mock
    implementation (for example `POST /auth/vendor/login`, `GET /vendor/cases`, `POST /vendors/register`).

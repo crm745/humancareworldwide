@@ -7,7 +7,7 @@ import { Card, CardHeader, InfoGrid } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { StatusBadge } from '@/components/ui/Badge';
 import { PageLoader } from '@/components/ui/Loading';
-import { ErrorState } from '@/components/ui/EmptyState';
+import { EmptyState, ErrorState } from '@/components/ui/EmptyState';
 import { PageHeader, SecureNote } from '@/components/ui/Misc';
 import { UpdateBankModal, bankInfoItems } from '@/components/forms/BankInfo';
 import { formatDateTime } from '@/utils/format';
@@ -26,6 +26,23 @@ export default function BankDetailsPage() {
       </Card>
     );
   const b = profile.bank;
+
+  // Payout-account setup rolls out with the payments work, which hasn't shipped yet —
+  // the backend deliberately omits `bank` until then rather than returning a fake one.
+  if (!b) {
+    return (
+      <div>
+        <PageHeader title="Bank Details" description="The account HumanCare uses for refunds and partner payouts." />
+        <Card>
+          <EmptyState
+            icon={Landmark}
+            title="Not set up yet"
+            description="Bank/payout details aren't available in this account yet — this rolls out together with the payments feature."
+          />
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div>
