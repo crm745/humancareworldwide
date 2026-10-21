@@ -15,7 +15,6 @@ model User {
   name         String
   email        String   @unique
   mobile       String?  @unique
-  passwordHash String?  @map("password_hash")
   countryCode  String   @default("+91") @map("country_code")
   googleId     String?  @unique @map("google_id")
   appleId      String?  @unique @map("apple_id")
@@ -163,7 +162,6 @@ model CorporateUser {
   corporate    Corporate @relation(fields: [corporateId], references: [id])
   email        String    @unique
   passwordHash String    @map("password_hash")
-  role         String    @default("viewer") // "admin" | "viewer"
   // Free-form preferences bag for the corporate-portal web app's Settings page
   // (notification channels, language, timezone, date format, two-factor toggle) — a
   // JSON column since this is a flexible, evolving per-login preference set, not
@@ -186,6 +184,7 @@ model ServiceRequest {
   patientContact    String?  @map("patient_contact")
   origin            String
   destination       String
+  country           String?
   preferredDate     DateTime? @map("preferred_date")
   careLevel         String?   @map("care_level")
   description       String?   @db.Text
@@ -224,6 +223,7 @@ model Case {
   serviceType         String    @map("service_type")
   origin              String
   destination         String
+  country             String?
   urgency             String?   @default("routine") // "routine" | "urgent" | "critical"
   policyReference      String?  @map("policy_reference")
   // Mirrors the patient-facing ServiceRequest's equivalent fields (see above) so the
@@ -236,11 +236,6 @@ model Case {
   referralSource      String?   @map("referral_source")
   notes               String?   @db.Text
   status              String    @default("submitted") // "submitted" | "scheduled" | "in_progress" | "completed" | "cancelled"
-  attendingPhysician  String?   @map("attending_physician")
-  caseCoordinator     String?   @map("case_coordinator")
-  aircraft            String?
-  hospitalFacility    String?   @map("hospital_facility")
-  hospitalContact     String?   @map("hospital_contact")
   // Same Bitrix24 sync tracking as ServiceRequest, for cases the corporate-portal
   // submits directly (those never go through ServiceRequest, so they need their own
   // copy of these columns rather than sharing that model's).

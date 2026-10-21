@@ -202,13 +202,12 @@ function toPortalPatientSummary(c) {
   return {
     id: patientIdFor(c.id),
     name: c.patientName,
+    age: c.patientAge,
+    gender: c.patientGender,
     caseId: c.referenceNumber,
     status: STATUS_LABEL[c.status] || c.status,
     service: c.serviceType,
-    // No structured country field exists on Case (origin/destination are free text) —
-    // '—' is the corporate-portal's own established placeholder for "no data" here, not
-    // something invented for this response.
-    country: '—',
+    country: c.country || '—',
   };
 }
 
@@ -246,6 +245,7 @@ async function getCorporatePatient(corporateId, patientId) {
     service: caseRecord.serviceType,
     origin: caseRecord.origin,
     destination: caseRecord.destination,
+    country: caseRecord.country,
     condition: URGENCY_TO_CONDITION[caseRecord.urgency] || 'Stable',
     documents: documents.map((d) => ({ id: d.id, type: d.type, name: d.name, uploadedAt: d.uploadedAt, fileSizeBytes: d.fileSizeBytes })),
     communications: communications.map((c) => ({ id: c.id, date: c.occurredAt, channel: c.channel, by: c.authorName, summary: c.summary })),

@@ -6,19 +6,41 @@
 // database. Callers should wrap these in try/catch and log-and-continue.
 
 const WEBHOOK_URL = process.env.BITRIX24_WEBHOOK_URL;
+const REQUEST_TIMEOUT_MS = 15000; // Bitrix webhooks normally respond in well under a second.
 
 async function callBitrix(method, payload) {
   if (!WEBHOOK_URL) {
     throw new Error('BITRIX24_WEBHOOK_URL is not set');
   }
-  const res = await fetch(WEBHOOK_URL + method + '.json', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const data = await res.json();
-  if (data.error) {
-    throw new Error(`Bitrix24 ${method} failed: ${data.error_description || data.error}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let res;
+  try {
+    res = await fetch(WEBHOOK_URL + method + '.json', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error(`Bitrix24 ${method} timed out after ${REQUEST_TIMEOUT_MS / 1000}s`);
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+  // Bitrix always answers with JSON on success; a non-2xx (rate limit, auth failure,
+  // a proxy error page) may not — parse defensively so a non-JSON body doesn't throw
+  // here and mask the real `!res.ok` failure below with a generic parse error instead.
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.error) {
+    throw new Error(`Bitrix24 ${method} failed (HTTP ${res.status}): ${data.error_description || data.error || 'no error details in response'}`);
+  }
+  // A 2xx with no `result` is just as ambiguous as an error — treat it as a failure
+  // instead of letting `undefined` flow back to the caller and get silently dropped
+  // by Prisma's update (which ignores undefined fields), leaving a lead that looks
+  // neither successful nor recorded as failed anywhere.
+  if (data.result === undefined || data.result === null) {
+    throw new Error(`Bitrix24 ${method} returned no result`);
   }
   return data.result;
 }

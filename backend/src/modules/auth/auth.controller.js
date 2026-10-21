@@ -89,8 +89,7 @@ async function registerVerifyOtp(req, res) {
 
   const token = signAccessToken({ sub: user.id, role: "patient" });
   const refreshToken = signRefreshToken({ sub: user.id, role: "patient" });
-  const { passwordHash: _omit, ...safeUser } = user;
-  res.status(201).json({ token, refreshToken, user: safeUser });
+  res.status(201).json({ token, refreshToken, user });
 }
 
 // Mobile numbers are stored without a country code (e.g. "8691930716"), but someone
@@ -148,10 +147,9 @@ async function loginVerifyOtp(req, res) {
 
   const token = signAccessToken({ sub: user.id, role: "patient" });
   const refreshToken = signRefreshToken({ sub: user.id, role: "patient" });
-  const { passwordHash: _omit, ...safeUser } = user;
-  res.json({ token, refreshToken, user: safeUser });
+  res.json({ token, refreshToken, user });
 }
-// the function for continue with google 
+// the function for continue with google
 async function googleLogin(req, res) {
   const { idToken } = req.body;
   if (!idToken) return res.status(400).json({ error: "idToken is required" });
@@ -166,8 +164,7 @@ async function googleLogin(req, res) {
   const user = await findOrCreateSocialUser({ provider: "google", ...payload });
   const token = signAccessToken({ sub: user.id, role: "patient" });
   const refreshToken = signRefreshToken({ sub: user.id, role: "patient" });
-  const { passwordHash: _omit, ...safeUser } = user;
-  res.json({ token, refreshToken, user: safeUser });
+  res.json({ token, refreshToken, user });
 }
 //the function for apple login with the help of name and password
 async function appleLogin(req, res) {
@@ -184,8 +181,7 @@ async function appleLogin(req, res) {
   const user = await findOrCreateSocialUser({ provider: "apple", ...payload, name });
   const token = signAccessToken({ sub: user.id, role: "patient" });
   const refreshToken = signRefreshToken({ sub: user.id, role: "patient" });
-  const { passwordHash: _omit, ...safeUser } = user;
-  res.json({ token, refreshToken, user: safeUser });
+  res.json({ token, refreshToken, user });
 }
 
 // Step 1 of corporate login: password gets you an OTP, not a token — the actual
@@ -280,8 +276,7 @@ async function getMe(req, res) {
 
   const user = await prisma.user.findUnique({ where: { id: req.user.id } });
   if (!user) return res.status(404).json({ error: "Account not found" });
-  const { passwordHash: _omit, ...safeUser } = user;
-  res.json({ user: safeUser });
+  res.json({ user });
 }
 // the function for updating the profile using email
 async function updateMe(req, res) {
@@ -317,8 +312,7 @@ async function updateMe(req, res) {
       ...(countryCode && { countryCode }),
     },
   });
-  const { passwordHash: _omit, ...safeUser } = user;
-  res.json({ user: safeUser });
+  res.json({ user });
 }
 // the function for saving the push token in the db for popup notification and we need ios account for it while doing the login task with it we'll do the notification task as well
 async function savePushToken(req, res) {

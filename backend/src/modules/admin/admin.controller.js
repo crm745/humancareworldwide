@@ -156,10 +156,10 @@ async function postCorporate(req, res, next) {
 
 async function postCorporateUser(req, res, next) {
   try {
-    const { email, password, role } = req.body;
+    const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'email and password are required' });
     if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
-    const corporateUser = await createCorporateUser(req.params.id, { email, password, role });
+    const corporateUser = await createCorporateUser(req.params.id, { email, password });
     res.status(201).json({ corporateUser });
   } catch (err) {
     next(err);
@@ -219,7 +219,7 @@ async function patchCaseBilling(req, res, next) {
 async function getPatients(req, res, next) {
   try {
     const patients = await searchPatients(req.query.search);
-    res.json({ patients: patients.map(({ passwordHash, ...rest }) => rest) });
+    res.json({ patients });
   } catch (err) {
     next(err);
   }

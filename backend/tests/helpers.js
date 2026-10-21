@@ -34,7 +34,7 @@ async function createCorporateUserAndLogin({ companyName = 'Test Corporate Co', 
   const corporate = await prisma.corporate.create({ data: { companyName, type } });
   const email = uniqueEmail('corporate');
   const passwordHash = await bcrypt.hash(password, 10);
-  await prisma.corporateUser.create({ data: { corporateId: corporate.id, email, passwordHash, role: 'admin' } });
+  await prisma.corporateUser.create({ data: { corporateId: corporate.id, email, passwordHash } });
 
   await request(app).post('/auth/corporate/login').send({ email, password });
   const code = codeSentTo(email);

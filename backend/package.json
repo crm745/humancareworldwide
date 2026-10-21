@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "node --watch-path=src src/server.js",
     "start": "node src/server.js",
-    "test": "cross-env NODE_ENV=test jest --runInBand"
+    "test": "cross-env NODE_ENV=test jest --runInBand",
+    "migrate:dev": "prisma migrate deploy",
+    "migrate:test": "node -e \"require('dotenv').config({path:'.env.test',override:true});require('child_process').execSync('npx prisma migrate deploy',{stdio:'inherit',env:process.env})\"",
+    "migrate:all": "npm run migrate:dev && npm run migrate:test"
   },
   "keywords": [],
   "author": "",

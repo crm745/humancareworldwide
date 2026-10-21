@@ -109,7 +109,7 @@ async function rejectRegistration(id, reason) {
 // requested/completed, read straight off the OTP records already created for that flow.
 async function listCorporates() {
   const corporates = await prisma.corporate.findMany({
-    include: { users: { select: { id: true, email: true, role: true, createdAt: true } } },
+    include: { users: { select: { id: true, email: true, createdAt: true } } },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -135,7 +135,7 @@ async function createCorporate({ companyName, type }) {
   return prisma.corporate.create({ data: { companyName, type } });
 }
 
-async function createCorporateUser(corporateId, { email, password, role }) {
+async function createCorporateUser(corporateId, { email, password }) {
   const corporate = await prisma.corporate.findUnique({ where: { id: Number(corporateId) } });
   if (!corporate) {
     const err = new Error('Corporate not found');
@@ -150,7 +150,7 @@ async function createCorporateUser(corporateId, { email, password, role }) {
   }
   const passwordHash = await hashPassword(password);
   const corporateUser = await prisma.corporateUser.create({
-    data: { corporateId: corporate.id, email, passwordHash, role: role || 'viewer' },
+    data: { corporateId: corporate.id, email, passwordHash },
   });
   const { passwordHash: _omit, ...safeCorporateUser } = corporateUser;
   return safeCorporateUser;
