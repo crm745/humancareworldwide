@@ -39,7 +39,7 @@ from the prototype, so the wording and images match it exactly.
 
 ## Next steps
 
-- Replace `src/data/mock.js` with calls to the backend API (see `ROADMAP.md` §3).
+- Replace `src/data/mock.js` with calls to the backend API (see `docs/ROADMAP.md` §3).
 - Store the JWT securely, e.g. with `expo-secure-store`.
 - Real file upload (`expo-document-picker`) and date pickers, in place of the mock toggle and
   `YYYY-MM-DD` text fields.

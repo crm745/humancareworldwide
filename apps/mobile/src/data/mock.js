@@ -1,5 +1,6 @@
 // Mock data mirroring interactive-prototype/app.html. Replace with API calls
-// (see ROADMAP.md §3) once the mobile app is wired to the backend.
+// (see docs/ROADMAP.md §3) once the mobile app is wired to the backend.
+import { COUNTRY_NAME_BY_ISO } from './countries';
 
 // Home / Select Service grid. Private Charter and Commercial Escort used to be
 // combined under one "Air Ambulance" tile that opened a sub-menu picking between the
@@ -132,10 +133,12 @@ export const COUNTRY_CODE_LABELS = Object.fromEntries(
   COUNTRY_CODES.map((code) => [code, `${countryLabel(CALLING_CODE_COUNTRY[code])} ${code}`])
 );
 
-// Deduped, sorted country names — same source data as the phone country-code picker
-// above, but for the standalone "Country" field on the request form (where the
-// patient/case actually is, unrelated to anyone's phone number).
-export const COUNTRY_NAMES = [...new Set(COUNTRY_CODES.map((code) => countryLabel(CALLING_CODE_COUNTRY[code])))].sort();
+// Full country names, deduped and sorted — same countries as the phone country-code
+// picker above, but for the standalone "Country" field on the request/new-case forms
+// (where the patient/case actually is, unrelated to anyone's phone number). The name
+// itself is what gets saved and shown in the admin portal.
+export const COUNTRY_NAMES = [...new Set(COUNTRY_CODES.map((code) => COUNTRY_NAME_BY_ISO[CALLING_CODE_COUNTRY[code]]))]
+  .sort((a, b) => a.localeCompare(b, 'en'));
 
 // 24/7 emergency line used by the Home SOS button and Help & Support "Call Alarm Desk".
 export const EMERGENCY_TEL = '+919699999065';
