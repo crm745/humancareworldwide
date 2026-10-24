@@ -12,6 +12,8 @@ const request = require('supertest');
 const { app } = require('../src/app');
 const { prisma } = require('../src/db/prisma');
 const { createPatient } = require('./helpers');
+const { createLead } = require('../src/modules/bitrix/bitrix.service');
+const { retryFailedBitrixSyncs } = require('../src/modules/bitrix/bitrix-retry.service');
 
 afterAll(async () => {
   await prisma.$disconnect();
@@ -48,6 +50,39 @@ describe('POST /requests', () => {
     expect(res.status).toBe(201);
     expect(res.body.request.referenceNumber).toMatch(/^REQ-/);
     expect(res.body.request.status).toBe('submitted');
+  });
+});
+
+describe('Bitrix24 on/off switch', () => {
+  afterEach(() => { delete process.env.BITRIX_SYNC_ENABLED; });
+
+  it('sends nothing and records no failure while the switch is off', async () => {
+    createLead.mockClear();
+    const { token } = await createPatient();
+    const res = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send(baseRequestBody);
+    expect(res.status).toBe(201);
+    expect(createLead).not.toHaveBeenCalled();
+    const saved = await prisma.serviceRequest.findUnique({ where: { id: res.body.request.id } });
+    expect(saved.bitrixLeadId).toBeNull();
+    expect(saved.bitrixSyncAttempts).toBe(0);
+    await expect(retryFailedBitrixSyncs()).resolves.toBe(0);
+    expect(createLead).not.toHaveBeenCalled();
+  });
+
+  it('sends new requests once switched on, but never the ones made while it was off', async () => {
+    createLead.mockClear();
+    const { token } = await createPatient();
+    const whileOff = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send(baseRequestBody);
+
+    process.env.BITRIX_SYNC_ENABLED = 'true';
+    const whileOn = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send(baseRequestBody);
+    expect(createLead).toHaveBeenCalledTimes(1);
+    expect(createLead.mock.calls[0][0].referenceNumber).toBe(whileOn.body.request.referenceNumber);
+
+    await retryFailedBitrixSyncs();
+    const off = await prisma.serviceRequest.findUnique({ where: { id: whileOff.body.request.id } });
+    expect(off.bitrixLeadId).toBeNull();
+    expect(createLead).toHaveBeenCalledTimes(1);
   });
 });
 

@@ -1,6 +1,7 @@
 const { prisma } = require('../../db/prisma');
 const { sendExpoPush } = require('../../lib/expo-push.service');
 const { createLead } = require('../bitrix/bitrix.service');
+const { isBitrixSyncEnabled } = require('../bitrix/bitrix-config');
 
 const VALID_CASE_STATUSES = ['submitted', 'scheduled', 'in_progress', 'completed', 'cancelled'];
 const CASE_INCLUDE = {
@@ -101,7 +102,9 @@ async function createCaseByCorporate(corporateId, data) {
   // which has already been saved above by this point. Same pattern as the patient
   // app's own request flow (requests.service.js#createRequest) — on failure this is
   // persisted (not just logged) so the background retry sweep in
-  // bitrix-retry.service.js can pick it back up.
+  // bitrix-retry.service.js can pick it back up. While the switch is off nothing is
+  // sent and nothing is recorded as failed (see bitrix-config.js).
+  if (!isBitrixSyncEnabled()) return caseRecord;
   try {
     const leadId = await createLead({
       name: caseRecord.patientName,

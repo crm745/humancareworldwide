@@ -14,10 +14,12 @@ describe('bitrix.service#createLead', () => {
   beforeEach(() => {
     jest.resetModules();
     process.env.BITRIX24_WEBHOOK_URL = 'https://example.bitrix24.com/rest/1/testtoken/';
+    process.env.BITRIX_SYNC_ENABLED = 'true';
   });
 
   afterAll(() => {
     process.env.BITRIX24_WEBHOOK_URL = ORIGINAL_ENV;
+    delete process.env.BITRIX_SYNC_ENABLED;
     global.fetch = ORIGINAL_FETCH;
   });
 
@@ -29,6 +31,14 @@ describe('bitrix.service#createLead', () => {
   it('returns the lead id on a normal successful response', async () => {
     global.fetch = jest.fn().mockResolvedValue(jsonResponse(200, { result: 42 }));
     await expect(call()).resolves.toBe(42);
+  });
+
+  it.each([undefined, 'false', 'TRUE', '1'])('sends nothing while the switch is %s', async (value) => {
+    if (value === undefined) delete process.env.BITRIX_SYNC_ENABLED;
+    else process.env.BITRIX_SYNC_ENABLED = value;
+    global.fetch = jest.fn();
+    await expect(call()).rejects.toThrow(/switched off/);
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it('throws without calling fetch when the webhook URL is not configured', async () => {

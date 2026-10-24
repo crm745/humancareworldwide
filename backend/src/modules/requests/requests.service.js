@@ -1,5 +1,6 @@
 const { prisma } = require('../../db/prisma');
 const { createLead } = require('../bitrix/bitrix.service');
+const { isBitrixSyncEnabled } = require('../bitrix/bitrix-config');
 
 const VALID_STATUSES = ['submitted', 'in_progress', 'completed', 'cancelled'];
 
@@ -76,7 +77,9 @@ async function createRequest(userId, data) {
   });
 
   // Bitrix24 is best-effort: a CRM hiccup must never fail the patient's submission,
-  // which has already been saved above by this point.
+  // which has already been saved above by this point. While the switch is off nothing
+  // is sent and nothing is recorded as failed (see bitrix-config.js).
+  if (!isBitrixSyncEnabled()) return request;
   try {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const leadId = await createLead({

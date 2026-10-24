@@ -8,6 +8,7 @@
 // this scale, and avoids adding infrastructure nobody asked for.
 const { prisma } = require('../../db/prisma');
 const { createLead } = require('./bitrix.service');
+const { isBitrixSyncEnabled } = require('./bitrix-config');
 
 const MAX_ATTEMPTS = 5;
 // ~5 attempts spaced this far apart covers roughly the "30 minutes" window the
@@ -51,6 +52,7 @@ async function retryModel(model, label, findCandidates, buildLeadInput) {
 }
 
 async function retryFailedBitrixSyncs() {
+  if (!isBitrixSyncEnabled()) return 0;
   const requestsRetried = await retryModel(
     prisma.serviceRequest,
     'request',

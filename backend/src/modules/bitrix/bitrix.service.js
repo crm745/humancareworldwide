@@ -5,10 +5,17 @@
 // outage must never block a patient's request from being saved in our own
 // database. Callers should wrap these in try/catch and log-and-continue.
 
+const { isBitrixSyncEnabled } = require('./bitrix-config');
+
 const WEBHOOK_URL = process.env.BITRIX24_WEBHOOK_URL;
 const REQUEST_TIMEOUT_MS = 15000; // Bitrix webhooks normally respond in well under a second.
 
+// Last line of defence: even a caller that forgot to check the switch can't reach
+// the CRM while it's off (see bitrix-config.js).
 async function callBitrix(method, payload) {
+  if (!isBitrixSyncEnabled()) {
+    throw new Error('Bitrix24 sync is switched off (BITRIX_SYNC_ENABLED is not "true")');
+  }
   if (!WEBHOOK_URL) {
     throw new Error('BITRIX24_WEBHOOK_URL is not set');
   }
