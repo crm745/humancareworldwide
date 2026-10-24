@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { app } = require('./app');
 const { retryFailedBitrixSyncs } = require('./modules/bitrix/bitrix-retry.service');
+const { purgeOldSecurityEvents, retentionDays } = require('./modules/auth/security-events');
 
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 app.listen(port, () => {
@@ -14,4 +15,12 @@ if (process.env.NODE_ENV !== 'test') {
   setInterval(() => {
     retryFailedBitrixSyncs().catch((err) => console.error('Bitrix24 retry sweep failed:', err.message));
   }, 5 * 60 * 1000);
+
+  // Deletes security log entries past their retention period — once at startup, then
+  // daily. See security-events.js.
+  const purgeSecurityLog = () => purgeOldSecurityEvents()
+    .then((count) => { if (count) console.log(`Deleted ${count} security log entries older than ${retentionDays()} days.`); })
+    .catch((err) => console.error('Security log cleanup failed:', err.message));
+  purgeSecurityLog();
+  setInterval(purgeSecurityLog, 24 * 60 * 60 * 1000);
 }

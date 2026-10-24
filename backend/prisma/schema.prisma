@@ -14,22 +14,76 @@ model User {
   id           Int      @id @default(autoincrement())
   name         String
   email        String   @unique
+  // E.164 (e.g. "+919876543210") so the same number can't be stored two ways.
   mobile       String?  @unique
   countryCode  String   @default("+91") @map("country_code")
+  // Null for accounts created before passwords were introduced (OTP-only) and for
+  // Google/Apple accounts — the login flow makes the former set one on next login.
+  passwordHash String?  @map("password_hash")
+  // False only between password registration and its OTP check; social and older
+  // accounts were already verified when they were created.
+  isVerified   Boolean  @default(true) @map("is_verified")
+  // Set once the person proves they own the email (OTP at sign-up or on change, or the
+  // provider vouching for it on Google/Apple sign-in). Google/Apple only ever link to
+  // an existing account whose email is verified.
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  failedLoginCount Int  @default(0) @map("failed_login_count")
+  lockedUntil  DateTime? @map("locked_until")
+  // Baked into every token; bumping it (password reset) kills existing sessions.
+  tokenVersion Int      @default(0) @map("token_version")
   googleId     String?  @unique @map("google_id")
   appleId      String?  @unique @map("apple_id")
   pushToken    String?  @map("push_token")
   createdAt    DateTime @default(now()) @map("created_at")
   requests     ServiceRequest[]
+  consents     UserConsent[]
 
   @@map("users")
+}
+
+// What the patient agreed to at sign-up, kept as proof (who, what, which wording, when,
+// from where). One row per consent; the optional marketing one is stored either way so
+// a "no" is on record too.
+model UserConsent {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  // A half-finished sign-up that gets replaced takes its consent rows with it.
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String   // "terms_privacy" | "medical_disclaimer" | "marketing"
+  accepted   Boolean
+  // Which wording was shown (CONSENT_VERSION in auth.controller.js); bump it whenever
+  // the consent text in the app changes.
+  version    String
+  ipAddress  String?  @map("ip_address")
+  acceptedAt DateTime @default(now()) @map("accepted_at")
+
+  @@index([userId])
+  @@map("user_consents")
+}
+
+// Audit trail of account security events: sign-ups, logins, failures, lockouts, password
+// and contact changes. Never holds a password or OTP; typed identifiers are stored
+// masked. No foreign key on purpose: the history outlives a deleted account.
+model SecurityEvent {
+  id         Int      @id @default(autoincrement())
+  userId     Int?     @map("user_id")
+  event      String   // see EVENTS in modules/auth/security-events.js
+  identifier String?  // masked mobile/email that was typed, e.g. "+91 •••••3210"
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @db.VarChar(255) @map("user_agent")
+  detail     Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt])
+  @@index([event, createdAt])
+  @@map("security_events")
 }
 
 model OtpCode {
   id         Int       @id @default(autoincrement())
   identifier String    // mobile number or email, depending on purpose
   codeHash   String    @map("code_hash")
-  purpose    String    // "patient_register" | "patient_login" | "corporate_password_reset"
+  purpose    String    // "patient_register" | "patient_register_email" | "patient_login" | "patient_password_reset" | "patient_change_mobile" | "patient_change_email" | "corporate_login" | "corporate_password_reset"
   expiresAt  DateTime  @map("expires_at")
   consumedAt DateTime? @map("consumed_at")
   attempts   Int       @default(0)

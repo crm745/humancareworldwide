@@ -273,9 +273,10 @@ async function updateCaseBilling(caseId, { amount, currency, status, notes }) {
 const ACTIVE_WINDOW_DAYS = 90;
 
 async function searchPatients(search) {
+  // Unverified rows are half-finished registrations (OTP never entered), not patients.
   const where = search
-    ? { OR: [{ name: { contains: search } }, { email: { contains: search } }, { mobile: { contains: search } }] }
-    : undefined;
+    ? { isVerified: true, OR: [{ name: { contains: search } }, { email: { contains: search } }, { mobile: { contains: search } }] }
+    : { isVerified: true };
   const patients = await prisma.user.findMany({ where, orderBy: { createdAt: 'desc' }, take: 50 });
 
   const since = new Date(Date.now() - ACTIVE_WINDOW_DAYS * 24 * 60 * 60 * 1000);

@@ -1,5 +1,6 @@
 const disposableDomains = require("disposable-email-domains");
 const { prisma } = require("../../db/prisma");
+const { normalizeMobile, normalizeEmail, maskContact } = require("../../lib/phone");
 const {
   signAccessToken,
   signRefreshToken,
@@ -8,10 +9,18 @@ const {
   comparePassword,
   issueOtp,
   verifyOtp,
+  issuePatientTokens,
+  signTicket,
+  readTicket,
+  passwordProblem,
+  DUMMY_PASSWORD_HASH,
   verifyGoogleIdToken,
   verifyAppleIdToken,
-  findOrCreateSocialUser,
+  findSocialUser,
+  SocialEmailInUseError,
+  SocialNoAccountError,
 } = require("./auth.service");
+const { EVENTS, recordSecurityEvent } = require("./security-events");
 
 const disposableDomainSet = new Set(disposableDomains);
 function isDisposableEmail(email) {
@@ -19,137 +28,407 @@ function isDisposableEmail(email) {
   return !!domain && disposableDomainSet.has(domain);
 }
 
-//the
-async function registerRequestOtp(req, res) {
-  const { name, email, mobile, countryCode } = req.body;
-  if (!name || !email || !mobile) {
-    return res
-      .status(400)
-      .json({ error: "name, email and mobile are required" });
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_FAILED_LOGINS = 5;
+const LOCKOUT_MINUTES = 15;
+const INVALID_CREDENTIALS = "Incorrect mobile/email or password";
+const TICKET_EXPIRED = "This step has expired. Please start again.";
+const DUPLICATE_ACCOUNT = "An account with that email or mobile number already exists.";
+// Which wording of the sign-up consents the app shows. Bump this whenever the consent
+// text in mobile/src/app/register.js changes, so each saved consent says what was agreed.
+const CONSENT_VERSION = "2026-10-24";
+
+// Only the fields the app needs — never the hash, lockout counters or token version.
+// `hasPassword` is included when the row was loaded with its hash, so Edit Profile knows
+// whether a Google-only account must set a password before changing mobile/email.
+
+function publicUser(user) {
+  const { passwordHash, failedLoginCount: _count, lockedUntil: _lock, tokenVersion: _tv, ...safe } = user;
+  return "passwordHash" in user ? { ...safe, hasPassword: !!passwordHash } : safe;
+}
+//the function for getting the session for the user after the login and registration and social login and also for the corporate login and refreshing the access token and also for the getMe
+// Tokens + profile for a freshly signed-in patient.
+async function sessionFor(userId) {
+  const user = await prisma.user.findUnique({ where: { id: userId }, omit: { passwordHash: false } });
+  return { ...issuePatientTokens(user), user: publicUser(user) };
+}
+
+function throttledResponse(res, result) {
+  return res.status(429).json({
+    error: `Please wait ${result.secondsLeft}s before requesting another code.`,
+    code: "otp_throttled",
+    secondsLeft: result.secondsLeft,
+  });
+}
+// 
+async function otpFailure(req, res, result, { userId = null, step } = {}) {
+  await recordSecurityEvent(req, EVENTS.OTP_FAILED, { userId, detail: { step, reason: result.code } });
+  return res.status(401).json({ error: result.reason, code: result.code, attemptsLeft: result.attemptsLeft });
+}
+
+function ticketFailure(res) {
+  return res.status(401).json({ error: TICKET_EXPIRED, code: "ticket_invalid" });
+}
+
+// Login and forgot-password take either an email or a mobile + its calling code.
+// Returns the Prisma `where` for it and the normalized value, or null if invalid.
+function parseIdentifier({ email, mobile, countryCode }) {
+  if (email) {
+    const clean = normalizeEmail(email);
+    return EMAIL_RE.test(clean) ? { where: { email: clean }, value: clean } : null;
   }
-  if (isDisposableEmail(email)) {
+  const parsed = normalizeMobile(mobile, countryCode);
+  return parsed ? { where: { mobile: parsed.e164 }, value: parsed.e164 } : null;
+}
+
+// Step 1 of registration: the account is created straight away but unverified, with the
+// password already hashed, and an OTP goes to the mobile. Step 2 (registerVerifyOtp)
+// checks it and only then flips isVerified, so nothing can log in to it before the
+// mobile is proven. The email is verified later, on first use (markEmailVerified).
+async function register(req, res) {
+  const { name, email, mobile, countryCode, password } = req.body;
+  if (!name || !email || !mobile || !password) {
+    return res.status(400).json({ error: "name, email, mobile and password are required" });
+  }
+  const cleanName = String(name).trim();
+  if (cleanName.length < 2) return res.status(400).json({ error: "Enter a valid name." });
+  const cleanEmail = normalizeEmail(email);
+  if (!EMAIL_RE.test(cleanEmail)) return res.status(400).json({ error: "Enter a valid email address." });
+  if (isDisposableEmail(cleanEmail)) {
     return res
       .status(400)
       .json({ error: "Please use a permanent email address, not a temporary/disposable one." });
   }
+  const phone = normalizeMobile(mobile, countryCode);
+  if (!phone) return res.status(400).json({ error: "Enter a valid mobile number for the selected country." });
+  const passwordError = passwordProblem(password);
+  if (passwordError) return res.status(400).json({ error: passwordError });
+  const consents = req.body.consents || {};
+  if (consents.termsPrivacy !== true || consents.medicalDisclaimer !== true) {
+    return res.status(400).json({
+      error: "Please accept the Terms & Privacy Policy and the medical disclaimer to continue.",
+      code: "consent_required",
+    });
+  }
 
-  const existing = await prisma.user.findFirst({
-    where: { OR: [{ email }, { mobile }] },
+  const existing = await prisma.user.findMany({
+    where: { OR: [{ email: cleanEmail }, { mobile: phone.e164 }] },
   });
-  if (existing) {
-    return res
-      .status(409)
-      .json({
-        error: "An account with that email or mobile number already exists.",
-      });
+  if (existing.some((u) => u.isVerified)) return res.status(409).json({ error: DUPLICATE_ACCOUNT });
+  // Half-finished registrations hold no data and can't log in, so a new attempt replaces
+  // them — otherwise anyone could block a number or email by starting a sign-up with it.
+  if (existing.length) {
+    await prisma.user.deleteMany({ where: { id: { in: existing.map((u) => u.id) }, isVerified: false } });
   }
 
-  const result = await issueOtp(mobile, "patient_register", countryCode);
-  if (result.throttled) {
-    return res
-      .status(429)
-      .json({
-        error: `Please wait ${result.secondsLeft}s before requesting another code.`,
-        secondsLeft: result.secondsLeft,
-      });
-  }
-  res.json({ message: "OTP sent." });
-}
-//
-async function registerVerifyOtp(req, res) {
-  const { name, email, mobile, countryCode, code } = req.body;
-  if (!name || !email || !mobile || !code) {
-    return res
-      .status(400)
-      .json({ error: "name, email, mobile and code are required" });
-  }
-  if (isDisposableEmail(email)) {
-    return res
-      .status(400)
-      .json({ error: "Please use a permanent email address, not a temporary/disposable one." });
-  }
-
-  const result = await verifyOtp(mobile, "patient_register", code);
-  if (!result.ok) return res.status(401).json({ error: result.reason });
-
-  const existing = await prisma.user.findFirst({
-    where: { OR: [{ email }, { mobile }] },
-  });
-  if (existing) {
-    return res
-      .status(409)
-      .json({
-        error: "An account with that email or mobile number already exists.",
-      });
+  let user;
+  try {
+    user = await prisma.user.create({
+      data: {
+        name: cleanName,
+        email: cleanEmail,
+        mobile: phone.e164,
+        countryCode: phone.countryCode,
+        passwordHash: await hashPassword(password),
+        isVerified: false,
+        consents: {
+          create: [
+            { type: "terms_privacy", accepted: true },
+            { type: "medical_disclaimer", accepted: true },
+            { type: "marketing", accepted: consents.marketing === true },
+          ].map((c) => ({ ...c, version: CONSENT_VERSION, ipAddress: req.ip || null })),
+        },
+      },
+    });
+  } catch (err) {
+    // Two sign-ups for the same email/mobile racing each other: the unique index decides.
+    if (err.code === "P2002") return res.status(409).json({ error: DUPLICATE_ACCOUNT });
+    throw err;
   }
 
-  const user = await prisma.user.create({
-    data: { name, email, mobile, countryCode: countryCode || "+91" },
-  });
-
-  const token = signAccessToken({ sub: user.id, role: "patient" });
-  const refreshToken = signRefreshToken({ sub: user.id, role: "patient" });
-  res.status(201).json({ token, refreshToken, user });
-}
-
-// Mobile numbers are stored without a country code (e.g. "8691930716"), but someone
-// logging in might type "+918691930716" — matching on the exact string would miss
-// their own account. A fixed "last 10 digits" match only works for the countries whose
-// national numbers happen to be 10 digits long (India/UK/US are, but e.g. the UAE's are
-// 9) — so instead we try the typed digits with 0 to 4 leading characters stripped (the
-// range of real-world calling-code lengths) and match whichever one is a stored number.
-// That works for any country without needing a hardcoded table of code lengths.
-async function findUserByIdentifier(identifier) {
-  if (identifier.includes("@")) {
-    return prisma.user.findFirst({ where: { email: identifier } });
-  }
-  const digits = identifier.replace(/\D/g, "");
-  const candidates = [0, 1, 2, 3, 4].map((n) => digits.slice(n)).filter(Boolean);
-  return prisma.user.findFirst({ where: { mobile: { in: candidates } } });
-}
-//
-async function loginRequestOtp(req, res) {
-  const { identifier } = req.body;
-  if (!identifier)
-    return res
-      .status(400)
-      .json({ error: "identifier (email or mobile) is required" });
-
-  const user = await findUserByIdentifier(identifier);
-  if (user) {
-    const result = await issueOtp(identifier, "patient_login", user.countryCode);
-    if (result.throttled) {
-      return res
-        .status(429)
-        .json({
-          error: `Please wait ${result.secondsLeft}s before requesting another code.`,
-          secondsLeft: result.secondsLeft,
-        });
-    }
-  }
-  // Same response whether or not the account exists, so we don't reveal which emails/mobiles are registered.
+  await recordSecurityEvent(req, EVENTS.REGISTER_STARTED, { userId: user.id, identifier: phone.e164 });
+  const result = await issueOtp(phone.e164, "patient_register", phone.countryCode);
+  if (result.throttled) return throttledResponse(res, result);
   res.json({
-    message:
-      "If an account exists for that email or mobile number, an OTP has been sent.",
+    ticket: signTicket({ step: "register_otp", sub: user.id, dest: phone.e164 }),
+    maskedContact: maskContact(phone.e164),
   });
 }
-//
-async function loginVerifyOtp(req, res) {
-  const { identifier, code } = req.body;
-  if (!identifier || !code)
-    return res.status(400).json({ error: "identifier and code are required" });
 
-  const result = await verifyOtp(identifier, "patient_login", code);
-  if (!result.ok) return res.status(401).json({ error: result.reason });
+async function registerVerifyOtp(req, res) {
+  const { ticket, code } = req.body;
+  if (!ticket || !code) return res.status(400).json({ error: "ticket and code are required" });
 
-  const user = await findUserByIdentifier(identifier);
-  if (!user) return res.status(404).json({ error: "Account not found" });
+  const step = readTicket(ticket, "register_otp");
+  if (!step) return ticketFailure(res);
+  // Gone if a newer sign-up replaced it; verified if this is a repeated submit.
+  const pending = await prisma.user.findUnique({ where: { id: step.sub } });
+  if (!pending || pending.isVerified) return ticketFailure(res);
 
-  const token = signAccessToken({ sub: user.id, role: "patient" });
-  const refreshToken = signRefreshToken({ sub: user.id, role: "patient" });
-  res.json({ token, refreshToken, user });
+  const result = await verifyOtp(step.dest, "patient_register", code);
+  if (!result.ok) return otpFailure(req, res, result, { userId: pending.id, step: "register_mobile" });
+
+  // The mobile is proven, so the account is done and they're signed straight in. The
+  // email is verified later, the first time a code sent to it is used (see
+  // markEmailVerified); until then it's never used to reset the password.
+  await prisma.user.update({ where: { id: pending.id }, data: { isVerified: true } });
+  await recordSecurityEvent(req, EVENTS.REGISTER_COMPLETED, { userId: pending.id });
+  res.status(201).json(await sessionFor(pending.id));
 }
-// the function for continue with google
+
+// Called when a code sent to the account's email was just entered correctly — that
+// proves the inbox is theirs. Only email login and email change reach this: both start
+// from someone who already proved they own the account (password, or a signed-in
+// session + password), so a stranger's inbox can't claim someone else's account.
+async function markEmailVerified(req, user) {
+  if (user.emailVerifiedAt) return;
+  await prisma.user.update({ where: { id: user.id }, data: { emailVerifiedAt: new Date() } });
+  await recordSecurityEvent(req, EVENTS.EMAIL_VERIFIED, { userId: user.id, identifier: user.email });
+}
+
+async function recordFailedLogin(user) {
+  const { failedLoginCount } = await prisma.user.update({
+    where: { id: user.id },
+    data: { failedLoginCount: { increment: 1 } },
+    select: { failedLoginCount: true },
+  });
+  if (failedLoginCount < MAX_FAILED_LOGINS) return false;
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { failedLoginCount: 0, lockedUntil: new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000) },
+  });
+  return true;
+}
+
+function lockedResponse(res, lockedUntil) {
+  const minutes = Math.max(Math.ceil((lockedUntil.getTime() - Date.now()) / 60000), 1);
+  return res.status(429).json({
+    error: `Too many failed attempts. Please try again in ${minutes} minute${minutes === 1 ? "" : "s"}.`,
+    code: "account_locked",
+  });
+}
+
+// Step 1 of login: the password is the first factor. Only once it checks out does an OTP
+// go out — to the registered email if they logged in with their email, otherwise to the
+// registered mobile (both were verified at sign-up) — and the ticket returned here is
+// the only way to reach the OTP step. Accounts from before passwords existed (and Google/Apple accounts)
+// have no password: they get the OTP alone and are then made to set one.
+async function login(req, res) {
+  const { password } = req.body;
+  if (!password || (!req.body.email && !req.body.mobile)) {
+    return res.status(400).json({ error: "email or mobile, and password, are required" });
+  }
+
+  const id = parseIdentifier(req.body);
+  const user = id
+    ? await prisma.user.findFirst({ where: { ...id.where, isVerified: true }, omit: { passwordHash: false } })
+    : null;
+
+  const typed = id?.value || req.body.email || req.body.mobile;
+  if (user?.lockedUntil && user.lockedUntil > new Date()) {
+    await recordSecurityEvent(req, EVENTS.LOGIN_BLOCKED_LOCKED, { userId: user.id, identifier: typed });
+    return lockedResponse(res, user.lockedUntil);
+  }
+
+  // The code goes where they said they are: email login -> email, mobile login -> SMS.
+  // Accounts without a mobile (older Google/Apple ones) always get it by email. One
+  // exception: an account with no password whose email isn't verified yet gets it on the
+  // mobile, since for them the code is the only check and the inbox isn't proven theirs.
+  const emailIsSafe = user && (user.emailVerifiedAt || user.passwordHash || !user.mobile);
+  const dest = user ? (req.body.email && emailIsSafe ? user.email : user.mobile || user.email) : null;
+
+  if (user && !user.passwordHash) {
+    const result = await issueOtp(dest, "patient_login", user.countryCode);
+    if (result.throttled) return throttledResponse(res, result);
+    return res.json({
+      ticket: signTicket({ step: "login_otp", sub: user.id, dest, needsPassword: true }),
+      maskedContact: maskContact(dest),
+      needsPasswordSetup: true,
+    });
+  }
+
+  const matches = await comparePassword(password, user?.passwordHash || DUMMY_PASSWORD_HASH);
+  if (!user || !matches) {
+    await recordSecurityEvent(req, EVENTS.LOGIN_FAILED, {
+      userId: user?.id ?? null,
+      identifier: typed,
+      detail: { reason: user ? "wrong_password" : "no_account" },
+    });
+    if (user && (await recordFailedLogin(user))) {
+      await recordSecurityEvent(req, EVENTS.ACCOUNT_LOCKED, { userId: user.id, detail: { minutes: LOCKOUT_MINUTES } });
+      return lockedResponse(res, new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000));
+    }
+    return res.status(401).json({ error: INVALID_CREDENTIALS, code: "invalid_credentials" });
+  }
+
+  if (user.failedLoginCount || user.lockedUntil) {
+    await prisma.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null } });
+  }
+
+  const result = await issueOtp(dest, "patient_login", user.countryCode);
+  if (result.throttled) return throttledResponse(res, result);
+  res.json({
+    ticket: signTicket({ step: "login_otp", sub: user.id, dest }),
+    maskedContact: maskContact(dest),
+  });
+}
+
+// Step 2 of login. Normally issues the session; for an account that still has no
+// password it instead hands back a set-password ticket, so there's no way into the app
+// without one.
+async function loginVerifyOtp(req, res) {
+  const { ticket, code } = req.body;
+  if (!ticket || !code) return res.status(400).json({ error: "ticket and code are required" });
+
+  const step = readTicket(ticket, "login_otp");
+  if (!step) return ticketFailure(res);
+  const user = await prisma.user.findFirst({
+    where: { id: step.sub, isVerified: true },
+    omit: { passwordHash: false },
+  });
+  if (!user) return ticketFailure(res);
+
+  const result = await verifyOtp(step.dest, "patient_login", code);
+  if (!result.ok) return otpFailure(req, res, result, { userId: user.id, step: "login" });
+  // Password + code from the inbox: proves both the account and the email are theirs.
+  if (step.dest === user.email && user.passwordHash) await markEmailVerified(req, user);
+
+  if (!user.passwordHash) {
+    return res.json({
+      needsPasswordSetup: true,
+      setPasswordTicket: signTicket({ step: "set_password", sub: user.id, reason: "setup", tv: user.tokenVersion }),
+    });
+  }
+  await recordSecurityEvent(req, EVENTS.LOGIN_SUCCEEDED, { userId: user.id, detail: { method: "password_otp" } });
+  res.json(await sessionFor(user.id));
+}
+
+// Forgot password, step 1. The code goes to whichever channel was typed (mobile or
+// email), proving the person controls it. The same response comes back whether or not
+// an account exists; a ticket without an account just never verifies.
+async function forgotPassword(req, res) {
+  if (!req.body.email && !req.body.mobile) {
+    return res.status(400).json({ error: "email or mobile is required" });
+  }
+  const id = parseIdentifier(req.body);
+  if (!id) return res.status(400).json({ error: "Enter a valid mobile number or email address." });
+
+  const user = await prisma.user.findFirst({ where: { ...id.where, isVerified: true } });
+  // An email nobody has proven yet can't be trusted to reset the password (it may be a
+  // stranger's inbox typed at sign-up), so the code goes to the verified mobile instead.
+  const dest = user && req.body.email && !user.emailVerifiedAt && user.mobile ? user.mobile : id.value;
+  if (user) {
+    const result = await issueOtp(dest, "patient_password_reset", user.countryCode);
+    if (result.throttled) return throttledResponse(res, result);
+  }
+  await recordSecurityEvent(req, EVENTS.PASSWORD_RESET_REQUESTED, {
+    userId: user?.id ?? null,
+    identifier: id.value,
+    detail: { accountFound: !!user },
+  });
+  res.json({
+    ticket: signTicket({ step: "reset_otp", sub: user?.id ?? null, dest }),
+    maskedContact: maskContact(dest),
+  });
+}
+
+async function verifyPasswordResetOtp(req, res) {
+  const { ticket, code } = req.body;
+  if (!ticket || !code) return res.status(400).json({ error: "ticket and code are required" });
+
+  const step = readTicket(ticket, "reset_otp");
+  if (!step) return ticketFailure(res);
+  // No account behind this ticket: answer exactly like a wrong code would.
+  if (!step.sub) return otpFailure(req, res, { code: "otp_invalid", reason: "Incorrect code." }, { step: "password_reset" });
+
+  const result = await verifyOtp(step.dest, "patient_password_reset", code);
+  if (!result.ok) return otpFailure(req, res, result, { userId: step.sub, step: "password_reset" });
+
+  const user = await prisma.user.findFirst({ where: { id: step.sub, isVerified: true } });
+  if (!user) return ticketFailure(res);
+  res.json({
+    setPasswordTicket: signTicket({ step: "set_password", sub: user.id, reason: "reset", tv: user.tokenVersion }),
+  });
+}
+
+// Final step of both forgot-password ("reset") and the first-login setup for accounts
+// that had no password ("setup"). Bumping tokenVersion signs out every existing
+// session and also makes this ticket single-use, since it carries the old version.
+async function setPassword(req, res) {
+  const { ticket, password } = req.body;
+  if (!ticket || !password) return res.status(400).json({ error: "ticket and password are required" });
+
+  const step = readTicket(ticket, "set_password");
+  if (!step) return ticketFailure(res);
+  const passwordError = passwordProblem(password);
+  if (passwordError) return res.status(400).json({ error: passwordError });
+
+  const updated = await prisma.user.updateMany({
+    where: { id: step.sub, isVerified: true, tokenVersion: step.tv },
+    data: {
+      passwordHash: await hashPassword(password),
+      tokenVersion: { increment: 1 },
+      failedLoginCount: 0,
+      lockedUntil: null,
+    },
+  });
+  if (updated.count === 0) return ticketFailure(res);
+
+  await recordSecurityEvent(req, step.reason === "reset" ? EVENTS.PASSWORD_RESET_COMPLETED : EVENTS.PASSWORD_SET, {
+    userId: step.sub,
+  });
+  if (step.reason === "reset") {
+    return res.json({ message: "Password updated. Please log in with your new password." });
+  }
+  await recordSecurityEvent(req, EVENTS.LOGIN_SUCCEEDED, { userId: step.sub, detail: { method: "otp_then_new_password" } });
+  res.json(await sessionFor(step.sub));
+}
+
+// Codes from any patient step can be resent with that step's ticket.
+const TICKET_PURPOSE = {
+  register_otp: "patient_register",
+  login_otp: "patient_login",
+  reset_otp: "patient_password_reset",
+  change_contact_otp: (step) => (step.kind === "mobile" ? "patient_change_mobile" : "patient_change_email"),
+};
+const REGISTRATION_STEPS = ["register_otp"];
+
+function purposeFor(step) {
+  const purpose = TICKET_PURPOSE[step.step];
+  return typeof purpose === "function" ? purpose(step) : purpose;
+}
+
+async function resendOtp(req, res) {
+  const step = readTicket(req.body.ticket, Object.keys(TICKET_PURPOSE));
+  if (!step) return ticketFailure(res);
+  const sent = { message: "A new code has been sent." };
+  if (!step.sub) return res.json(sent); // forgot-password for an account that doesn't exist
+
+  const user = await prisma.user.findUnique({ where: { id: step.sub } });
+  const stillValid = user
+    && (REGISTRATION_STEPS.includes(step.step) ? !user.isVerified : user.isVerified)
+    && (step.tv === undefined || step.tv === user.tokenVersion);
+  if (!stillValid) return ticketFailure(res);
+
+  const result = await issueOtp(step.dest, purposeFor(step), step.countryCode || user.countryCode);
+  if (result.throttled) return throttledResponse(res, result);
+  res.json(sent);
+}
+
+// Google and Apple have already authenticated the person, so no password or OTP here.
+// They only sign in to an existing account (see findSocialUser); new people sign up with
+// the form so the consents, mobile and password are always collected.
+function socialNoAccount(res) {
+  return res.status(404).json({ error: "No account found for this email. Please sign up first.", code: "no_account" });
+}
+
+function socialEmailInUse(res) {
+  return res.status(409).json({
+    error: "An account already uses this email. Log in with your mobile/email and password instead.",
+    code: "email_in_use",
+  });
+}
+
 async function googleLogin(req, res) {
   const { idToken } = req.body;
   if (!idToken) return res.status(400).json({ error: "idToken is required" });
@@ -161,12 +440,23 @@ async function googleLogin(req, res) {
     return res.status(401).json({ error: "Invalid Google token" });
   }
 
-  const user = await findOrCreateSocialUser({ provider: "google", ...payload });
-  const token = signAccessToken({ sub: user.id, role: "patient" });
-  const refreshToken = signRefreshToken({ sub: user.id, role: "patient" });
-  res.json({ token, refreshToken, user });
+  let user;
+  try {
+    user = await findSocialUser({ provider: "google", ...payload });
+  } catch (err) {
+    if (err instanceof SocialEmailInUseError || err instanceof SocialNoAccountError) {
+      await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_REFUSED, {
+        identifier: payload.email,
+        detail: { provider: "google", reason: err instanceof SocialNoAccountError ? "no_account" : "email_not_verified" },
+      });
+      return err instanceof SocialNoAccountError ? socialNoAccount(res) : socialEmailInUse(res);
+    }
+    throw err;
+  }
+  await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_SUCCEEDED, { userId: user.id, detail: { provider: "google" } });
+  res.json(await sessionFor(user.id));
 }
-//the function for apple login with the help of name and password
+
 async function appleLogin(req, res) {
   const { idToken, name } = req.body;
   if (!idToken) return res.status(400).json({ error: "idToken is required" });
@@ -178,10 +468,21 @@ async function appleLogin(req, res) {
     return res.status(401).json({ error: "Invalid Apple token" });
   }
 
-  const user = await findOrCreateSocialUser({ provider: "apple", ...payload, name });
-  const token = signAccessToken({ sub: user.id, role: "patient" });
-  const refreshToken = signRefreshToken({ sub: user.id, role: "patient" });
-  res.json({ token, refreshToken, user });
+  let user;
+  try {
+    user = await findSocialUser({ provider: "apple", ...payload, name });
+  } catch (err) {
+    if (err instanceof SocialEmailInUseError || err instanceof SocialNoAccountError) {
+      await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_REFUSED, {
+        identifier: payload.email,
+        detail: { provider: "apple", reason: err instanceof SocialNoAccountError ? "no_account" : "email_not_verified" },
+      });
+      return err instanceof SocialNoAccountError ? socialNoAccount(res) : socialEmailInUse(res);
+    }
+    throw err;
+  }
+  await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_SUCCEEDED, { userId: user.id, detail: { provider: "apple" } });
+  res.json(await sessionFor(user.id));
 }
 
 // Step 1 of corporate login: password gets you an OTP, not a token — the actual
@@ -218,7 +519,7 @@ async function corporateVerifyOtp(req, res) {
     return res.status(400).json({ error: "email and code are required" });
 
   const result = await verifyOtp(email, "corporate_login", code);
-  if (!result.ok) return res.status(401).json({ error: result.reason });
+  if (!result.ok) return res.status(401).json({ error: result.reason, code: result.code });
 
   const corporateUser = await prisma.corporateUser.findUnique({
     where: { email },
@@ -239,7 +540,7 @@ async function corporateVerifyOtp(req, res) {
   const { passwordHash: _omit, ...safeCorporateUser } = corporateUser;
   res.json({ token, refreshToken, corporateUser: safeCorporateUser });
 }
-//
+
 async function refreshAccessToken(req, res) {
   const { refreshToken } = req.body;
   if (!refreshToken)
@@ -257,6 +558,18 @@ async function refreshAccessToken(req, res) {
     role: payload.role,
     ...(payload.corporateId != null && { corporateId: payload.corporateId }),
   };
+  // A patient session dies once the password is reset (tokenVersion moves on). Tokens
+  // minted before tokenVersion existed carry no `tv` and count as version 0.
+  if (payload.role === "patient") {
+    const user = await prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { tokenVersion: true, isVerified: true },
+    });
+    if (!user || !user.isVerified || user.tokenVersion !== (payload.tv ?? 0)) {
+      return res.status(401).json({ error: "Your session has ended. Please log in again." });
+    }
+    claims.tv = user.tokenVersion;
+  }
   const token = signAccessToken(claims);
   const newRefreshToken = signRefreshToken(claims);
   res.json({ token, refreshToken: newRefreshToken });
@@ -274,45 +587,120 @@ async function getMe(req, res) {
     return res.json({ corporateUser: safeCorporateUser });
   }
 
-  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+  const user = await prisma.user.findUnique({ where: { id: req.user.id }, omit: { passwordHash: false } });
   if (!user) return res.status(404).json({ error: "Account not found" });
-  res.json({ user });
+  res.json({ user: publicUser(user) });
 }
-// the function for updating the profile using email
+// Name only. Mobile and email are where the login code and password resets go, so they
+// change through requestContactChange/verifyContactChange (password + OTP) instead.
 async function updateMe(req, res) {
-  const { name, mobile, email, countryCode } = req.body;
-
-  if (mobile) {
-    const existing = await prisma.user.findFirst({
-      where: { mobile, NOT: { id: req.user.id } },
-    });
-    if (existing)
-      return res
-        .status(409)
-        .json({
-          error: "That mobile number is already in use by another account.",
-        });
+  if (req.body.mobile !== undefined || req.body.email !== undefined || req.body.countryCode !== undefined) {
+    return res.status(400).json({ error: "Mobile number and email are changed with a verification code, not here." });
   }
-  if (email) {
-    const existing = await prisma.user.findFirst({
-      where: { email, NOT: { id: req.user.id } },
-    });
-    if (existing)
-      return res
-        .status(409)
-        .json({ error: "That email is already in use by another account." });
-  }
+  const name = req.body.name === undefined ? undefined : String(req.body.name).trim();
+  if (name !== undefined && name.length < 2) return res.status(400).json({ error: "Enter a valid name." });
 
   const user = await prisma.user.update({
     where: { id: req.user.id },
-    data: {
-      ...(name && { name }),
-      ...(mobile && { mobile }),
-      ...(email && { email }),
-      ...(countryCode && { countryCode }),
-    },
+    data: { ...(name && { name }) },
+    omit: { passwordHash: false },
   });
-  res.json({ user });
+  res.json({ user: publicUser(user) });
+}
+
+// Change mobile/email, step 1: the current password, then a code to the NEW value. A
+// stolen session alone (no password) can't move either login factor to someone else.
+async function requestContactChange(req, res) {
+  const { kind, password } = req.body;
+  if (kind !== "mobile" && kind !== "email") return res.status(400).json({ error: 'kind must be "mobile" or "email"' });
+  if (!password) return res.status(400).json({ error: "password is required" });
+
+  const user = await prisma.user.findUnique({ where: { id: req.user.id }, omit: { passwordHash: false } });
+  if (!user || !user.isVerified) return res.status(404).json({ error: "Account not found" });
+  if (!user.passwordHash) {
+    return res.status(403).json({ error: "Set a password to change your mobile or email.", code: "password_required" });
+  }
+  if (user.lockedUntil && user.lockedUntil > new Date()) return lockedResponse(res, user.lockedUntil);
+  if (!(await comparePassword(password, user.passwordHash))) {
+    await recordSecurityEvent(req, EVENTS.CONTACT_CHANGE_FAILED, { userId: user.id, detail: { kind, reason: "wrong_password" } });
+    if (await recordFailedLogin(user)) {
+      await recordSecurityEvent(req, EVENTS.ACCOUNT_LOCKED, { userId: user.id, detail: { minutes: LOCKOUT_MINUTES } });
+      return lockedResponse(res, new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000));
+    }
+    return res.status(401).json({ error: "Incorrect password.", code: "invalid_password" });
+  }
+  if (user.failedLoginCount) {
+    await prisma.user.update({ where: { id: user.id }, data: { failedLoginCount: 0 } });
+  }
+
+  let dest;
+  let countryCode;
+  if (kind === "mobile") {
+    const phone = normalizeMobile(req.body.mobile, req.body.countryCode);
+    if (!phone) return res.status(400).json({ error: "Enter a valid mobile number for the selected country." });
+    if (phone.e164 === user.mobile) return res.status(400).json({ error: "That is already your mobile number." });
+    dest = phone.e164;
+    countryCode = phone.countryCode;
+  } else {
+    dest = normalizeEmail(req.body.email);
+    if (!EMAIL_RE.test(dest)) return res.status(400).json({ error: "Enter a valid email address." });
+    if (isDisposableEmail(dest)) {
+      return res.status(400).json({ error: "Please use a permanent email address, not a temporary/disposable one." });
+    }
+    if (dest === user.email) return res.status(400).json({ error: "That is already your email address." });
+  }
+  const taken = await prisma.user.findFirst({ where: { [kind]: dest, isVerified: true, NOT: { id: user.id } } });
+  if (taken) {
+    return res.status(409).json({
+      error: kind === "mobile" ? "That mobile number is already in use by another account." : "That email is already in use by another account.",
+    });
+  }
+
+  const result = await issueOtp(dest, kind === "mobile" ? "patient_change_mobile" : "patient_change_email", countryCode);
+  if (result.throttled) return throttledResponse(res, result);
+  res.json({
+    ticket: signTicket({ step: "change_contact_otp", sub: user.id, kind, dest, countryCode, tv: user.tokenVersion }),
+    maskedContact: maskContact(dest),
+  });
+}
+
+// Change mobile/email, step 2: the code from the new number/inbox. Needs the same signed-in
+// account that started it, and a ticket from before a password reset no longer works.
+async function verifyContactChange(req, res) {
+  const { ticket, code } = req.body;
+  if (!ticket || !code) return res.status(400).json({ error: "ticket and code are required" });
+
+  const step = readTicket(ticket, "change_contact_otp");
+  if (!step || step.sub !== req.user.id) return ticketFailure(res);
+  const current = await prisma.user.findUnique({ where: { id: req.user.id } });
+  if (!current || !current.isVerified || current.tokenVersion !== step.tv) return ticketFailure(res);
+
+  const result = await verifyOtp(step.dest, purposeFor(step), code);
+  if (!result.ok) return otpFailure(req, res, result, { userId: req.user.id, step: "contact_change" });
+
+  // A half-finished sign-up holding this number/email would otherwise trip the unique index.
+  await prisma.user.deleteMany({ where: { [step.kind]: step.dest, isVerified: false } });
+  let user;
+  try {
+    user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: step.kind === "mobile"
+        ? { mobile: step.dest, countryCode: step.countryCode }
+        : { email: step.dest, emailVerifiedAt: new Date() },
+      omit: { passwordHash: false },
+    });
+  } catch (err) {
+    // Someone else verified the same number/email in the meantime.
+    if (err.code === "P2002") return res.status(409).json({ error: "That is now in use by another account." });
+    throw err;
+  }
+  // Old value masked, new one masked too: enough to trace a takeover, no full numbers.
+  await recordSecurityEvent(req, step.kind === "mobile" ? EVENTS.MOBILE_CHANGED : EVENTS.EMAIL_CHANGED, {
+    userId: req.user.id,
+    identifier: step.dest,
+    detail: { from: maskContact(step.kind === "mobile" ? current.mobile || "" : current.email) || null },
+  });
+  res.json({ user: publicUser(user) });
 }
 // the function for saving the push token in the db for popup notification and we need ios account for it while doing the login task with it we'll do the notification task as well
 async function savePushToken(req, res) {
@@ -323,8 +711,8 @@ async function savePushToken(req, res) {
   res.json({ message: "Push token saved." });
 }
 
-// Corporate accounts still use a password, so "forgot password" only applies to them —
-// patients authenticate via OTP and have nothing to reset.
+// Corporate forgot/reset password (email only). Patients have their own flow above:
+// forgotPassword -> verifyPasswordResetOtp -> setPassword.
 async function requestPasswordReset(req, res) {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "email is required" });
@@ -410,10 +798,14 @@ async function corporateLogout(req, res) {
 }
 
 module.exports = {
-  registerRequestOtp,
+  register,
   registerVerifyOtp,
-  loginRequestOtp,
+  login,
   loginVerifyOtp,
+  forgotPassword,
+  verifyPasswordResetOtp,
+  setPassword,
+  resendOtp,
   googleLogin,
   appleLogin,
   corporateLogin,
@@ -421,6 +813,8 @@ module.exports = {
   refreshAccessToken,
   getMe,
   updateMe,
+  requestContactChange,
+  verifyContactChange,
   savePushToken,
   requestPasswordReset,
   resetPassword,

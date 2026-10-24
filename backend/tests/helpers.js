@@ -5,8 +5,9 @@ const { app } = require('../src/app');
 const { prisma } = require('../src/db/prisma');
 const { deliverOtp } = require('../src/modules/auth/otp-delivery.service');
 
+// A valid 10-digit Indian mobile (registration validates numbers per country now).
 function uniqueMobile() {
-  return `9${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 1000)}`;
+  return `9${Date.now().toString().slice(-6)}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
 }
 function uniqueEmail(tag = 'test') {
   return `${tag}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
@@ -17,14 +18,17 @@ function codeSentTo(identifier) {
   return call?.[call.length > 0 ? 1 : 0];
 }
 
-// Registers a brand-new patient through the real OTP flow and returns their token.
-async function createPatient({ name = 'Test Patient' } = {}) {
-  const mobile = uniqueMobile();
+// Registers a brand-new patient through the real password + OTP flow and returns their
+// token. `mobile` comes back in E.164, the form it's stored and sent to in.
+async function createPatient({ name = 'Test Patient', password = 'TestPass123' } = {}) {
+  const mobile = `+91${uniqueMobile()}`;
   const email = uniqueEmail('patient');
-  await request(app).post('/auth/register/request-otp').send({ name, email, mobile });
-  const code = codeSentTo(mobile);
-  const res = await request(app).post('/auth/register/verify-otp').send({ name, email, mobile, code });
-  return { token: res.body.token, user: res.body.user, mobile, email };
+  const reg = await request(app).post('/auth/register').send({
+    name, email, mobile, countryCode: '+91', password,
+    consents: { termsPrivacy: true, medicalDisclaimer: true, marketing: false },
+  });
+  const res = await request(app).post('/auth/register/verify-otp').send({ ticket: reg.body.ticket, code: codeSentTo(mobile) });
+  return { token: res.body.token, refreshToken: res.body.refreshToken, user: res.body.user, mobile, email, password };
 }
 
 // Creates a corporate + corporate login directly (there's no public corporate sign-up endpoint —

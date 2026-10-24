@@ -29,4 +29,41 @@ const otpRequestLimiter = rateLimit({
   message: { error: 'Too many verification codes requested. Please wait a few minutes before trying again.' },
 });
 
-module.exports = { loginLimiter, otpRequestLimiter };
+// Every endpoint that can send a code, keyed by IP alone: caps how many different
+// numbers/emails one source can make us text, on top of the per-destination cap
+// enforced in issueOtp (which also covers many IPs aiming at one phone).
+const otpSendIpLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipInTest,
+  message: { error: 'Too many verification codes requested. Please try again later.' },
+});
+
+// Patient password login. Only failures count, so a shared office/mobile-carrier IP
+// isn't blocked by its own successful logins; per-account lockout lives in the
+// controller and catches an attacker spreading guesses across many IPs.
+const patientLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  skip: skipInTest,
+  message: { error: 'Too many login attempts. Please try again in a few minutes.' },
+});
+
+// OTP verify endpoints. Each code already dies after 5 wrong tries; this stops one IP
+// cycling through many tickets.
+const otpVerifyLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  skip: skipInTest,
+  message: { error: 'Too many attempts. Please try again in a few minutes.' },
+});
+
+module.exports = { loginLimiter, otpRequestLimiter, otpSendIpLimiter, patientLoginLimiter, otpVerifyLimiter };

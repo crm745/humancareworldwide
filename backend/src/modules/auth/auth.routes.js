@@ -1,11 +1,21 @@
 const { Router } = require('express');
 const { requireAuth } = require('../../middleware/auth.middleware');
-const { loginLimiter, otpRequestLimiter } = require('../../middleware/rate-limit.middleware');
 const {
-  registerRequestOtp,
+  loginLimiter,
+  otpRequestLimiter,
+  otpSendIpLimiter,
+  patientLoginLimiter,
+  otpVerifyLimiter,
+} = require('../../middleware/rate-limit.middleware');
+const {
+  register,
   registerVerifyOtp,
-  loginRequestOtp,
+  login,
   loginVerifyOtp,
+  forgotPassword,
+  verifyPasswordResetOtp,
+  setPassword,
+  resendOtp,
   googleLogin,
   appleLogin,
   corporateLogin,
@@ -13,6 +23,8 @@ const {
   refreshAccessToken,
   getMe,
   updateMe,
+  requestContactChange,
+  verifyContactChange,
   savePushToken,
   requestPasswordReset,
   resetPassword,
@@ -22,11 +34,16 @@ const {
 
 const authRouter = Router();
 
-// Patients authenticate via OTP, Google, or Apple — no password.
-authRouter.post('/register/request-otp', otpRequestLimiter, registerRequestOtp);
-authRouter.post('/register/verify-otp', registerVerifyOtp);
-authRouter.post('/login/request-otp', otpRequestLimiter, loginRequestOtp);
-authRouter.post('/login/verify-otp', loginVerifyOtp);
+// Patients: password first, then an OTP to their mobile (each step hands back a ticket
+// the next step requires). Google/Apple skip both, since the provider authenticated them.
+authRouter.post('/register', otpSendIpLimiter, otpRequestLimiter, register);
+authRouter.post('/register/verify-otp', otpVerifyLimiter, registerVerifyOtp);
+authRouter.post('/login', patientLoginLimiter, login);
+authRouter.post('/login/verify-otp', otpVerifyLimiter, loginVerifyOtp);
+authRouter.post('/otp/resend', otpSendIpLimiter, resendOtp);
+authRouter.post('/password/forgot', otpSendIpLimiter, otpRequestLimiter, forgotPassword);
+authRouter.post('/password/forgot/verify-otp', otpVerifyLimiter, verifyPasswordResetOtp);
+authRouter.post('/password/set', setPassword);
 authRouter.post('/google', googleLogin);
 authRouter.post('/apple', appleLogin);
 
@@ -37,7 +54,7 @@ authRouter.post('/corporate/otp/verify', corporateVerifyOtp);
 authRouter.post('/forgot-password', otpRequestLimiter, requestPasswordReset);
 authRouter.post('/reset-password', resetPassword);
 // Same two handlers, reachable under /corporate/* too — the corporate-portal web app calls
-// them by this name; patients never had a password to reset in the first place.
+// them by this name. Patients reset through /password/* above.
 authRouter.post('/corporate/forgot-password', otpRequestLimiter, requestPasswordReset);
 authRouter.post('/corporate/reset-password', resetPassword);
 authRouter.post('/corporate/change-password', requireAuth(['corporate']), changePassword);
@@ -46,6 +63,9 @@ authRouter.post('/corporate/logout', corporateLogout);
 authRouter.post('/refresh', refreshAccessToken);
 authRouter.get('/me', requireAuth(), getMe);
 authRouter.patch('/me', requireAuth(['patient']), updateMe);
+// Mobile/email changes: current password, then an OTP to the new value.
+authRouter.post('/me/contact', requireAuth(['patient']), patientLoginLimiter, otpSendIpLimiter, requestContactChange);
+authRouter.post('/me/contact/verify-otp', requireAuth(['patient']), otpVerifyLimiter, verifyContactChange);
 authRouter.post('/push-token', requireAuth(['patient']), savePushToken);
 
 module.exports = { authRouter };

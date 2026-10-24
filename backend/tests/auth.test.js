@@ -8,130 +8,768 @@ const request = require('supertest');
 const { app } = require('../src/app');
 const { prisma } = require('../src/db/prisma');
 const { deliverOtp } = require('../src/modules/auth/otp-delivery.service');
-const { createCorporateUserAndLogin } = require('./helpers');
+const { createCorporateUserAndLogin, createPatient } = require('./helpers');
 
-// Each test run uses a fresh, unique mobile/email so tests never collide with each
-// other or with leftover data from a previous run.
+const PASSWORD = 'TestPass123';
+
+// Each test uses a fresh, unique mobile/email so tests never collide with each other or
+// with leftover data from a previous run. A valid 10-digit Indian mobile, national form.
 function uniqueMobile() {
-  return `9${Date.now().toString().slice(-9)}`;
+  return `9${Date.now().toString().slice(-6)}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
 }
 function uniqueEmail() {
   return `test-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
 }
 
-// Finds the MOST RECENT call for this identifier — a test flow can trigger more than
-// one OTP to the same identifier (e.g. a login OTP during setup, then a separate
-// password-reset OTP later), and it's always the latest one that's still valid.
+// Finds the MOST RECENT call for this identifier — a flow can send more than one OTP
+// to the same identifier, and it's always the latest one that's still valid.
 function codeSentTo(identifier) {
   const calls = deliverOtp.mock.calls.filter((c) => c[0] === identifier);
   return calls[calls.length - 1]?.[1];
+}
+function sendCount(identifier) {
+  return deliverOtp.mock.calls.filter((c) => c[0] === identifier).length;
+}
+
+// Pushes this destination's codes past the 30s resend cooldown, so a test can trigger
+// the next OTP without waiting for real time to pass.
+async function skipCooldown(identifier) {
+  await prisma.otpCode.updateMany({
+    where: { identifier },
+    data: { createdAt: new Date(Date.now() - 60 * 1000) },
+  });
+}
+
+function registerBody(overrides = {}) {
+  return {
+    name: 'Test User', email: uniqueEmail(), mobile: uniqueMobile(), countryCode: '+91', password: PASSWORD,
+    consents: { termsPrivacy: true, medicalDisclaimer: true, marketing: false },
+    ...overrides,
+  };
+}
+
+// A patient from before passwords existed: verified, no password_hash.
+async function createLegacyPatient() {
+  const mobile = `+91${uniqueMobile()}`;
+  const user = await prisma.user.create({ data: { name: 'Legacy User', email: uniqueEmail(), mobile, countryCode: '+91' } });
+  return { user, mobile };
+}
+
+async function loginToOtpStep(body) {
+  return request(app).post('/auth/login').send({ password: PASSWORD, ...body });
+}
+
+// Email + password login finished with the code from the inbox — the first use of the
+// email, which is what verifies it. Returns the session ({ token, refreshToken, user }).
+async function verifyEmailByLogin(patient) {
+  await skipCooldown(patient.email);
+  const login = await loginToOtpStep({ email: patient.email, password: patient.password });
+  const res = await request(app).post('/auth/login/verify-otp').send({ ticket: login.body.ticket, code: codeSentTo(patient.email) });
+  return res.body;
 }
 
 afterAll(async () => {
   await prisma.$disconnect();
 });
 
-describe('POST /auth/register/request-otp', () => {
+describe('POST /auth/register', () => {
   it('rejects a request missing required fields', async () => {
-    const res = await request(app).post('/auth/register/request-otp').send({ name: 'Test' });
+    const res = await request(app).post('/auth/register').send({ name: 'Test' });
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects a registration without a password', async () => {
+    const res = await request(app).post('/auth/register').send(registerBody({ password: undefined }));
     expect(res.status).toBe(400);
   });
 
   it('rejects a disposable email domain', async () => {
-    const res = await request(app)
-      .post('/auth/register/request-otp')
-      .send({ name: 'Test User', email: 'someone@mailinator.com', mobile: uniqueMobile() });
+    const res = await request(app).post('/auth/register').send(registerBody({ email: 'someone@mailinator.com' }));
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/temporary|disposable/i);
   });
 
-  it('sends an OTP for a valid new registration', async () => {
-    const mobile = uniqueMobile();
-    const res = await request(app)
-      .post('/auth/register/request-otp')
-      .send({ name: 'Test User', email: uniqueEmail(), mobile });
-    expect(res.status).toBe(200);
-    expect(codeSentTo(mobile)).toMatch(/^\d{6}$/);
+  it('rejects a mobile number that is not valid for the selected country', async () => {
+    const res = await request(app).post('/auth/register').send(registerBody({ mobile: '12345' }));
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/mobile/i);
   });
 
-  // Regression test for a real bug: the SMS-sending step used to hardcode +91 for
-  // every registration regardless of which country code the person actually picked,
-  // so a UAE/UK/US number would get sent to the wrong country entirely.
-  it('passes the actual selected country code through to OTP delivery, not a hardcoded one', async () => {
-    const mobile = uniqueMobile();
-    await request(app)
-      .post('/auth/register/request-otp')
-      .send({ name: 'UAE Test User', email: uniqueEmail(), mobile, countryCode: '+971' });
+  it.each([
+    ['too short', 'abc123'],
+    ['no number', 'abcdefghij'],
+    ['no letter', '1234567890'],
+  ])('rejects a password that is %s', async (_label, password) => {
+    const res = await request(app).post('/auth/register').send(registerBody({ password }));
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/password/i);
+  });
 
-    const call = deliverOtp.mock.calls.find((c) => c[0] === mobile);
+  it('creates an unverified account, stores normalized contact details, and texts an OTP', async () => {
+    const national = uniqueMobile();
+    const email = uniqueEmail();
+    const res = await request(app)
+      .post('/auth/register')
+      .send(registerBody({ mobile: `0${national}`, email: `  ${email.toUpperCase()} ` }));
+    expect(res.status).toBe(200);
+    expect(res.body.ticket).toBeTruthy();
+    expect(res.body.maskedContact).toBe(`+91 •••••${national.slice(-4)}`);
+
+    // Trunk zero dropped, E.164 stored and texted; email trimmed + lowercased.
+    const e164 = `+91${national}`;
+    expect(codeSentTo(e164)).toMatch(/^\d{6}$/);
+    const user = await prisma.user.findUnique({ where: { email }, omit: { passwordHash: false } });
+    expect(user.mobile).toBe(e164);
+    expect(user.isVerified).toBe(false);
+    expect(user.passwordHash).toMatch(/^\$2[aby]\$/); // bcrypt, never plain text
+    expect(user.passwordHash).not.toContain(PASSWORD);
+  });
+
+  // Regression test for a real bug: the SMS step used to hardcode +91 for every
+  // registration regardless of the country code the person actually picked.
+  it('sends the OTP to the selected country, not a hardcoded one', async () => {
+    // A unique 9-digit UAE mobile ("50" + 7 digits).
+    const uaeMobile = `50${Date.now().toString().slice(-4)}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+    const res = await request(app).post('/auth/register').send(registerBody({ mobile: uaeMobile, countryCode: '+971' }));
+    expect(res.status).toBe(200);
+    const call = deliverOtp.mock.calls.filter((c) => c[0] === `+971${uaeMobile}`).pop();
     expect(call[3]).toBe('+971'); // deliverOtp(identifier, code, purpose, countryCode)
   });
 });
 
-describe('full register -> verify flow', () => {
-  it('creates an account with a correct OTP, and rejects a repeat registration', async () => {
-    const mobile = uniqueMobile();
-    const email = uniqueEmail();
+describe('register -> verify flow', () => {
+  it('needs only the mobile code, then logs straight in; the email is not verified yet', async () => {
+    const body = registerBody();
+    const reg = await request(app).post('/auth/register').send(body);
 
-    await request(app).post('/auth/register/request-otp').send({ name: 'Flow Test', email, mobile });
-    const code = codeSentTo(mobile);
+    // Before the code: can't log in.
+    const early = await loginToOtpStep({ email: body.email });
+    expect(early.status).toBe(401);
 
-    const verifyRes = await request(app)
-      .post('/auth/register/verify-otp')
-      .send({ name: 'Flow Test', email, mobile, code });
+    const verifyRes = await request(app).post('/auth/register/verify-otp').send({ ticket: reg.body.ticket, code: codeSentTo(`+91${body.mobile}`) });
     expect(verifyRes.status).toBe(201);
     expect(verifyRes.body.token).toBeTruthy();
-    expect(verifyRes.body.user.mobile).toBe(mobile);
+    expect(verifyRes.body.refreshToken).toBeTruthy();
+    expect(verifyRes.body.user.mobile).toBe(`+91${body.mobile}`);
+    expect(verifyRes.body.user.isVerified).toBe(true);
+    expect(verifyRes.body.user.emailVerifiedAt).toBeNull();
+    expect(verifyRes.body.user.hasPassword).toBe(true);
+    expect(verifyRes.body.user).not.toHaveProperty('passwordHash');
+    expect(sendCount(body.email)).toBe(0); // no email code at sign-up
 
-    // Same email/mobile again should now be rejected as a duplicate account.
-    const dupeRes = await request(app)
-      .post('/auth/register/request-otp')
-      .send({ name: 'Flow Test', email, mobile });
-    expect(dupeRes.status).toBe(409);
+    // Same number typed another way, or the email in another case, is still a duplicate.
+    const dupeMobile = await request(app).post('/auth/register').send(registerBody({ mobile: `+91 ${body.mobile}` }));
+    expect(dupeMobile.status).toBe(409);
+    const dupeEmail = await request(app).post('/auth/register').send(registerBody({ email: body.email.toUpperCase() }));
+    expect(dupeEmail.status).toBe(409);
   });
 
-  it('rejects an incorrect OTP and locks out after 5 wrong attempts', async () => {
+  it('lets a new sign-up replace an abandoned unverified one for the same number', async () => {
     const mobile = uniqueMobile();
-    const email = uniqueEmail();
-    await request(app).post('/auth/register/request-otp').send({ name: 'Lockout Test', email, mobile });
+    const first = await request(app).post('/auth/register').send(registerBody({ mobile }));
+    await skipCooldown(`+91${mobile}`);
+    const second = await request(app).post('/auth/register').send(registerBody({ mobile }));
+    expect(second.status).toBe(200);
+
+    // The first sign-up's ticket now points at a deleted row.
+    const stale = await request(app)
+      .post('/auth/register/verify-otp')
+      .send({ ticket: first.body.ticket, code: codeSentTo(`+91${mobile}`) });
+    expect(stale.status).toBe(401);
+    expect(stale.body.code).toBe('ticket_invalid');
+
+    const fresh = await request(app)
+      .post('/auth/register/verify-otp')
+      .send({ ticket: second.body.ticket, code: codeSentTo(`+91${mobile}`) });
+    expect(fresh.status).toBe(201);
+  });
+
+  it('rejects wrong codes, then locks the code after 5 wrong attempts', async () => {
+    const body = registerBody();
+    const reg = await request(app).post('/auth/register').send(body);
 
     let lastRes;
     for (let i = 0; i < 5; i++) {
-      lastRes = await request(app)
-        .post('/auth/register/verify-otp')
-        .send({ name: 'Lockout Test', email, mobile, code: '000000' });
+      lastRes = await request(app).post('/auth/register/verify-otp').send({ ticket: reg.body.ticket, code: '000000' });
       expect(lastRes.status).toBe(401);
     }
-    expect(lastRes.body.error).toMatch(/too many/i);
+    expect(lastRes.body.code).toBe('otp_locked');
 
-    // Even the real code should now be rejected, since the OTP record is locked out.
-    const code = codeSentTo(mobile);
+    // Even the real code is now rejected until a new one is sent.
     const finalRes = await request(app)
       .post('/auth/register/verify-otp')
-      .send({ name: 'Lockout Test', email, mobile, code });
+      .send({ ticket: reg.body.ticket, code: codeSentTo(`+91${body.mobile}`) });
     expect(finalRes.status).toBe(401);
+    expect(finalRes.body.code).toBe('otp_locked');
+  });
+
+  it('reports a wrong code as otp_invalid with the attempts left', async () => {
+    const body = registerBody();
+    const reg = await request(app).post('/auth/register').send(body);
+    const res = await request(app).post('/auth/register/verify-otp').send({ ticket: reg.body.ticket, code: '000000' });
+    expect(res.body.code).toBe('otp_invalid');
+    expect(res.body.attemptsLeft).toBe(4);
+  });
+
+  it('reports an expired code as otp_expired', async () => {
+    const body = registerBody();
+    const reg = await request(app).post('/auth/register').send(body);
+    await prisma.otpCode.updateMany({ where: { identifier: `+91${body.mobile}` }, data: { expiresAt: new Date(Date.now() - 1000) } });
+    const res = await request(app)
+      .post('/auth/register/verify-otp')
+      .send({ ticket: reg.body.ticket, code: codeSentTo(`+91${body.mobile}`) });
+    expect(res.status).toBe(401);
+    expect(res.body.code).toBe('otp_expired');
+  });
+
+  it('refuses a resend inside 30 seconds, and a resend invalidates the previous code', async () => {
+    const body = registerBody();
+    const e164 = `+91${body.mobile}`;
+    const reg = await request(app).post('/auth/register').send(body);
+    const firstCode = codeSentTo(e164);
+
+    const tooSoon = await request(app).post('/auth/otp/resend').send({ ticket: reg.body.ticket });
+    expect(tooSoon.status).toBe(429);
+    expect(tooSoon.body.secondsLeft).toBeGreaterThan(0);
+
+    await skipCooldown(e164);
+    const resent = await request(app).post('/auth/otp/resend').send({ ticket: reg.body.ticket });
+    expect(resent.status).toBe(200);
+    const secondCode = codeSentTo(e164);
+
+    if (firstCode !== secondCode) {
+      const old = await request(app).post('/auth/register/verify-otp').send({ ticket: reg.body.ticket, code: firstCode });
+      expect(old.status).toBe(401);
+    }
+    const ok = await request(app).post('/auth/register/verify-otp').send({ ticket: reg.body.ticket, code: secondCode });
+    expect(ok.status).toBe(201);
+  });
+
+  it('caps how many codes one number can be sent in a window', async () => {
+    const body = registerBody();
+    const e164 = `+91${body.mobile}`;
+    const reg = await request(app).post('/auth/register').send(body);
+    for (let i = 0; i < 4; i++) {
+      await skipCooldown(e164);
+      // Keep these inside the 15-minute window the cap counts over.
+      await prisma.otpCode.updateMany({ where: { identifier: e164 }, data: { createdAt: new Date(Date.now() - 60 * 1000) } });
+      const r = await request(app).post('/auth/otp/resend').send({ ticket: reg.body.ticket });
+      expect(r.status).toBe(200);
+    }
+    await skipCooldown(e164);
+    const capped = await request(app).post('/auth/otp/resend').send({ ticket: reg.body.ticket });
+    expect(capped.status).toBe(429);
+    expect(sendCount(e164)).toBe(5);
+  });
+
+  it('does not accept a ticket in place of an access token', async () => {
+    const reg = await request(app).post('/auth/register').send(registerBody());
+    const res = await request(app).get('/auth/me').set('Authorization', `Bearer ${reg.body.ticket}`);
+    expect(res.status).toBe(401);
   });
 });
 
-describe('login identifier matching works regardless of country-code prefix', () => {
-  it('logs in whether or not the stored mobile is typed with a country code', async () => {
-    const mobile = uniqueMobile();
+describe('POST /auth/login (password, then OTP)', () => {
+  it('after a correct password, sends the login OTP by SMS for a mobile login and by email for an email login', async () => {
+    const patient = await createPatient();
+    const national = patient.mobile.slice(3);
+
+    const byMobile = await loginToOtpStep({ mobile: national, countryCode: '+91' });
+    expect(byMobile.status).toBe(200);
+    expect(byMobile.body.ticket).toBeTruthy();
+    expect(byMobile.body.maskedContact).toBe(`+91 •••••${national.slice(-4)}`);
+    const code = codeSentTo(patient.mobile);
+
+    const verify = await request(app).post('/auth/login/verify-otp').send({ ticket: byMobile.body.ticket, code });
+    expect(verify.status).toBe(200);
+    expect(verify.body.token).toBeTruthy();
+    expect(verify.body.user.email).toBe(patient.email);
+    expect(verify.body.user).not.toHaveProperty('passwordHash');
+
+    // Email login: the code goes to the (verified) inbox, and the screen shows the email.
+    const byEmail = await loginToOtpStep({ email: patient.email.toUpperCase() });
+    expect(byEmail.status).toBe(200);
+    expect(byEmail.body.maskedContact).toBe(`${patient.email.slice(0, 2)}•••@example.com`);
+    const lastCall = deliverOtp.mock.calls[deliverOtp.mock.calls.length - 1];
+    expect(lastCall[0]).toBe(patient.email);
+    expect(lastCall[2]).toBe('patient_login');
+    const emailVerify = await request(app).post('/auth/login/verify-otp').send({ ticket: byEmail.body.ticket, code: codeSentTo(patient.email) });
+    expect(emailVerify.status).toBe(200);
+    expect(emailVerify.body.token).toBeTruthy();
+  });
+
+  it('gives one generic error for a wrong password and for an account that does not exist', async () => {
+    const patient = await createPatient();
+    const wrongPassword = await request(app).post('/auth/login').send({ email: patient.email, password: 'WrongPass999' });
+    const noAccount = await request(app).post('/auth/login').send({ email: uniqueEmail(), password: PASSWORD });
+    expect(wrongPassword.status).toBe(401);
+    expect(noAccount.status).toBe(401);
+    expect(wrongPassword.body.error).toBe('Incorrect mobile/email or password');
+    expect(noAccount.body).toEqual(wrongPassword.body);
+    expect(sendCount(patient.mobile)).toBe(1); // only the registration code
+  });
+
+  it('does not let an unverified sign-up log in', async () => {
+    const body = registerBody();
+    await request(app).post('/auth/register').send(body);
+    const res = await loginToOtpStep({ email: body.email });
+    expect(res.status).toBe(401);
+  });
+
+  it('refuses the OTP step without a valid ticket', async () => {
+    const res = await request(app).post('/auth/login/verify-otp').send({ ticket: 'not-a-ticket', code: '123456' });
+    expect(res.status).toBe(401);
+    expect(res.body.code).toBe('ticket_invalid');
+  });
+
+  it('locks the account for 15 minutes after 5 wrong passwords, even for the right one', async () => {
+    const patient = await createPatient();
+    for (let i = 0; i < 4; i++) {
+      const r = await request(app).post('/auth/login').send({ email: patient.email, password: 'WrongPass999' });
+      expect(r.status).toBe(401);
+    }
+    const fifth = await request(app).post('/auth/login').send({ email: patient.email, password: 'WrongPass999' });
+    expect(fifth.status).toBe(429);
+    expect(fifth.body.code).toBe('account_locked');
+
+    const rightPassword = await loginToOtpStep({ email: patient.email });
+    expect(rightPassword.status).toBe(429);
+    expect(rightPassword.body.error).toMatch(/15 minutes/);
+
+    // Once the lock has passed, the right password works and the counter resets.
+    await prisma.user.update({ where: { email: patient.email }, data: { lockedUntil: new Date(Date.now() - 1000) } });
+    const afterLock = await loginToOtpStep({ email: patient.email });
+    expect(afterLock.status).toBe(200);
+  });
+});
+
+describe('existing patients with no password', () => {
+  it('verifies them by OTP, then makes them set a password before issuing a session', async () => {
+    const { user, mobile } = await createLegacyPatient();
+
+    const step1 = await request(app).post('/auth/login').send({ mobile, password: 'anything1' });
+    expect(step1.status).toBe(200);
+    expect(step1.body.needsPasswordSetup).toBe(true);
+
+    const step2 = await request(app).post('/auth/login/verify-otp').send({ ticket: step1.body.ticket, code: codeSentTo(mobile) });
+    expect(step2.status).toBe(200);
+    expect(step2.body.token).toBeUndefined();
+    expect(step2.body.setPasswordTicket).toBeTruthy();
+
+    const weak = await request(app).post('/auth/password/set').send({ ticket: step2.body.setPasswordTicket, password: 'short' });
+    expect(weak.status).toBe(400);
+
+    const set = await request(app).post('/auth/password/set').send({ ticket: step2.body.setPasswordTicket, password: PASSWORD });
+    expect(set.status).toBe(200);
+    expect(set.body.token).toBeTruthy();
+    expect(set.body.user.id).toBe(user.id);
+
+    // The setup ticket is single-use.
+    const reuse = await request(app).post('/auth/password/set').send({ ticket: step2.body.setPasswordTicket, password: 'Another123' });
+    expect(reuse.status).toBe(401);
+
+    // From now on the password is enforced.
+    const wrong = await request(app).post('/auth/login').send({ mobile, password: 'anything1' });
+    expect(wrong.status).toBe(401);
+    await skipCooldown(mobile);
+    const right = await request(app).post('/auth/login').send({ mobile, password: PASSWORD });
+    expect(right.status).toBe(200);
+    expect(right.body.needsPasswordSetup).toBeUndefined();
+  });
+});
+
+describe('forgot password', () => {
+  it('answers the same for an unknown account, sends nothing, and never verifies', async () => {
     const email = uniqueEmail();
-    await request(app).post('/auth/register/request-otp').send({ name: 'CC Test', email, mobile });
-    const regCode = codeSentTo(mobile);
-    await request(app).post('/auth/register/verify-otp').send({ name: 'CC Test', email, mobile, code: regCode });
+    const res = await request(app).post('/auth/password/forgot').send({ email });
+    expect(res.status).toBe(200);
+    expect(res.body.ticket).toBeTruthy();
+    expect(sendCount(email)).toBe(0);
 
-    // Login by typing the mobile WITH a +91 prefix, even though it's stored without one.
-    const loginReq = await request(app).post('/auth/login/request-otp').send({ identifier: `+91${mobile}` });
-    expect(loginReq.status).toBe(200);
-    const loginCode = codeSentTo(`+91${mobile}`);
-    expect(loginCode).toMatch(/^\d{6}$/);
+    const verify = await request(app).post('/auth/password/forgot/verify-otp').send({ ticket: res.body.ticket, code: '123456' });
+    expect(verify.status).toBe(401);
+    expect(verify.body.code).toBe('otp_invalid');
+  });
 
-    const loginVerify = await request(app)
-      .post('/auth/login/verify-otp')
-      .send({ identifier: `+91${mobile}`, code: loginCode });
-    expect(loginVerify.status).toBe(200);
-    expect(loginVerify.body.token).toBeTruthy();
+  it('resets the password via the typed channel and signs out existing sessions', async () => {
+    const patient = await createPatient();
+
+    // A session from before the reset.
+    const oldRefresh = await request(app).post('/auth/refresh').send({ refreshToken: patient.refreshToken });
+    expect(oldRefresh.status).toBe(200);
+
+    const forgot = await request(app).post('/auth/password/forgot').send({ mobile: patient.mobile.slice(3), countryCode: '+91' });
+    expect(forgot.status).toBe(200);
+    const code = codeSentTo(patient.mobile);
+    expect(deliverOtp.mock.calls[deliverOtp.mock.calls.length - 1][2]).toBe('patient_password_reset');
+
+    const verify = await request(app).post('/auth/password/forgot/verify-otp').send({ ticket: forgot.body.ticket, code });
+    expect(verify.status).toBe(200);
+
+    const set = await request(app).post('/auth/password/set').send({ ticket: verify.body.setPasswordTicket, password: 'BrandNew456' });
+    expect(set.status).toBe(200);
+    expect(set.body.token).toBeUndefined(); // reset sends them to Login, not into the app
+
+    const staleRefresh = await request(app).post('/auth/refresh').send({ refreshToken: oldRefresh.body.refreshToken });
+    expect(staleRefresh.status).toBe(401);
+
+    const oldPassword = await request(app).post('/auth/login').send({ email: patient.email, password: patient.password });
+    expect(oldPassword.status).toBe(401);
+    await skipCooldown(patient.mobile);
+    const newPassword = await request(app).post('/auth/login').send({ email: patient.email, password: 'BrandNew456' });
+    expect(newPassword.status).toBe(200);
+  });
+
+  it('sends the code to the mobile while the typed email is not verified yet', async () => {
+    const patient = await createPatient();
+    const res = await request(app).post('/auth/password/forgot').send({ email: patient.email });
+    expect(res.status).toBe(200);
+    expect(res.body.maskedContact).toBe(`+91 •••••${patient.mobile.slice(-4)}`);
+    expect(sendCount(patient.email)).toBe(0);
+    expect(deliverOtp.mock.calls[deliverOtp.mock.calls.length - 1][0]).toBe(patient.mobile);
+  });
+
+  it('sends the code to the email once the email is verified', async () => {
+    const patient = await createPatient();
+    await verifyEmailByLogin(patient);
+    const res = await request(app).post('/auth/password/forgot').send({ email: patient.email });
+    expect(res.status).toBe(200);
+    expect(res.body.maskedContact).toBe(`${patient.email.slice(0, 2)}•••@example.com`);
+  });
+});
+
+describe('email verified on first use', () => {
+  it('marks the email verified after an email login (password + code from the inbox)', async () => {
+    const patient = await createPatient();
+    let me = await request(app).get('/auth/me').set('Authorization', `Bearer ${patient.token}`);
+    expect(me.body.user.emailVerifiedAt).toBeNull();
+
+    const session = await verifyEmailByLogin(patient);
+    me = await request(app).get('/auth/me').set('Authorization', `Bearer ${session.token}`);
+    expect(me.body.user.emailVerifiedAt).toBeTruthy();
+  });
+
+  it('does not verify the email from a mobile login', async () => {
+    const patient = await createPatient();
+    const login = await loginToOtpStep({ mobile: patient.mobile });
+    await request(app).post('/auth/login/verify-otp').send({ ticket: login.body.ticket, code: codeSentTo(patient.mobile) });
+    const user = await prisma.user.findUnique({ where: { id: patient.user.id } });
+    expect(user.emailVerifiedAt).toBeNull();
+  });
+
+  it('a wrong email code does not verify it', async () => {
+    const patient = await createPatient();
+    const login = await loginToOtpStep({ email: patient.email });
+    await request(app).post('/auth/login/verify-otp').send({ ticket: login.body.ticket, code: '000000' });
+    const user = await prisma.user.findUnique({ where: { id: patient.user.id } });
+    expect(user.emailVerifiedAt).toBeNull();
+  });
+
+  it('never sends the code to an unverified email for an account with no password', async () => {
+    const { user, mobile } = await createLegacyPatient(); // no password, email not verified
+    const res = await request(app).post('/auth/login').send({ email: user.email, password: 'anything1' });
+    expect(res.status).toBe(200);
+    expect(sendCount(user.email)).toBe(0);
+    expect(deliverOtp.mock.calls[deliverOtp.mock.calls.length - 1][0]).toBe(mobile);
+  });
+});
+
+// The service function the Google/Apple endpoints call, tested directly so no real
+// Google/Apple token is needed.
+describe('Google/Apple sign-in', () => {
+  const { findSocialUser, SocialEmailInUseError, SocialNoAccountError } = require('../src/modules/auth/auth.service');
+  const providerId = () => `g-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+
+  it('refuses to link until the account email is verified, then signs in, then by provider id', async () => {
+    const patient = await createPatient();
+    const gid = providerId();
+    await expect(
+      findSocialUser({ provider: 'google', providerId: gid, email: patient.email, emailVerified: true }),
+    ).rejects.toBeInstanceOf(SocialEmailInUseError);
+    await verifyEmailByLogin(patient);
+    const first = await findSocialUser({ provider: 'google', providerId: gid, email: patient.email, emailVerified: true });
+    expect(first.id).toBe(patient.user.id);
+    const again = await findSocialUser({ provider: 'google', providerId: gid, email: 'changed@example.com', emailVerified: true });
+    expect(again.id).toBe(patient.user.id);
+  });
+
+  it('never creates an account for someone who has not signed up', async () => {
+    const email = uniqueEmail();
+    await expect(
+      findSocialUser({ provider: 'google', providerId: providerId(), email, emailVerified: true }),
+    ).rejects.toBeInstanceOf(SocialNoAccountError);
+    expect(await prisma.user.findFirst({ where: { email } })).toBeNull();
+  });
+
+  it('treats an unfinished sign-up as no account, and leaves it alone', async () => {
+    const body = registerBody();
+    await request(app).post('/auth/register').send(body); // never verified
+    await expect(
+      findSocialUser({ provider: 'google', providerId: providerId(), email: body.email, emailVerified: true }),
+    ).rejects.toBeInstanceOf(SocialNoAccountError);
+    const pending = await prisma.user.findFirst({ where: { email: body.email } });
+    expect(pending.googleId).toBeNull();
+  });
+
+  it('refuses to link when the provider has not verified the email', async () => {
+    const patient = await createPatient();
+    await expect(
+      findSocialUser({ provider: 'google', providerId: providerId(), email: patient.email, emailVerified: false }),
+    ).rejects.toBeInstanceOf(SocialEmailInUseError);
+  });
+
+  it('refuses to link to an account whose email was never verified', async () => {
+    const { user } = await createLegacyPatient(); // no emailVerifiedAt
+    await expect(
+      findSocialUser({ provider: 'google', providerId: providerId(), email: user.email, emailVerified: true }),
+    ).rejects.toBeInstanceOf(SocialEmailInUseError);
+    const after = await prisma.user.findUnique({ where: { id: user.id } });
+    expect(after.googleId).toBeNull();
+  });
+
+  it('answers a brand-new Google user at POST /auth/google with "please sign up first"', async () => {
+    // A separate copy of the app where only the Google token check is faked, so the
+    // real endpoint can be called without a real Google token.
+    const email = uniqueEmail();
+    let isolatedApp;
+    let isolatedPrisma;
+    jest.isolateModules(() => {
+      jest.doMock('../src/modules/auth/auth.service', () => ({
+        ...jest.requireActual('../src/modules/auth/auth.service'),
+        verifyGoogleIdToken: async () => ({ providerId: providerId(), email, emailVerified: true, name: 'New Person' }),
+      }));
+      isolatedApp = require('../src/app').app;
+      isolatedPrisma = require('../src/db/prisma').prisma;
+    });
+    try {
+      const res = await request(isolatedApp).post('/auth/google').send({ idToken: 'fake' });
+      expect(res.status).toBe(404);
+      expect(res.body.code).toBe('no_account');
+      expect(res.body.error).toMatch(/sign up first/i);
+      expect(await prisma.user.findFirst({ where: { email } })).toBeNull();
+    } finally {
+      await isolatedPrisma.$disconnect();
+    }
+  });
+});
+
+describe('changing mobile or email', () => {
+  const auth = (token) => ({ Authorization: `Bearer ${token}` });
+
+  it('no longer accepts mobile/email through PATCH /auth/me, but still saves the name', async () => {
+    const patient = await createPatient();
+    const blocked = await request(app).patch('/auth/me').set(auth(patient.token)).send({ mobile: uniqueMobile(), countryCode: '+91' });
+    expect(blocked.status).toBe(400);
+    const named = await request(app).patch('/auth/me').set(auth(patient.token)).send({ name: 'New Name' });
+    expect(named.status).toBe(200);
+    expect(named.body.user.name).toBe('New Name');
+  });
+
+  it('needs the current password', async () => {
+    const patient = await createPatient();
+    const res = await request(app).post('/auth/me/contact').set(auth(patient.token))
+      .send({ kind: 'mobile', mobile: uniqueMobile(), countryCode: '+91', password: 'WrongPass999' });
+    expect(res.status).toBe(401);
+    expect(res.body.code).toBe('invalid_password');
+  });
+
+  it('changes the mobile after a code sent to the NEW number', async () => {
+    const patient = await createPatient();
+    const newMobile = uniqueMobile();
+    const start = await request(app).post('/auth/me/contact').set(auth(patient.token))
+      .send({ kind: 'mobile', mobile: newMobile, countryCode: '+91', password: patient.password });
+    expect(start.status).toBe(200);
+    const code = codeSentTo(`+91${newMobile}`);
+    expect(code).toMatch(/^\d{6}$/);
+
+    const done = await request(app).post('/auth/me/contact/verify-otp').set(auth(patient.token)).send({ ticket: start.body.ticket, code });
+    expect(done.status).toBe(200);
+    expect(done.body.user.mobile).toBe(`+91${newMobile}`);
+
+    // Mobile login now uses (and texts) the new number.
+    const login = await loginToOtpStep({ mobile: newMobile, countryCode: '+91' });
+    expect(login.status).toBe(200);
+    expect(deliverOtp.mock.calls[deliverOtp.mock.calls.length - 1][0]).toBe(`+91${newMobile}`);
+  });
+
+  it('changes the email after a code sent to the NEW inbox, and marks it verified', async () => {
+    const patient = await createPatient();
+    const newEmail = uniqueEmail();
+    const start = await request(app).post('/auth/me/contact').set(auth(patient.token))
+      .send({ kind: 'email', email: newEmail, password: patient.password });
+    expect(start.status).toBe(200);
+    const done = await request(app).post('/auth/me/contact/verify-otp').set(auth(patient.token))
+      .send({ ticket: start.body.ticket, code: codeSentTo(newEmail) });
+    expect(done.status).toBe(200);
+    expect(done.body.user.email).toBe(newEmail);
+    expect(done.body.user.emailVerifiedAt).toBeTruthy();
+  });
+
+  it("won't take another account's number, or finish with another account's ticket", async () => {
+    const a = await createPatient();
+    const b = await createPatient();
+    const taken = await request(app).post('/auth/me/contact').set(auth(a.token))
+      .send({ kind: 'mobile', mobile: b.mobile.slice(3), countryCode: '+91', password: a.password });
+    expect(taken.status).toBe(409);
+
+    const start = await request(app).post('/auth/me/contact').set(auth(a.token))
+      .send({ kind: 'email', email: uniqueEmail(), password: a.password });
+    const hijack = await request(app).post('/auth/me/contact/verify-otp').set(auth(b.token)).send({ ticket: start.body.ticket, code: '123456' });
+    expect(hijack.status).toBe(401);
+    expect(hijack.body.code).toBe('ticket_invalid');
+  });
+
+  it('asks an account without a password to set one first', async () => {
+    // A session for an account with no password, the way a Google-only account has one.
+    const { user } = await createLegacyPatient();
+    const { issuePatientTokens } = require('../src/modules/auth/auth.service');
+    const { token } = issuePatientTokens(user);
+
+    const me = await request(app).get('/auth/me').set(auth(token));
+    expect(me.body.user.hasPassword).toBe(false);
+    const res = await request(app).post('/auth/me/contact').set(auth(token)).send({ kind: 'email', email: uniqueEmail(), password: 'x' });
+    expect(res.status).toBe(403);
+    expect(res.body.code).toBe('password_required');
+  });
+});
+
+describe('sign-up consents', () => {
+  it.each([
+    ['missing', undefined],
+    ['terms not accepted', { termsPrivacy: false, medicalDisclaimer: true }],
+    ['medical disclaimer not accepted', { termsPrivacy: true, medicalDisclaimer: false }],
+  ])('refuses sign-up when consent is %s, and creates nothing', async (_label, consents) => {
+    const body = registerBody({ consents });
+    const res = await request(app).post('/auth/register').send(body);
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('consent_required');
+    expect(await prisma.user.findFirst({ where: { email: body.email } })).toBeNull();
+    expect(sendCount(`+91${body.mobile}`)).toBe(0);
+  });
+
+  it('saves each consent with its wording version, time and IP, including a marketing "no"', async () => {
+    const patient = await createPatient();
+    const rows = await prisma.userConsent.findMany({ where: { userId: patient.user.id }, orderBy: { type: 'asc' } });
+    expect(rows.map((r) => [r.type, r.accepted])).toEqual([
+      ['marketing', false],
+      ['medical_disclaimer', true],
+      ['terms_privacy', true],
+    ]);
+    for (const r of rows) {
+      expect(r.version).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(r.acceptedAt).toBeInstanceOf(Date);
+      expect(r.ipAddress).toBeTruthy();
+    }
+  });
+
+  it('drops the consents of a half-finished sign-up when it is replaced', async () => {
+    const body = registerBody();
+    await request(app).post('/auth/register').send(body);
+    const first = await prisma.user.findFirst({ where: { email: body.email } });
+    await skipCooldown(`+91${body.mobile}`);
+    await request(app).post('/auth/register').send(body);
+    expect(await prisma.userConsent.count({ where: { userId: first.id } })).toBe(0);
+  });
+});
+
+describe('security event log', () => {
+  const eventsFor = (userId) => prisma.securityEvent.findMany({ where: { userId }, orderBy: { id: 'asc' } });
+
+  describe('retention', () => {
+    const { purgeOldSecurityEvents, retentionDays } = require('../src/modules/auth/security-events');
+    const daysAgo = (d) => new Date(Date.now() - d * 24 * 60 * 60 * 1000);
+    afterEach(() => { delete process.env.SECURITY_LOG_RETENTION_DAYS; });
+
+    it('deletes entries older than the retention period and keeps the rest', async () => {
+      process.env.SECURITY_LOG_RETENTION_DAYS = '365';
+      const old = await prisma.securityEvent.create({ data: { event: 'login_failed', createdAt: daysAgo(400) } });
+      const recent = await prisma.securityEvent.create({ data: { event: 'login_failed', createdAt: daysAgo(300) } });
+      await purgeOldSecurityEvents();
+      expect(await prisma.securityEvent.findUnique({ where: { id: old.id } })).toBeNull();
+      expect(await prisma.securityEvent.findUnique({ where: { id: recent.id } })).not.toBeNull();
+    });
+
+    it('uses 365 days when the setting is missing or invalid', () => {
+      expect(retentionDays()).toBe(365);
+      process.env.SECURITY_LOG_RETENTION_DAYS = 'abc';
+      expect(retentionDays()).toBe(365);
+      process.env.SECURITY_LOG_RETENTION_DAYS = '180';
+      expect(retentionDays()).toBe(180);
+    });
+  });
+
+  it('records sign-up, failed and successful logins, without any password or code', async () => {
+    const patient = await createPatient();
+    await request(app).post('/auth/login').send({ email: patient.email, password: 'WrongPass999' });
+    await skipCooldown(patient.mobile);
+    const ok = await loginToOtpStep({ email: patient.email, password: patient.password });
+    await request(app).post('/auth/login/verify-otp').send({ ticket: ok.body.ticket, code: '000000' });
+    await request(app).post('/auth/login/verify-otp').send({ ticket: ok.body.ticket, code: codeSentTo(patient.email) });
+
+    const events = await eventsFor(patient.user.id);
+    expect(events.map((e) => e.event)).toEqual([
+      'register_started', 'register_completed', 'login_failed', 'otp_failed', 'email_verified', 'login_succeeded',
+    ]);
+    const failed = events.find((e) => e.event === 'login_failed');
+    expect(failed.identifier).toBe(`${patient.email.slice(0, 2)}•••@example.com`);
+    expect(failed.ipAddress).toBeTruthy();
+
+    // Nothing secret anywhere in the log.
+    const dump = JSON.stringify(await prisma.securityEvent.findMany());
+    expect(dump).not.toContain('WrongPass999');
+    expect(dump).not.toContain(patient.password);
+    expect(dump).not.toContain(codeSentTo(patient.mobile));
+    expect(dump).not.toContain(patient.email);
+  });
+
+  it('records a lockout, and a failed login for an account that does not exist (masked, no user)', async () => {
+    const patient = await createPatient();
+    for (let i = 0; i < 5; i++) await request(app).post('/auth/login').send({ email: patient.email, password: 'WrongPass999' });
+    await request(app).post('/auth/login').send({ email: patient.email, password: patient.password });
+    const names = (await eventsFor(patient.user.id)).map((e) => e.event);
+    expect(names.filter((n) => n === 'login_failed')).toHaveLength(5);
+    expect(names).toContain('account_locked');
+    expect(names[names.length - 1]).toBe('login_blocked_locked');
+
+    const ghost = uniqueEmail();
+    await request(app).post('/auth/login').send({ email: ghost, password: 'Whatever123' });
+    const row = await prisma.securityEvent.findFirst({ where: { event: 'login_failed', userId: null }, orderBy: { id: 'desc' } });
+    expect(row.detail).toEqual({ reason: 'no_account' });
+    expect(row.identifier).not.toContain(ghost);
+  });
+
+  it('records password resets and mobile changes, with the old and new numbers masked', async () => {
+    const patient = await createPatient();
+    const forgot = await request(app).post('/auth/password/forgot').send({ email: patient.email });
+    // Email not verified yet, so the reset code went to the mobile.
+    const verify = await request(app).post('/auth/password/forgot/verify-otp').send({ ticket: forgot.body.ticket, code: codeSentTo(patient.mobile) });
+    await request(app).post('/auth/password/set').send({ ticket: verify.body.setPasswordTicket, password: 'BrandNew456' });
+
+    await skipCooldown(patient.mobile);
+    const login = await loginToOtpStep({ email: patient.email, password: 'BrandNew456' });
+    const session = await request(app).post('/auth/login/verify-otp').send({ ticket: login.body.ticket, code: codeSentTo(patient.email) });
+    const newMobile = uniqueMobile();
+    const start = await request(app).post('/auth/me/contact').set('Authorization', `Bearer ${session.body.token}`)
+      .send({ kind: 'mobile', mobile: newMobile, countryCode: '+91', password: 'BrandNew456' });
+    await request(app).post('/auth/me/contact/verify-otp').set('Authorization', `Bearer ${session.body.token}`)
+      .send({ ticket: start.body.ticket, code: codeSentTo(`+91${newMobile}`) });
+
+    const events = await eventsFor(patient.user.id);
+    const names = events.map((e) => e.event);
+    expect(names).toEqual(expect.arrayContaining(['password_reset_requested', 'password_reset_completed', 'mobile_changed']));
+    const changed = events.find((e) => e.event === 'mobile_changed');
+    expect(changed.identifier).toBe(`+91 •••••${newMobile.slice(-4)}`);
+    expect(changed.detail.from).toBe(`+91 •••••${patient.mobile.slice(-4)}`);
+  });
+});
+
+describe('GET /auth/me for a patient', () => {
+  it('never returns the password hash', async () => {
+    const patient = await createPatient();
+    const res = await request(app).get('/auth/me').set('Authorization', `Bearer ${patient.token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.user).not.toHaveProperty('passwordHash');
+    expect(res.body.user).not.toHaveProperty('tokenVersion');
   });
 });
 
