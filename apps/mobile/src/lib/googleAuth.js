@@ -21,5 +21,9 @@ export function useGoogleAuth() {
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS || PLACEHOLDER,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID || PLACEHOLDER,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB || PLACEHOLDER,
+    // Always show Google's account chooser. Otherwise Google silently reuses whichever
+    // account the browser/phone is already signed in to, and someone whose HumanCare
+    // account uses a different email gets "No account found" with no way to switch.
+    selectAccount: true,
   });
 }

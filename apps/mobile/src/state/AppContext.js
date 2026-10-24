@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import I18N from '../data/i18n.json';
 import { apiGet } from '../lib/api';
 import { getAccessToken } from '../lib/session';
+import { profileFromUser } from '../lib/profile';
 
 const AppContext = createContext(null);
 
@@ -15,8 +16,7 @@ function profileFromMe(data) {
     const c = data.corporateUser;
     return { session: 'corporate', profile: { name: c.corporate?.companyName || c.email, cc: '+91', phone: '', email: c.email } };
   }
-  const u = data.user;
-  return { session: 'patient', profile: { name: u.name, cc: u.countryCode || '+91', phone: u.mobile || '', email: u.email } };
+  return { session: 'patient', profile: profileFromUser(data.user) };
 }
 
 export const INITIAL_DRAFT = {

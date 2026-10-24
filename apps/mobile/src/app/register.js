@@ -1,48 +1,55 @@
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useApp } from '../state/AppContext';
 import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 import { BackButton, Body, Screen } from '../components/layout';
 import { Button, Consent, Field, FieldLabel, Heading, Input, Text } from '../components/ui';
-import { Select } from '../components/widgets';
+import { PasswordField, Select } from '../components/widgets';
 import { apiPost } from '../lib/api';
-import { navReplace } from '../lib/nav';
-import { saveTokens } from '../lib/session';
-import { useSocialAuth } from '../lib/useSocialAuth';
-import { isValidEmail, isValidName, isValidPhoneForCountry } from '../lib/validators';
+import { setAuthStep } from '../lib/authFlow';
+import { PASSWORD_HINT, isValidEmail, isValidMobileNumber, isValidName, passwordProblem } from '../lib/validators';
 
+// Sign-up is only through this form: Google/Apple would skip the required consents and
+// the mobile number, so those buttons live on the Login screen only.
 export default function Register() {
-  const { t, toast, setSession, setProfile } = useApp();
+  const { t, toast } = useApp();
   const [name, setName] = useState('');
   const [cc, setCc] = useState('+91');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [busy, setBusy] = useState(false);
   const [consents, setConsents] = useState([false, false, false]);
   // Consent 0 (terms/privacy) and 1 (medical disclaimer) are required; consent 2
   // (marketing communications) is optional, like most apps treat it — grouped last.
-  const ready = isValidName(name) && isValidPhoneForCountry(phone, cc) && isValidEmail(email) && consents[0] && consents[1];
+  const passwordError = password ? passwordProblem(password) : null;
+  const confirmError = confirm && confirm !== password ? 'Passwords do not match.' : null;
+  const ready = isValidName(name) && isValidMobileNumber(phone, cc) && isValidEmail(email)
+    && password && !passwordError && confirm === password && consents[0] && consents[1];
   const toggle = (i) => setConsents((c) => c.map((v, j) => (j === i ? !v : v)));
 
+  // Creates the account (unverified, password hashed server-side) and texts an OTP;
+  // register-otp.js verifies it with the ticket and signs straight in.
   const submit = async () => {
-    if (!ready) { toast('Enter a valid name, mobile number, email, and accept the required consents.'); return; }
+    if (!ready) { toast('Enter a valid name, mobile number, email and password, and accept the required consents.'); return; }
+    setBusy(true);
     try {
-      await apiPost('/auth/register/request-otp', { name, email, mobile: phone, countryCode: cc });
+      // The backend saves these as proof of consent and refuses sign-up without the two required ones.
+      const data = await apiPost('/auth/register', {
+        name: name.trim(), email: email.trim(), mobile: phone.trim(), countryCode: cc, password,
+        consents: { termsPrivacy: consents[0], medicalDisclaimer: consents[1], marketing: consents[2] },
+      });
       toast('OTP sent');
-      router.push({ pathname: '/register-otp', params: { identifier: `${cc} ${phone}`, name, email, mobile: phone, countryCode: cc } });
+      setAuthStep('register-otp', { ticket: data.ticket, contact: data.maskedContact });
+      router.push('/register-otp');
     } catch (err) {
       toast(err.message);
+    } finally {
+      setBusy(false);
     }
   };
-
-  const afterSocialLogin = async ({ token, refreshToken, user }) => {
-    await saveTokens({ token, refreshToken });
-    if (user) setProfile({ name: user.name, cc: user.countryCode || '+91', phone: user.mobile || '', email: user.email });
-    setSession('patient');
-    navReplace('/home');
-  };
-
-  const socialButtons = useSocialAuth({ toast, afterSocialLogin });
 
   const link = (label, path) => <Text className="font-inter-bold text-primary" onPress={() => router.push(path)}>{label}</Text>;
 
@@ -63,11 +70,19 @@ export default function Register() {
               <Select large value={cc} options={COUNTRY_CODES} labels={COUNTRY_CODE_LABELS} onChange={setCc} title={t('field_mobile_number')} className="w-28" />
               <Input large className="flex-1" placeholder="Mobile number" keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
             </View>
-            {phone && !isValidPhoneForCountry(phone, cc) ? <Text className="mt-1 text-[12px] text-danger">Enter a valid mobile number for the selected country.</Text> : null}
+            {phone && !isValidMobileNumber(phone, cc) ? <Text className="mt-1 text-[12px] text-danger">Enter a valid mobile number for the selected country.</Text> : null}
           </View>
           <Field
             large required label={t('field_email_address')} placeholder="you@example.com" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail}
             error={email && !isValidEmail(email) ? 'Enter a valid email address.' : undefined}
+          />
+          <PasswordField
+            required label={t('field_password')} placeholder="Create a password" value={password} onChangeText={setPassword}
+            error={passwordError} hint={PASSWORD_HINT}
+          />
+          <PasswordField
+            required label={t('field_confirm_password')} placeholder="Re-enter your password" value={confirm} onChangeText={setConfirm}
+            error={confirmError}
           />
         </View>
         <View className="mt-[18px] gap-3.5">
@@ -87,17 +102,8 @@ export default function Register() {
             </Text>
           </Consent>
         </View>
-        <Button large title={t('send_otp_btn')} dimmed={!ready} onPress={submit} className="mt-[26px]" />
-        <Text className="my-[22px] text-center text-[14px] text-faint">{t('login_or')}</Text>
-        <View className="gap-2.5">
-          {socialButtons.map(({ key, Mark, onPress, disabled }) => (
-            <Pressable key={key} onPress={onPress} disabled={disabled} className="h-12 flex-row items-center justify-center gap-2.5 rounded-xl border-[1.5px] border-field bg-white active:opacity-80 disabled:opacity-40">
-              <Mark />
-              <Text className="font-inter-bold text-[14px] text-ink">{t(`continue_with_${key}`)}</Text>
-            </Pressable>
-          ))}
-        </View>
-        <Text className="mt-5 text-center text-[15px] text-muted">
+        <Button large title={t('send_otp_btn')} dimmed={!ready} loading={busy} onPress={submit} className="mt-[26px]" />
+        <Text className="mt-6 text-center text-[15px] text-muted">
           {t('register_login_q')} <Text className="font-inter-bold text-primary" onPress={() => router.push('/login')}>{t('cta_login')}</Text>
         </Text>
       </Body>

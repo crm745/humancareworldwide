@@ -55,7 +55,15 @@ async function apiFetch(path, options = {}, isRetry = false) {
   }
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+  if (!res.ok) {
+    // `code` / `secondsLeft` let auth screens show the specific inline
+    // message (wrong vs expired OTP, account locked) instead of a generic toast.
+    const err = new Error(data.error || 'Something went wrong. Please try again.');
+    err.status = res.status;
+    err.code = data.code;
+    err.secondsLeft = data.secondsLeft;
+    throw err;
+  }
   return data;
 }
 

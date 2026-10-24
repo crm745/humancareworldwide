@@ -65,3 +65,29 @@ describe('isValidAge', () => {
   it('rejects an unrealistic age', () => expect(isValidAge('200')).toBe(false));
   it('rejects a non-integer', () => expect(isValidAge('45.5')).toBe(false));
 });
+
+describe('isValidMobileNumber (libphonenumber, same as the backend)', () => {
+  const { isValidMobileNumber } = require('../validators');
+  it('accepts real numbers for each country', () => {
+    expect(isValidMobileNumber('9876543210', '+91')).toBe(true);
+    expect(isValidMobileNumber('501234567', '+971')).toBe(true);
+    expect(isValidMobileNumber('92402959', '+968')).toBe(true);
+  });
+  it('allows a leading trunk 0', () => expect(isValidMobileNumber('09876543210', '+91')).toBe(true));
+  it('rejects wrong lengths', () => {
+    expect(isValidMobileNumber('98765432', '+91')).toBe(false);
+    expect(isValidMobileNumber('5012345678', '+971')).toBe(false);
+  });
+  it('rejects empty input or a missing country code', () => {
+    expect(isValidMobileNumber('', '+91')).toBe(false);
+    expect(isValidMobileNumber('9876543210', '')).toBe(false);
+  });
+});
+
+describe('passwordProblem', () => {
+  const { passwordProblem } = require('../validators');
+  it('accepts 8+ characters with a letter and a number', () => expect(passwordProblem('abcdefg1')).toBeNull());
+  it('rejects fewer than 8 characters', () => expect(passwordProblem('abc123')).toMatch(/8 characters/));
+  it('rejects a password with no number', () => expect(passwordProblem('abcdefghij')).toMatch(/letter and one number/));
+  it('rejects a password with no letter', () => expect(passwordProblem('1234567890')).toMatch(/letter and one number/));
+});

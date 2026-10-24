@@ -1,25 +1,47 @@
 import { useState } from 'react';
+import { Pressable, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { Mail, Phone } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
+import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 import { goBack } from '../lib/nav';
 import { apiPost } from '../lib/api';
-import { isValidEmail } from '../lib/validators';
+import { setAuthStep } from '../lib/authFlow';
+import { isValidEmail, isValidMobileNumber } from '../lib/validators';
 import { BackButton, Body, Screen } from '../components/layout';
-import { Button, Field, Heading, Spacer, Text } from '../components/ui';
+import { Button, Field, FieldLabel, Heading, Input, Spacer, Text } from '../components/ui';
+import { Select } from '../components/widgets';
 
+// Shared screen, two backends: corporates reset by email through the corporate flow
+// (reset-password.js); patients can use their mobile or email, verify the code on
+// forgot-password-otp.js and then pick a new password on set-password.js.
 export default function ForgotPassword() {
   const { t, toast } = useApp();
   const { origin = '/login' } = useLocalSearchParams();
+  const isCorporate = origin === '/corporate-login';
+  const [mode, setMode] = useState(isCorporate ? 'email' : 'phone');
   const [id, setId] = useState('');
+  const [phone, setPhone] = useState('');
+  const [cc, setCc] = useState('+91');
   const [busy, setBusy] = useState(false);
 
+  const valid = mode === 'phone' ? isValidMobileNumber(phone, cc) : isValidEmail(id);
+
   const submit = async () => {
-    if (!isValidEmail(id)) { toast('Enter a valid email.'); return; }
+    if (!valid) { toast(mode === 'phone' ? 'Enter a valid mobile number.' : 'Enter a valid email.'); return; }
     setBusy(true);
     try {
-      await apiPost('/auth/forgot-password', { email: id });
-      toast('If that account exists, a reset code has been sent.');
-      router.push({ pathname: '/reset-password', params: { identifier: id, origin } });
+      if (isCorporate) {
+        await apiPost('/auth/forgot-password', { email: id });
+        toast('If that account exists, a reset code has been sent.');
+        router.push({ pathname: '/reset-password', params: { identifier: id, origin } });
+      } else {
+        const body = mode === 'phone' ? { mobile: phone.trim(), countryCode: cc } : { email: id.trim() };
+        const data = await apiPost('/auth/password/forgot', body);
+        toast('If that account exists, a reset code has been sent.');
+        setAuthStep('forgot-password-otp', { ticket: data.ticket, contact: data.maskedContact });
+        router.push('/forgot-password-otp');
+      }
     } catch (err) {
       toast(err.message);
     } finally {
@@ -33,12 +55,32 @@ export default function ForgotPassword() {
         <BackButton className="mb-10" />
         <Heading className="text-center text-[27.5px]">{t('forgot_pwd_title')}</Heading>
         <Text className="mb-9 mt-3.5 text-center text-[16.5px] leading-[25px] text-muted">{t('forgot_pwd_sub')}</Text>
-        <Field
-          large required label={t('field_email_address')} placeholder="you@company.com" value={id} onChangeText={setId} autoCapitalize="none" keyboardType="email-address"
-          error={id && !isValidEmail(id) ? 'Enter a valid email address.' : undefined}
-        />
+        {mode === 'phone' ? (
+          <View>
+            <FieldLabel large required>{t('field_mobile_number')}</FieldLabel>
+            <View className="flex-row gap-2">
+              <Select large value={cc} options={COUNTRY_CODES} labels={COUNTRY_CODE_LABELS} onChange={setCc} title={t('field_mobile_number')} className="w-28" />
+              <Input large className="flex-1" placeholder="Mobile number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+            </View>
+            {phone && !valid ? <Text className="mt-1 text-[12px] text-danger">Enter a valid number for the selected country.</Text> : null}
+          </View>
+        ) : (
+          <Field
+            large required label={t('field_email_address')} placeholder={isCorporate ? 'you@company.com' : 'you@example.com'} value={id} onChangeText={setId} autoCapitalize="none" keyboardType="email-address"
+            error={id && !isValidEmail(id) ? 'Enter a valid email address.' : undefined}
+          />
+        )}
+        {isCorporate ? null : (
+          <Pressable
+            onPress={() => setMode(mode === 'phone' ? 'email' : 'phone')}
+            className="mt-4 h-12 flex-row items-center justify-center gap-2.5 rounded-xl border-[1.5px] border-field bg-white active:opacity-80"
+          >
+            {mode === 'phone' ? <Mail size={20} color="#45526B" /> : <Phone size={20} color="#45526B" />}
+            <Text className="font-inter-bold text-[14px] text-ink">{t(mode === 'phone' ? 'continue_with_email' : 'continue_with_phone')}</Text>
+          </Pressable>
+        )}
         <Spacer />
-        <Button large title={t('forgot_pwd_btn')} dimmed={!isValidEmail(id) || busy} onPress={submit} />
+        <Button large title={t('forgot_pwd_btn')} dimmed={!valid || busy} onPress={submit} />
         <Text className="mt-7 text-center text-[15px] text-muted">
           {t('forgot_pwd_remember_q')}{' '}
           <Text className="font-inter-bold text-primary" onPress={goBack}>{t('cta_back_to_login')}</Text>

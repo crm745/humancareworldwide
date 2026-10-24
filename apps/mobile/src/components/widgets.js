@@ -95,11 +95,24 @@ export function Select({ value, options, onChange, title, large, bare, labels, p
 }
 
 // Six single-digit boxes that auto-advance, like the prototype's otpAdvance().
-export function OtpInput({ value, onChange, large }) {
+export function OtpInput({ value, onChange, large, error }) {
   const refs = useRef([]);
   const digits = Array.from({ length: 6 }, (_, i) => value[i] || '');
   const setDigit = (i, raw) => {
-    const d = raw.replace(/[^0-9]/g, '').slice(-1);
+    let typed = raw.replace(/[^0-9]/g, '');
+    // Several digits arriving at once is a paste or SMS autofill. A full code fills
+    // every box; a partial one fills forward from this box.
+    if (typed.length > 2) {
+      if (digits[i] && typed.length > 6 && typed.startsWith(digits[i])) typed = typed.slice(1);
+      typed = typed.slice(0, 6);
+      const next = typed.length === 6 ? typed.split('') : [...digits];
+      if (typed.length < 6) typed.split('').forEach((d, k) => { if (i + k < 6) next[i + k] = d; });
+      onChange(next.join(''));
+      const last = Math.min(typed.length === 6 ? 5 : i + typed.length, 5);
+      refs.current[last]?.focus();
+      return;
+    }
+    const d = typed.slice(-1);
     const next = [...digits];
     next[i] = d;
     onChange(next.join(''));
@@ -118,10 +131,14 @@ export function OtpInput({ value, onChange, large }) {
           onChangeText={(v) => setDigit(i, v)}
           onKeyPress={(e) => onKey(i, e)}
           keyboardType="number-pad"
-          maxLength={2}
+          // Room for a pasted/autofilled code; setDigit keeps one digit per box.
+          maxLength={12}
+          // Lets iOS/Android offer the code from the SMS above the keyboard.
+          textContentType={i === 0 ? 'oneTimeCode' : 'none'}
+          autoComplete={i === 0 ? 'sms-otp' : 'off'}
           // Zero basis + minWidth 0: web inputs otherwise keep an intrinsic width and overflow the row.
           style={{ flexGrow: 1, flexBasis: 0, minWidth: 0 }}
-          className={`rounded-[10px] border-2 border-field bg-input text-center font-inter-bold text-ink ${large ? 'py-3.5 text-[21.5px]' : 'py-3 text-[19.5px]'}`}
+          className={`rounded-[10px] border-2 ${error ? 'border-danger' : 'border-field'} bg-input text-center font-inter-bold text-ink ${large ? 'py-3.5 text-[21.5px]' : 'py-3 text-[19.5px]'}`}
         />
       ))}
     </View>
@@ -130,7 +147,7 @@ export function OtpInput({ value, onChange, large }) {
 
 export const otpComplete = (v) => /^\d{6}$/.test(v);
 
-export function PasswordField({ label, value, onChangeText, placeholder, required, error }) {
+export function PasswordField({ label, value, onChangeText, placeholder, required, error, hint }) {
   const [hidden, setHidden] = useState(true);
   const Icon = hidden ? Eye : EyeOff;
   return (
@@ -142,7 +159,7 @@ export function PasswordField({ label, value, onChangeText, placeholder, require
           <Icon size={18} color="#97A4B8" strokeWidth={1.8} />
         </Pressable>
       </View>
-      {error ? <Text className="mt-1 text-[12px] text-danger">{error}</Text> : null}
+      {error ? <Text className="mt-1 text-[12px] text-danger">{error}</Text> : hint ? <Text className="mt-1 text-[12px] text-faint">{hint}</Text> : null}
     </View>
   );
 }

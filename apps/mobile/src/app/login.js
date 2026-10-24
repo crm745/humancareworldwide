@@ -5,12 +5,14 @@ import { Mail, Phone } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
 import { Body, Screen } from '../components/layout';
 import { Button, FieldLabel, Heading, Input, Text } from '../components/ui';
-import { Select } from '../components/widgets';
+import { PasswordField, Select } from '../components/widgets';
 import { navReplace } from '../lib/nav';
 import { apiPost } from '../lib/api';
 import { saveTokens } from '../lib/session';
+import { setAuthStep } from '../lib/authFlow';
+import { profileFromUser } from '../lib/profile';
 import { useSocialAuth } from '../lib/useSocialAuth';
-import { isValidEmail, isValidPhoneForCountry } from '../lib/validators';
+import { isValidEmail, isValidMobileNumber } from '../lib/validators';
 import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 
 export default function Login() {
@@ -22,28 +24,40 @@ export default function Login() {
   const [phone, setPhone] = useState('');
   const [cc, setCc] = useState('+91');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [formError, setFormError] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  const valid = mode === 'phone' ? isValidPhoneForCountry(phone, cc) : isValidEmail(email);
+  const valid = mode === 'phone' ? isValidMobileNumber(phone, cc) : isValidEmail(email);
+  const ready = valid && password.length > 0;
 
+  // Password first; the backend then texts an OTP to the registered mobile and
+  // login-otp.js finishes the sign-in with the ticket it hands back.
   const submit = async () => {
-    if (!valid) { toast(mode === 'phone' ? 'Enter a valid mobile number.' : 'Enter a valid email.'); return; }
-    const identifier = mode === 'phone' ? `${cc}${phone.trim()}` : email.trim();
+    if (!ready) return;
+    setFormError(null);
     setBusy(true);
     try {
-      await apiPost('/auth/login/request-otp', { identifier });
-      toast('OTP sent');
-      router.push({ pathname: '/login-otp', params: { identifier } });
+      const body = mode === 'phone' ? { mobile: phone.trim(), countryCode: cc, password } : { email: email.trim(), password };
+      const data = await apiPost('/auth/login', body);
+      setAuthStep('login-otp', { ticket: data.ticket, contact: data.maskedContact, setup: !!data.needsPasswordSetup });
+      router.push('/login-otp');
     } catch (err) {
-      toast(err.message);
+      if (err.code === 'invalid_credentials' || err.code === 'account_locked') setFormError(err.message);
+      else toast(err.message);
     } finally {
       setBusy(false);
     }
   };
 
+  const switchMode = () => {
+    setMode(mode === 'phone' ? 'email' : 'phone');
+    setFormError(null);
+  };
+
   const afterSocialLogin = async ({ token, refreshToken, user }) => {
     await saveTokens({ token, refreshToken });
-    if (user) setProfile({ name: user.name, cc: user.countryCode || '+91', phone: user.mobile || '', email: user.email });
+    if (user) setProfile(profileFromUser(user));
     setSession('patient');
     navReplace('/home');
   };
@@ -73,11 +87,21 @@ export default function Login() {
           </>
         )}
 
-        <Button large title={t('send_otp_btn')} dimmed={!valid} loading={busy} onPress={submit} className="mt-[30px]" />
+        <View className="mt-[18px]">
+          <PasswordField required label={t('field_password')} placeholder="Your password" value={password} onChangeText={setPassword} />
+        </View>
+        <View className="mt-2.5 items-end">
+          <Text className="font-inter-bold text-[14.5px] text-primary" onPress={() => router.push({ pathname: '/forgot-password', params: { origin: '/login' } })}>
+            {t('cta_forgot_password')}
+          </Text>
+        </View>
+
+        {formError ? <Text className="mt-4 text-center text-[13.5px] text-danger">{formError}</Text> : null}
+        <Button large title={t('login_btn')} disabled={!ready} loading={busy} onPress={submit} className={formError ? 'mt-4' : 'mt-[30px]'} />
         <Text className="my-[22px] text-center text-[14px] text-faint">{t('login_or')}</Text>
         <View className="gap-2.5">
           <Pressable
-            onPress={() => setMode(mode === 'phone' ? 'email' : 'phone')}
+            onPress={switchMode}
             className="h-12 flex-row items-center justify-center gap-2.5 rounded-xl border-[1.5px] border-field bg-white active:opacity-80"
           >
             {mode === 'phone' ? <Mail size={20} color="#45526B" /> : <Phone size={20} color="#45526B" />}

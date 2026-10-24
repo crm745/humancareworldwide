@@ -1,3 +1,5 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
 export function isValidName(value) {
   const v = (value || '').trim();
   return v.length >= 2 && /\p{L}/u.test(v);
@@ -46,4 +48,26 @@ export function isValidAge(value) {
   if (!value) return true;
   const n = Number(value);
   return Number.isInteger(n) && n > 0 && n < 130;
+}
+
+// Account mobile numbers (register, login, edit profile): checked with libphonenumber's
+// per-country rules, exactly like the backend does before storing them in E.164.
+// `value` is the national number as typed; a leading trunk 0 is allowed.
+export function isValidMobileNumber(value, countryCode) {
+  const digits = (value || '').replace(/\D/g, '');
+  const cc = (countryCode || '').replace(/\D/g, '');
+  if (!digits || !cc) return false;
+  const parsed = parsePhoneNumberFromString(`+${cc}${digits}`);
+  return !!parsed && parsed.isValid();
+}
+
+export const PASSWORD_HINT = 'At least 8 characters, with a letter and a number.';
+
+// Same rule as the backend's passwordProblem(): a message, or null when it's fine.
+export function passwordProblem(value) {
+  const v = value || '';
+  if (v.length < 8) return 'Password must be at least 8 characters.';
+  if (v.length > 72) return 'Password must be at most 72 characters.';
+  if (!/\p{L}/u.test(v) || !/\d/.test(v)) return 'Password must include at least one letter and one number.';
+  return null;
 }

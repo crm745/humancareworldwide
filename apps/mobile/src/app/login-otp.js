@@ -1,32 +1,39 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import { Redirect } from 'expo-router';
+import { useApp } from '../state/AppContext';
 import { OtpScreen } from '../components/OtpScreen';
 import { apiPost } from '../lib/api';
+import { getAuthStep, setAuthStep } from '../lib/authFlow';
+import { profileFromUser } from '../lib/profile';
 
+// Second factor of login. The ticket from /auth/login (passed via authFlow, never the
+// URL) is what ties this code to the password that was just checked. Accounts created
+// before passwords existed arrive with `setup` set, and go on to set-password instead.
 export default function LoginOtp() {
-  const { identifier } = useLocalSearchParams();
+  const { t } = useApp();
+  const [step] = useState(() => getAuthStep('login-otp'));
+  if (!step) return <Redirect href="/login" />;
+  const { ticket, contact, setup } = step;
 
-  const onVerify = async (code, currentId) => {
-    const data = await apiPost('/auth/login/verify-otp', { identifier: currentId, code });
-    return {
-      token: data.token,
-      refreshToken: data.refreshToken,
-      profile: { name: data.user.name, cc: data.user.countryCode || '+91', phone: data.user.mobile || '', email: data.user.email },
-    };
+  const onVerify = async (code) => {
+    const data = await apiPost('/auth/login/verify-otp', { ticket, code });
+    if (data.setPasswordTicket) {
+      setAuthStep('set-password', { ticket: data.setPasswordTicket, reason: 'setup' });
+      return { next: '/set-password' };
+    }
+    return { token: data.token, refreshToken: data.refreshToken, profile: profileFromUser(data.user) };
   };
 
-  const onResend = (currentId) => apiPost('/auth/login/request-otp', { identifier: currentId });
-
-  // Edit link: same endpoint as resend, just targeting whatever new value was typed.
-  const onChangeIdentifier = (newId) => apiPost('/auth/login/request-otp', { identifier: newId });
+  const onResend = () => apiPost('/auth/otp/resend', { ticket });
 
   return (
     <OtpScreen
       titleKey="otp_enter_title"
-      identifier={identifier}
+      contact={contact}
+      note={setup ? t('login_setup_note') : undefined}
       session="patient"
       onVerify={onVerify}
       onResend={onResend}
-      onChangeIdentifier={onChangeIdentifier}
     />
   );
 }

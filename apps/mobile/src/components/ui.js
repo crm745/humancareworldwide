@@ -39,17 +39,20 @@ const BUTTON = {
 // tappable (so a tap can still surface a validation message). `loading` is different —
 // a request is genuinely in flight, so the button is actually disabled (no double-submits)
 // and shows a spinner instead of the icon.
-export function Button({ title, onPress, variant = 'primary', dimmed, loading, large, icon, className = '', textClassName = '' }) {
+// `dimmed` only looks inactive (the press still runs, so it can explain what's missing);
+// `disabled` also blocks the press.
+export function Button({ title, onPress, variant = 'primary', dimmed, disabled, loading, large, icon, className = '', textClassName = '' }) {
   const v = BUTTON[variant];
-  const shadow = variant === 'primary' && !dimmed && !loading
+  const faded = dimmed || disabled || loading;
+  const shadow = variant === 'primary' && !faded
     ? { shadowColor: '#1A73E8', shadowOpacity: 0.28, shadowRadius: 10, shadowOffset: { width: 0, height: 8 }, elevation: 4 }
     : null;
   return (
     <Pressable
       onPress={onPress}
-      disabled={loading}
+      disabled={loading || disabled}
       style={shadow}
-      className={cx(`flex-row items-center justify-center gap-1.5 rounded-xl ${large ? 'py-4' : 'py-3.5'} ${v.box} ${dimmed || loading ? 'opacity-45' : 'active:opacity-85'}`, className)}
+      className={cx(`flex-row items-center justify-center gap-1.5 rounded-xl ${large ? 'py-4' : 'py-3.5'} ${v.box} ${faded ? 'opacity-45' : 'active:opacity-85'}`, className)}
     >
       {loading ? <Spinner size={large ? 19 : 16} color={v.spinner} /> : icon}
       <Text className={`font-inter-bold ${v.text} ${large ? 'text-[16.5px]' : ''} ${textClassName}`}>{title}</Text>
