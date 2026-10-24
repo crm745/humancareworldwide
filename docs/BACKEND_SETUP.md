@@ -31,9 +31,12 @@ Status: Auth module (patient OTP login + vendor email/password + OTP) built and 
 
 ```
 humancare-app/
-├── ROADMAP.md              # Original full build plan (all phases, all modules)
-├── BACKEND_SETUP.md         # This file
-├── backend/                 # <-- the Express API (what's built so far)
+├── package.json             # Root shortcuts only (npm run dev:backend, dev:mobile, …); no shared installs
+├── apps/
+│   ├── mobile/              # Patient (and corporate) mobile app — Expo / React Native
+│   ├── corporate-portal/    # Corporate web portal — React + Vite
+│   └── admin-portal/        # Admin web console (admin.html) + its Playwright tests
+├── backend/                 # <-- the Express API
 │   ├── .env                 # Local secrets — DATABASE_URL, JWT secrets, PORT (gitignored)
 │   ├── .gitignore
 │   ├── package.json         # Scripts + dependencies (see §3)
@@ -54,9 +57,8 @@ humancare-app/
 │       │       ├── auth.controller.js# Handles each request: reads input, calls service, sends response
 │       │       └── auth.service.js   # The actual logic: generate/check OTPs, sign tokens
 │       └── seed-vendor.js            # One-off script to create a test vendor account
-├── interactive-prototype/    # The clickable HTML/CSS/JS app prototype (Artifact)
-├── design-canvas/             # Earlier non-interactive design mockups
-└── docs/                      # Reference material (proposal PDF, etc.)
+└── docs/                      # Reference material: this file, ROADMAP.md (original full
+                               # build plan), design-canvas/ mockups, proposal PDF, etc.
 ```
 
 **Why grouped this way (`modules/auth/`, later `modules/requests/`, `modules/vendors/`, etc.):**
@@ -134,4 +136,4 @@ Defined in `backend/prisma/schema.prisma`, applied via one migration (`202609161
 - Vendor-facing case list/status-update endpoints.
 - Mobile app (Expo/React Native) — not started.
 
-Full original plan and phase sequencing: see `ROADMAP.md` in the project root.
+Full original plan and phase sequencing: see `docs/ROADMAP.md`.

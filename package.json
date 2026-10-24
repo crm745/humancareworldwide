@@ -1,0 +1,19 @@
+{
+  "name": "humancare-app",
+  "private": true,
+  "description": "HumanCare World Wide — backend API, patient mobile app, corporate portal and admin portal. Root shortcuts only: each app keeps its own package.json and node_modules.",
+  "scripts": {
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:mobile": "npm run start --prefix apps/mobile",
+    "dev:mobile:web": "npm run web --prefix apps/mobile -- --port 8082",
+    "dev:corporate": "npm run dev --prefix apps/corporate-portal",
+    "dev:admin": "npm run serve --prefix apps/admin-portal",
+    "test:backend": "npm test --prefix backend",
+    "test:mobile": "npm test --prefix apps/mobile",
+    "test:admin": "npm test --prefix apps/admin-portal",
+    "lint:mobile": "npm run lint --prefix apps/mobile",
+    "build:corporate": "npm run build --prefix apps/corporate-portal",
+    "migrate:dev": "npm run migrate:dev --prefix backend",
+    "migrate:test": "npm run migrate:test --prefix backend"
+  }
+}
