@@ -8,6 +8,7 @@ import { downloadAndShare } from '../lib/download';
 import { toUiStatus, formatDisplayDate } from '../lib/requestShape';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Button, Card, InfoRow, Pill, Spacer, Text } from '../components/ui';
+import { LoadError, LoadingState } from '../components/LoadingState';
 
 function Action({ Icon, label, onPress }) {
   return (
@@ -58,16 +59,24 @@ export default function RequestDetails() {
   const { t, toast } = useApp();
   const { id } = useLocalSearchParams();
   const [request, setRequest] = useState(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (!id) return;
     apiGet(`/requests/me/${id}`)
       .then(({ request: r }) => setRequest(r))
-      .catch((err) => toast(err.message));
+      .catch((err) => { setFailed(true); toast(err.message); });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once per id
   }, [id]);
 
-  if (!request) return <Screen><TopBar title={t('request_details_title')} /></Screen>;
+  if (!request) {
+    return (
+      <Screen>
+        <TopBar title={t('request_details_title')} />
+        {failed || !id ? <LoadError message="Couldn't load this request. Please go back and try again." /> : <LoadingState />}
+      </Screen>
+    );
+  }
 
   const docs = request.case?.documents || [];
   const docsLabel = docs.length ? `${docs[0].name}${docs.length > 1 ? ` +${docs.length - 1}` : ''} >` : 'No documents yet';
@@ -84,9 +93,9 @@ export default function RequestDetails() {
   const shareRequest = async () => {
     try {
       await Share.share({
-        title: `HumanCare WorldWide — ${request.referenceNumber}`,
+        title: `HumanCare World Wide — ${request.referenceNumber}`,
         message:
-          `HumanCare WorldWide request ${request.referenceNumber}\n` +
+          `HumanCare World Wide request ${request.referenceNumber}\n` +
           `${request.serviceType} — ${request.origin} to ${request.destination}\n` +
           `Status: ${t('status_' + toUiStatus(request.status))}`,
       });

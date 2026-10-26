@@ -4,14 +4,15 @@ import { router } from 'expo-router';
 import { useApp } from '../state/AppContext';
 import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 import { BackButton, Body, Screen } from '../components/layout';
-import { Button, Consent, Field, FieldLabel, Heading, Input, Text } from '../components/ui';
+import { Button, Field, FieldLabel, Heading, Input, Text } from '../components/ui';
+import { SignupConsents, consentsBody } from '../components/SignupConsents';
 import { PasswordField, Select } from '../components/widgets';
 import { apiPost } from '../lib/api';
-import { setAuthStep } from '../lib/authFlow';
+import { codeStepFrom, setAuthStep } from '../lib/authFlow';
 import { PASSWORD_HINT, isValidEmail, isValidMobileNumber, isValidName, passwordProblem } from '../lib/validators';
 
-// Sign-up is only through this form: Google/Apple would skip the required consents and
-// the mobile number, so those buttons live on the Login screen only.
+// The sign-up form. Google/Apple buttons live on the Login screen only; someone new who
+// uses them finishes on complete-profile.js (mobile + consents) instead of this form.
 export default function Register() {
   const { t, toast } = useApp();
   const [name, setName] = useState('');
@@ -28,7 +29,6 @@ export default function Register() {
   const confirmError = confirm && confirm !== password ? 'Passwords do not match.' : null;
   const ready = isValidName(name) && isValidMobileNumber(phone, cc) && isValidEmail(email)
     && password && !passwordError && confirm === password && consents[0] && consents[1];
-  const toggle = (i) => setConsents((c) => c.map((v, j) => (j === i ? !v : v)));
 
   // Creates the account (unverified, password hashed server-side) and texts an OTP;
   // register-otp.js verifies it with the ticket and signs straight in.
@@ -39,10 +39,10 @@ export default function Register() {
       // The backend saves these as proof of consent and refuses sign-up without the two required ones.
       const data = await apiPost('/auth/register', {
         name: name.trim(), email: email.trim(), mobile: phone.trim(), countryCode: cc, password,
-        consents: { termsPrivacy: consents[0], medicalDisclaimer: consents[1], marketing: consents[2] },
+        consents: consentsBody(consents),
       });
       toast('OTP sent');
-      setAuthStep('register-otp', { ticket: data.ticket, contact: data.maskedContact });
+      setAuthStep('register-otp', codeStepFrom(data));
       router.push('/register-otp');
     } catch (err) {
       toast(err.message);
@@ -50,8 +50,6 @@ export default function Register() {
       setBusy(false);
     }
   };
-
-  const link = (label, path) => <Text className="font-inter-bold text-primary" onPress={() => router.push(path)}>{label}</Text>;
 
   return (
     <Screen bg="bg-white">
@@ -85,23 +83,7 @@ export default function Register() {
             error={confirmError}
           />
         </View>
-        <View className="mt-[18px] gap-3.5">
-          <Consent on={consents[0]} onToggle={() => toggle(0)}>
-            <Text className="text-[13.5px] leading-5 text-muted">
-              By submitting the above information, you agree to our {link(t('register_terms_link'), '/terms')} and {link(t('privacy_title'), '/privacy')}
-            </Text>
-          </Consent>
-          <Consent on={consents[1]} onToggle={() => toggle(1)}>
-            <Text className="text-[13.5px] leading-5 text-muted">
-              Certain features on the platform are for informational and educational purposes only. It is not a medical device and does not provide professional medical advice, diagnosis, or treatment. Never disregard or delay seeking professional medical consultation because of information found here. Always consult a qualified healthcare provider regarding any medical condition.
-            </Text>
-          </Consent>
-          <Consent on={consents[2]} onToggle={() => toggle(2)}>
-            <Text className="text-[13.5px] leading-5 text-muted">
-              You are agreeing to receive communication reminding you about your account and updates about HumanCare WorldWide&apos;s services and programs.
-            </Text>
-          </Consent>
-        </View>
+        <SignupConsents value={consents} onChange={setConsents} />
         <Button large title={t('send_otp_btn')} dimmed={!ready} loading={busy} onPress={submit} className="mt-[26px]" />
         <Text className="mt-6 text-center text-[15px] text-muted">
           {t('register_login_q')} <Text className="font-inter-bold text-primary" onPress={() => router.push('/login')}>{t('cta_login')}</Text>

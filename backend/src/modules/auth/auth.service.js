@@ -204,8 +204,8 @@ async function verifyAppleIdToken(idToken) {
 
 // Shared by the Google and Apple login controllers. Google/Apple only LOG IN to an
 // account that already exists — matched by provider id, or by email the first time
-// (which then links the provider to it). They never create one: every account comes
-// from the sign-up form, so nobody skips the required consents, mobile and password.
+// (which then links the provider to it). They never create one here: someone new gets a
+// sign-up ticket instead and finishes in socialRegister (mobile + OTP + consents).
 //
 // Linking by email needs BOTH sides to have verified that email; otherwise whoever
 // registered the address first (possibly not its owner) would share an account with

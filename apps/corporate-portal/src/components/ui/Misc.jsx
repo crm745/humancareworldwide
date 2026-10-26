@@ -2,12 +2,18 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, ChevronRight, Info, Lock, TriangleAlert } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import logoMark from '@/assets/logo-mark.png';
 import { cn } from '@/utils/cn';
 import { initials } from '@/utils/format';
 import { useClickOutside } from '@/hooks/useUtils';
 
 export function Logo({ className }) {
-  return <img src={logo} alt="HumanCare Worldwide" className={cn('h-9 w-auto select-none', className)} draggable={false} />;
+  return <img src={logo} alt="HumanCare World Wide" className={cn('h-9 w-auto select-none', className)} draggable={false} />;
+}
+
+// Just the HL wings, for spaces too small for the full logo (collapsed sidebar).
+export function LogoMark({ className }) {
+  return <img src={logoMark} alt="HumanCare World Wide" className={cn('h-7 w-auto select-none', className)} draggable={false} />;
 }
 
 export function PageHeader({ title, description, actions, breadcrumbs }) {

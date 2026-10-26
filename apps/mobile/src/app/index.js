@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { Image, Pressable } from 'react-native';
-import { SPLASH_BG } from '../data/images';
+import { Image, Pressable, View } from 'react-native';
+import { LOGO } from '../data/images';
 import { navReplace } from '../lib/nav';
 import { getAccessToken } from '../lib/session';
 
-// Splash: full-bleed brand image, shown for at least 2s (tap to skip) while we check
+// Splash: the logo centred on white, shown for at least 2s (tap to skip) while we check
 // for a saved session. A saved token means they're already logged in — AppContext's
 // own startup effect loads their real profile in parallel (it runs on every app
 // launch, not just this screen), so here we just need to decide where to land: Home
@@ -24,7 +24,9 @@ export default function Splash() {
 
   return (
     <Pressable className="flex-1 bg-white" onPress={() => navReplace('/welcome')}>
-      <Image source={SPLASH_BG} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+      <View className="flex-1 items-center justify-center">
+        <Image source={LOGO} style={{ width: '62%', maxWidth: 320, aspectRatio: 2440 / 1405 }} resizeMode="contain" />
+      </View>
     </Pressable>
   );
 }

@@ -10,6 +10,7 @@ import { Body, BottomNav, Screen, TopBar } from '../components/layout';
 import { Card, Pill, Text } from '../components/ui';
 import { FilterSheet } from '../components/FilterSheet';
 import { SearchHeader } from '../components/SearchHeader';
+import { LoadingState } from '../components/LoadingState';
 
 const STATUSES = ['all', 'submitted', 'progress', 'completed', 'cancelled'];
 const FILTER_SERVICES = Object.entries(SERVICE_LABELS).map(([value, labelKey]) => ({ value, labelKey }));
@@ -24,11 +25,13 @@ export default function MyRequests() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [sheet, setSheet] = useState(false);
   const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     apiGet('/requests/me')
       .then(({ requests: rows }) => setRequests(rows.map(toListItem)))
-      .catch((err) => toast(err.message));
+      .catch((err) => toast(err.message))
+      .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
   }, []);
 
@@ -53,6 +56,7 @@ export default function MyRequests() {
         onChange={setStatus}
       />
       <Body withNav contentClassName="gap-2.5 px-[18px] pt-4">
+        {loading && <LoadingState />}
         {items.map((r) => (
           <Card key={r.id} onPress={() => router.push({ pathname: '/request-details', params: { id: r.rawId } })}>
             <View className="flex-row items-start justify-between">
@@ -68,7 +72,7 @@ export default function MyRequests() {
             </View>
           </Card>
         ))}
-        {items.length === 0 && (
+        {!loading && items.length === 0 && (
           <View className="items-center px-5 py-[50px]">
             <Text className="mb-1.5 font-inter-bold text-[14px] text-muted">{t('mr_empty_title')}</Text>
             <Text className="text-[12.5px] text-faint">{t('mr_empty_sub')}</Text>

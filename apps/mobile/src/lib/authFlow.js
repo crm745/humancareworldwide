@@ -20,6 +20,19 @@ function writeWeb(value) {
   try { window.sessionStorage.setItem(KEY, JSON.stringify(value)); } catch { /* storage blocked: memory still works */ }
 }
 
+// What a code screen needs from the backend's step-1 answer: the ticket, the masked
+// contact to show, and — when the backend uses Firebase for this mobile — the full
+// number the app must ask Firebase to text (see usePhoneCode).
+export function codeStepFrom(data, extra = {}) {
+  return {
+    ticket: data.ticket,
+    contact: data.maskedContact,
+    phoneVerification: data.phoneVerification,
+    phoneNumber: data.phoneNumber,
+    ...extra,
+  };
+}
+
 export function setAuthStep(screen, data) {
   memory = { ...(isWeb ? readWeb() : memory), [screen]: data };
   if (isWeb) writeWeb(memory);

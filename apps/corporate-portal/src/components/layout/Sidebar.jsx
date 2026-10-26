@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { ChevronsLeft, ChevronsRight, LogOut, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { Logo } from '@/components/ui/Misc';
+import { Logo, LogoMark } from '@/components/ui/Misc';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useAuth } from '@/hooks/useAuth';
 import { NAV_SECTIONS } from './navItems';
@@ -90,7 +90,7 @@ export function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMobile
       >
         <div className={cn('flex h-20 items-center border-b border-slate-100', collapsed ? 'justify-center px-2' : 'px-5')}>
           {collapsed ? (
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white">HC</span>
+            <LogoMark className="w-11 h-auto" />
           ) : (
             <Logo className="h-14 w-auto" />
           )}

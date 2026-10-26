@@ -48,8 +48,10 @@ async function apiFetch(path, options = {}, isRetry = false) {
       await refreshAccessToken();
       return apiFetch(path, options, true);
     } catch {
+      // The session can't be renewed (expired, or signed out by a password reset). They
+      // already have an account, so send them to Login rather than Get Started.
       await clearTokens();
-      navReplace('/welcome');
+      navReplace('/login');
       throw new Error('Your session expired. Please log in again.');
     }
   }
@@ -62,6 +64,7 @@ async function apiFetch(path, options = {}, isRetry = false) {
     err.status = res.status;
     err.code = data.code;
     err.secondsLeft = data.secondsLeft;
+    err.data = data;
     throw err;
   }
   return data;
@@ -111,7 +114,7 @@ export async function apiUpload(path, file, isRetry = false, onProgress) {
             resolve(await apiUpload(path, file, true, onProgress));
           } catch {
             await clearTokens();
-            navReplace('/welcome');
+            navReplace('/login');
             reject(new Error('Your session expired. Please log in again.'));
           }
           return;
@@ -154,7 +157,7 @@ export async function apiUpload(path, file, isRetry = false, onProgress) {
       return apiUpload(path, file, true, onProgress);
     } catch {
       await clearTokens();
-      navReplace('/welcome');
+      navReplace('/login');
       throw new Error('Your session expired. Please log in again.');
     }
   }

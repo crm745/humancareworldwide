@@ -49,15 +49,16 @@ export default function Home() {
     registerForPushNotifications();
   }, [isCorporate]);
 
+  // Signed-out people already have an account, so they land on their login screen.
   const signOut = async () => {
     await clearTokens();
-    navReplace('/welcome');
+    navReplace(isCorporate ? '/corporate-login' : '/login');
   };
 
   return (
     <Screen>
       <View className="flex-row items-center justify-between border-b border-line bg-white px-[18px] pb-4 pt-[22px]">
-        <Image source={LOGO} style={{ height: 42, width: 42 * (360 / 135) }} resizeMode="contain" />
+        <Image source={LOGO} style={{ height: 42, width: 42 * (2440 / 1405) }} resizeMode="contain" />
         <View className="flex-row items-center gap-2">
           <IconButton onPress={() => router.push('/notifications')}>
             <Bell size={16} color="#45526B" />

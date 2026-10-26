@@ -18,6 +18,7 @@ const {
   resendOtp,
   googleLogin,
   appleLogin,
+  socialRegister,
   corporateLogin,
   corporateVerifyOtp,
   refreshAccessToken,
@@ -35,7 +36,8 @@ const {
 const authRouter = Router();
 
 // Patients: password first, then an OTP to their mobile (each step hands back a ticket
-// the next step requires). Google/Apple skip both, since the provider authenticated them.
+// the next step requires). Google/Apple skip both for an existing account, since the
+// provider authenticated them.
 authRouter.post('/register', otpSendIpLimiter, otpRequestLimiter, register);
 authRouter.post('/register/verify-otp', otpVerifyLimiter, registerVerifyOtp);
 authRouter.post('/login', patientLoginLimiter, login);
@@ -46,6 +48,8 @@ authRouter.post('/password/forgot/verify-otp', otpVerifyLimiter, verifyPasswordR
 authRouter.post('/password/set', setPassword);
 authRouter.post('/google', googleLogin);
 authRouter.post('/apple', appleLogin);
+// New Google/Apple people: mobile + consents, then the same OTP step as /register.
+authRouter.post('/social/register', otpSendIpLimiter, otpRequestLimiter, socialRegister);
 
 // Corporates authenticate with password + OTP (two factors, since these accounts
 // can see patient case/medical data).

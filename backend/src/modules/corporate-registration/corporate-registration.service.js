@@ -1,6 +1,6 @@
 const crypto = require('crypto');
-const sgMail = require('@sendgrid/mail');
 const { prisma } = require('../../db/prisma');
+const { sendMail } = require('../../lib/mailer');
 const { hashPassword } = require('../auth/auth.service');
 
 const EMAIL_VERIFY_TTL_HOURS = 24;
@@ -71,16 +71,11 @@ function toAdminRegistration(reg) {
 }
 
 async function sendVerificationEmail(reg) {
-  const apiKey = process.env.SENDGRID_API_KEY;
-  const from = process.env.SENDGRID_FROM_EMAIL;
-  if (!apiKey || !from) throw new Error('SENDGRID_API_KEY / SENDGRID_FROM_EMAIL is not set');
   const portalUrl = process.env.CORPORATE_PORTAL_URL || 'http://localhost:5173';
   const link = `${portalUrl}/register/verify-email?token=${reg.emailVerifyToken}`;
 
-  sgMail.setApiKey(apiKey);
-  await sgMail.send({
+  await sendMail({
     to: reg.email,
-    from,
     subject: 'Verify your email — HumanCare corporate registration',
     text: `Confirm your email to continue your HumanCare corporate registration (Corporate ID ${reg.corporateRefId}): ${link}\nThis link expires in ${EMAIL_VERIFY_TTL_HOURS} hours.`,
     html: `<p>Confirm your email to continue your HumanCare corporate registration (Corporate ID <strong>${reg.corporateRefId}</strong>):</p><p><a href="${link}">${link}</a></p><p>This link expires in ${EMAIL_VERIFY_TTL_HOURS} hours.</p>`,

@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useApp } from '../state/AppContext';
 import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 import { apiPost } from '../lib/api';
-import { setAuthStep } from '../lib/authFlow';
+import { codeStepFrom, setAuthStep } from '../lib/authFlow';
 import { isValidEmail, isValidMobileNumber } from '../lib/validators';
 import { BackButton, Body, Screen } from '../components/layout';
 import { Button, Field, FieldLabel, Heading, Input, Spacer, Text } from '../components/ui';
@@ -37,7 +37,7 @@ export default function ChangeContact() {
         : { kind, email: email.trim(), password };
       const data = await apiPost('/auth/me/contact', body);
       toast('OTP sent');
-      setAuthStep('change-contact-otp', { ticket: data.ticket, contact: data.maskedContact, kind });
+      setAuthStep('change-contact-otp', codeStepFrom(data, { kind }));
       router.push('/change-contact-otp');
     } catch (err) {
       if (['invalid_password', 'account_locked', 'password_required'].includes(err.code)) setFormError(err.message);

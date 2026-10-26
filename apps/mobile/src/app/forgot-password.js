@@ -6,7 +6,7 @@ import { useApp } from '../state/AppContext';
 import { COUNTRY_CODES, COUNTRY_CODE_LABELS } from '../data/mock';
 import { goBack } from '../lib/nav';
 import { apiPost } from '../lib/api';
-import { setAuthStep } from '../lib/authFlow';
+import { codeStepFrom, setAuthStep } from '../lib/authFlow';
 import { isValidEmail, isValidMobileNumber } from '../lib/validators';
 import { BackButton, Body, Screen } from '../components/layout';
 import { Button, Field, FieldLabel, Heading, Input, Spacer, Text } from '../components/ui';
@@ -39,11 +39,13 @@ export default function ForgotPassword() {
         const body = mode === 'phone' ? { mobile: phone.trim(), countryCode: cc } : { email: id.trim() };
         const data = await apiPost('/auth/password/forgot', body);
         toast('If that account exists, a reset code has been sent.');
-        setAuthStep('forgot-password-otp', { ticket: data.ticket, contact: data.maskedContact });
+        setAuthStep('forgot-password-otp', codeStepFrom(data));
         router.push('/forgot-password-otp');
       }
     } catch (err) {
       toast(err.message);
+      // Email not verified yet: the reset has to go through the mobile number.
+      if (err.code === 'use_mobile') setMode('phone');
     } finally {
       setBusy(false);
     }

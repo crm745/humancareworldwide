@@ -12,5 +12,4 @@ export const IMAGES = {
 };
 
 export const LOGO = require('../../assets/images/logo-full.png');
-export const SPLASH_BG = require('../../assets/images/splash-bg.png');
 export const WELCOME_BG = require('../../assets/images/welcome-bg.png');

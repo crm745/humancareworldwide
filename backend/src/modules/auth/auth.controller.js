@@ -21,6 +21,7 @@ const {
   SocialNoAccountError,
 } = require("./auth.service");
 const { EVENTS, recordSecurityEvent } = require("./security-events");
+const { isFirebasePhoneEnabled, verifyPhoneProof } = require("../../lib/firebase");
 
 const disposableDomainSet = new Set(disposableDomains);
 function isDisposableEmail(email) {
@@ -36,7 +37,7 @@ const TICKET_EXPIRED = "This step has expired. Please start again.";
 const DUPLICATE_ACCOUNT = "An account with that email or mobile number already exists.";
 // Which wording of the sign-up consents the app shows. Bump this whenever the consent
 // text in mobile/src/app/register.js changes, so each saved consent says what was agreed.
-const CONSENT_VERSION = "2026-10-24";
+const CONSENT_VERSION = "2026-10-26"; // company name spelling fixed in the marketing consent
 
 // Only the fields the app needs — never the hash, lockout counters or token version.
 // `hasPassword` is included when the row was loaded with its hash, so Edit Profile knows
@@ -70,6 +71,57 @@ function ticketFailure(res) {
   return res.status(401).json({ error: TICKET_EXPIRED, code: "ticket_invalid" });
 }
 
+// --- Sending and checking codes -------------------------------------------------------
+// Email codes are always ours (src/lib/mailer.js). Mobile codes are ours by default (only
+// printed to the log in development — see otp-delivery.service.js); with
+// PHONE_OTP_PROVIDER=firebase the app asks Firebase to send and check them, and sends us
+// Firebase's signed proof (firebaseIdToken) instead of the code. Everything else — tickets,
+// passwords, which number a step is for — stays here either way.
+function viaFirebase(dest) {
+  return isFirebasePhoneEnabled() && !String(dest).includes("@");
+}
+
+// Step 1. In Firebase mode there's nothing to send from here for a mobile: the app does it.
+async function sendCode(dest, purpose, countryCode) {
+  if (viaFirebase(dest)) return { throttled: false };
+  return issueOtp(dest, purpose, countryCode);
+}
+
+// What the code screen needs. The full number is only handed back in Firebase mode, and
+// only for numbers the person typed themselves (callers make sure of that).
+function codeStep(ticket, dest) {
+  return {
+    ticket,
+    maskedContact: maskContact(dest),
+    ...(viaFirebase(dest) && { phoneVerification: "firebase", phoneNumber: dest }),
+  };
+}
+
+function hasProof(body) {
+  return !!(body.code || body.firebaseIdToken);
+}
+
+// Step 2. Same result shape as verifyOtp. A Firebase proof only counts if it is for the
+// exact number this step was started for.
+async function checkCode(dest, purpose, body) {
+  if (!viaFirebase(dest)) return verifyOtp(dest, purpose, body.code);
+  try {
+    const phone = await verifyPhoneProof(body.firebaseIdToken);
+    if (phone !== dest) return { ok: false, code: "otp_invalid", reason: "That code was for a different mobile number." };
+    return { ok: true };
+  } catch (err) {
+    if (!err.code || !String(err.code).startsWith("otp_")) throw err;
+    return { ok: false, code: err.code, reason: err.message };
+  }
+}
+
+// Firebase sends the SMS from the app, so the app must know the full number. When the
+// person typed their email but the code would go to their (unshown) mobile, ask them to
+// use the mobile instead rather than reveal the number.
+function useMobileInstead(res, message) {
+  return res.status(400).json({ error: message, code: "use_mobile" });
+}
+
 // Login and forgot-password take either an email or a mobile + its calling code.
 // Returns the Prisma `where` for it and the normalized value, or null if invalid.
 function parseIdentifier({ email, mobile, countryCode }) {
@@ -79,6 +131,27 @@ function parseIdentifier({ email, mobile, countryCode }) {
   }
   const parsed = normalizeMobile(mobile, countryCode);
   return parsed ? { where: { mobile: parsed.e164 }, value: parsed.e164 } : null;
+}
+
+// Both sign-ups (the form, and Google/Apple + mobile) refuse to go on without the two
+// required consents, and save all three as proof of what was agreed.
+function hasRequiredConsents(consents) {
+  return consents.termsPrivacy === true && consents.medicalDisclaimer === true;
+}
+
+function consentRequired(res) {
+  return res.status(400).json({
+    error: "Please accept the Terms & Privacy Policy and the medical disclaimer to continue.",
+    code: "consent_required",
+  });
+}
+
+function consentRows(req, consents) {
+  return [
+    { type: "terms_privacy", accepted: true },
+    { type: "medical_disclaimer", accepted: true },
+    { type: "marketing", accepted: consents.marketing === true },
+  ].map((c) => ({ ...c, version: CONSENT_VERSION, ipAddress: req.ip || null }));
 }
 
 // Step 1 of registration: the account is created straight away but unverified, with the
@@ -104,12 +177,7 @@ async function register(req, res) {
   const passwordError = passwordProblem(password);
   if (passwordError) return res.status(400).json({ error: passwordError });
   const consents = req.body.consents || {};
-  if (consents.termsPrivacy !== true || consents.medicalDisclaimer !== true) {
-    return res.status(400).json({
-      error: "Please accept the Terms & Privacy Policy and the medical disclaimer to continue.",
-      code: "consent_required",
-    });
-  }
+  if (!hasRequiredConsents(consents)) return consentRequired(res);
 
   const existing = await prisma.user.findMany({
     where: { OR: [{ email: cleanEmail }, { mobile: phone.e164 }] },
@@ -131,13 +199,7 @@ async function register(req, res) {
         countryCode: phone.countryCode,
         passwordHash: await hashPassword(password),
         isVerified: false,
-        consents: {
-          create: [
-            { type: "terms_privacy", accepted: true },
-            { type: "medical_disclaimer", accepted: true },
-            { type: "marketing", accepted: consents.marketing === true },
-          ].map((c) => ({ ...c, version: CONSENT_VERSION, ipAddress: req.ip || null })),
-        },
+        consents: { create: consentRows(req, consents) },
       },
     });
   } catch (err) {
@@ -147,17 +209,14 @@ async function register(req, res) {
   }
 
   await recordSecurityEvent(req, EVENTS.REGISTER_STARTED, { userId: user.id, identifier: phone.e164 });
-  const result = await issueOtp(phone.e164, "patient_register", phone.countryCode);
+  const result = await sendCode(phone.e164, "patient_register", phone.countryCode);
   if (result.throttled) return throttledResponse(res, result);
-  res.json({
-    ticket: signTicket({ step: "register_otp", sub: user.id, dest: phone.e164 }),
-    maskedContact: maskContact(phone.e164),
-  });
+  res.json(codeStep(signTicket({ step: "register_otp", sub: user.id, dest: phone.e164 }), phone.e164));
 }
 
 async function registerVerifyOtp(req, res) {
-  const { ticket, code } = req.body;
-  if (!ticket || !code) return res.status(400).json({ error: "ticket and code are required" });
+  const { ticket } = req.body;
+  if (!ticket || !hasProof(req.body)) return res.status(400).json({ error: "ticket and code are required" });
 
   const step = readTicket(ticket, "register_otp");
   if (!step) return ticketFailure(res);
@@ -165,7 +224,7 @@ async function registerVerifyOtp(req, res) {
   const pending = await prisma.user.findUnique({ where: { id: step.sub } });
   if (!pending || pending.isVerified) return ticketFailure(res);
 
-  const result = await verifyOtp(step.dest, "patient_register", code);
+  const result = await checkCode(step.dest, "patient_register", req.body);
   if (!result.ok) return otpFailure(req, res, result, { userId: pending.id, step: "register_mobile" });
 
   // The mobile is proven, so the account is done and they're signed straight in. The
@@ -238,11 +297,11 @@ async function login(req, res) {
   const dest = user ? (req.body.email && emailIsSafe ? user.email : user.mobile || user.email) : null;
 
   if (user && !user.passwordHash) {
-    const result = await issueOtp(dest, "patient_login", user.countryCode);
+    if (req.body.email && viaFirebase(dest)) return useMobileInstead(res, "Please log in with your mobile number.");
+    const result = await sendCode(dest, "patient_login", user.countryCode);
     if (result.throttled) return throttledResponse(res, result);
     return res.json({
-      ticket: signTicket({ step: "login_otp", sub: user.id, dest, needsPassword: true }),
-      maskedContact: maskContact(dest),
+      ...codeStep(signTicket({ step: "login_otp", sub: user.id, dest, needsPassword: true }), dest),
       needsPasswordSetup: true,
     });
   }
@@ -265,20 +324,19 @@ async function login(req, res) {
     await prisma.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null } });
   }
 
-  const result = await issueOtp(dest, "patient_login", user.countryCode);
+  // Only possible for an email login whose account has no email on file — not today.
+  if (req.body.email && viaFirebase(dest)) return useMobileInstead(res, "Please log in with your mobile number.");
+  const result = await sendCode(dest, "patient_login", user.countryCode);
   if (result.throttled) return throttledResponse(res, result);
-  res.json({
-    ticket: signTicket({ step: "login_otp", sub: user.id, dest }),
-    maskedContact: maskContact(dest),
-  });
+  res.json(codeStep(signTicket({ step: "login_otp", sub: user.id, dest }), dest));
 }
 
 // Step 2 of login. Normally issues the session; for an account that still has no
 // password it instead hands back a set-password ticket, so there's no way into the app
 // without one.
 async function loginVerifyOtp(req, res) {
-  const { ticket, code } = req.body;
-  if (!ticket || !code) return res.status(400).json({ error: "ticket and code are required" });
+  const { ticket } = req.body;
+  if (!ticket || !hasProof(req.body)) return res.status(400).json({ error: "ticket and code are required" });
 
   const step = readTicket(ticket, "login_otp");
   if (!step) return ticketFailure(res);
@@ -288,7 +346,7 @@ async function loginVerifyOtp(req, res) {
   });
   if (!user) return ticketFailure(res);
 
-  const result = await verifyOtp(step.dest, "patient_login", code);
+  const result = await checkCode(step.dest, "patient_login", req.body);
   if (!result.ok) return otpFailure(req, res, result, { userId: user.id, step: "login" });
   // Password + code from the inbox: proves both the account and the email are theirs.
   if (step.dest === user.email && user.passwordHash) await markEmailVerified(req, user);
@@ -317,8 +375,11 @@ async function forgotPassword(req, res) {
   // An email nobody has proven yet can't be trusted to reset the password (it may be a
   // stranger's inbox typed at sign-up), so the code goes to the verified mobile instead.
   const dest = user && req.body.email && !user.emailVerifiedAt && user.mobile ? user.mobile : id.value;
+  if (req.body.email && viaFirebase(dest)) {
+    return useMobileInstead(res, "Your email isn't verified yet. Please reset your password with your mobile number.");
+  }
   if (user) {
-    const result = await issueOtp(dest, "patient_password_reset", user.countryCode);
+    const result = await sendCode(dest, "patient_password_reset", user.countryCode);
     if (result.throttled) return throttledResponse(res, result);
   }
   await recordSecurityEvent(req, EVENTS.PASSWORD_RESET_REQUESTED, {
@@ -326,22 +387,19 @@ async function forgotPassword(req, res) {
     identifier: id.value,
     detail: { accountFound: !!user },
   });
-  res.json({
-    ticket: signTicket({ step: "reset_otp", sub: user?.id ?? null, dest }),
-    maskedContact: maskContact(dest),
-  });
+  res.json(codeStep(signTicket({ step: "reset_otp", sub: user?.id ?? null, dest }), dest));
 }
 
 async function verifyPasswordResetOtp(req, res) {
-  const { ticket, code } = req.body;
-  if (!ticket || !code) return res.status(400).json({ error: "ticket and code are required" });
+  const { ticket } = req.body;
+  if (!ticket || !hasProof(req.body)) return res.status(400).json({ error: "ticket and code are required" });
 
   const step = readTicket(ticket, "reset_otp");
   if (!step) return ticketFailure(res);
   // No account behind this ticket: answer exactly like a wrong code would.
   if (!step.sub) return otpFailure(req, res, { code: "otp_invalid", reason: "Incorrect code." }, { step: "password_reset" });
 
-  const result = await verifyOtp(step.dest, "patient_password_reset", code);
+  const result = await checkCode(step.dest, "patient_password_reset", req.body);
   if (!result.ok) return otpFailure(req, res, result, { userId: step.sub, step: "password_reset" });
 
   const user = await prisma.user.findFirst({ where: { id: step.sub, isVerified: true } });
@@ -401,6 +459,9 @@ function purposeFor(step) {
 async function resendOtp(req, res) {
   const step = readTicket(req.body.ticket, Object.keys(TICKET_PURPOSE));
   if (!step) return ticketFailure(res);
+  if (viaFirebase(step.dest)) {
+    return res.status(400).json({ error: "Request a new code from the app.", code: "resend_in_app" });
+  }
   const sent = { message: "A new code has been sent." };
   if (!step.sub) return res.json(sent); // forgot-password for an account that doesn't exist
 
@@ -415,9 +476,10 @@ async function resendOtp(req, res) {
   res.json(sent);
 }
 
-// Google and Apple have already authenticated the person, so no password or OTP here.
-// They only sign in to an existing account (see findSocialUser); new people sign up with
-// the form so the consents, mobile and password are always collected.
+// Google and Apple have already authenticated the person, so an existing account is
+// signed straight in (see findSocialUser). Someone new gets a signed sign-up ticket
+// carrying what the provider vouched for (its id, email, name); socialRegister turns it
+// into an account once they add a mobile (proven by OTP) and accept the consents.
 function socialNoAccount(res) {
   return res.status(404).json({ error: "No account found for this email. Please sign up first.", code: "no_account" });
 }
@@ -427,6 +489,37 @@ function socialEmailInUse(res) {
     error: "An account already uses this email. Log in with your mobile/email and password instead.",
     code: "email_in_use",
   });
+}
+
+async function socialSignIn(req, res, provider, payload) {
+  let user;
+  try {
+    user = await findSocialUser({ provider, ...payload });
+  } catch (err) {
+    if (!(err instanceof SocialEmailInUseError || err instanceof SocialNoAccountError)) throw err;
+    const noAccount = err instanceof SocialNoAccountError;
+    await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_REFUSED, {
+      identifier: payload.email,
+      detail: { provider, reason: noAccount ? "no_account" : "email_not_verified" },
+    });
+    if (!noAccount) return socialEmailInUse(res);
+    // Only an email the provider has verified can become the account's (already verified) email.
+    if (!payload.email || !payload.emailVerified) return socialNoAccount(res);
+    return res.status(404).json({
+      error: "Finish creating your account.",
+      code: "no_account",
+      signupTicket: signTicket({
+        step: "social_signup",
+        provider,
+        providerId: payload.providerId,
+        email: normalizeEmail(payload.email),
+        name: payload.name || "",
+      }),
+      profile: { name: payload.name || "", email: normalizeEmail(payload.email) },
+    });
+  }
+  await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_SUCCEEDED, { userId: user.id, detail: { provider } });
+  res.json(await sessionFor(user.id));
 }
 
 async function googleLogin(req, res) {
@@ -439,22 +532,7 @@ async function googleLogin(req, res) {
   } catch (err) {
     return res.status(401).json({ error: "Invalid Google token" });
   }
-
-  let user;
-  try {
-    user = await findSocialUser({ provider: "google", ...payload });
-  } catch (err) {
-    if (err instanceof SocialEmailInUseError || err instanceof SocialNoAccountError) {
-      await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_REFUSED, {
-        identifier: payload.email,
-        detail: { provider: "google", reason: err instanceof SocialNoAccountError ? "no_account" : "email_not_verified" },
-      });
-      return err instanceof SocialNoAccountError ? socialNoAccount(res) : socialEmailInUse(res);
-    }
-    throw err;
-  }
-  await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_SUCCEEDED, { userId: user.id, detail: { provider: "google" } });
-  res.json(await sessionFor(user.id));
+  return socialSignIn(req, res, "google", payload);
 }
 
 async function appleLogin(req, res) {
@@ -467,22 +545,72 @@ async function appleLogin(req, res) {
   } catch (err) {
     return res.status(401).json({ error: "Invalid Apple token" });
   }
+  return socialSignIn(req, res, "apple", { ...payload, name });
+}
+
+// Google/Apple sign-up, step 1: name (editable), mobile and consents on top of what the
+// provider vouched for. Like the form sign-up, the account is created unverified and the
+// mobile gets a code; registerVerifyOtp finishes it. No password: they sign in with
+// Google/Apple, and are asked to set one if they ever log in with mobile/email instead.
+async function socialRegister(req, res) {
+  const { signupTicket, name, mobile, countryCode } = req.body;
+  if (!signupTicket || !name || !mobile) {
+    return res.status(400).json({ error: "signupTicket, name and mobile are required" });
+  }
+  const step = readTicket(signupTicket, "social_signup");
+  if (!step) return ticketFailure(res);
+  const cleanName = String(name).trim();
+  if (cleanName.length < 2) return res.status(400).json({ error: "Enter a valid name." });
+  const phone = normalizeMobile(mobile, countryCode);
+  if (!phone) return res.status(400).json({ error: "Enter a valid mobile number for the selected country." });
+  const consents = req.body.consents || {};
+  if (!hasRequiredConsents(consents)) return consentRequired(res);
+
+  const idField = step.provider === "google" ? "googleId" : "appleId";
+  const existing = await prisma.user.findMany({
+    where: { OR: [{ email: step.email }, { mobile: phone.e164 }, { [idField]: step.providerId }] },
+  });
+  const verified = existing.filter((u) => u.isVerified);
+  if (verified.some((u) => u.mobile === phone.e164)) {
+    return res.status(409).json({
+      error: "This mobile number already has an account. Log in with it instead.",
+      code: "mobile_in_use",
+    });
+  }
+  if (verified.length) return res.status(409).json({ error: DUPLICATE_ACCOUNT });
+  // Same as the form: half-finished sign-ups can't log in and are simply replaced.
+  if (existing.length) {
+    await prisma.user.deleteMany({ where: { id: { in: existing.map((u) => u.id) }, isVerified: false } });
+  }
 
   let user;
   try {
-    user = await findSocialUser({ provider: "apple", ...payload, name });
+    user = await prisma.user.create({
+      data: {
+        name: cleanName,
+        email: step.email,
+        mobile: phone.e164,
+        countryCode: phone.countryCode,
+        [idField]: step.providerId,
+        // The provider only issues the ticket for an email it has verified.
+        emailVerifiedAt: new Date(),
+        isVerified: false,
+        consents: { create: consentRows(req, consents) },
+      },
+    });
   } catch (err) {
-    if (err instanceof SocialEmailInUseError || err instanceof SocialNoAccountError) {
-      await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_REFUSED, {
-        identifier: payload.email,
-        detail: { provider: "apple", reason: err instanceof SocialNoAccountError ? "no_account" : "email_not_verified" },
-      });
-      return err instanceof SocialNoAccountError ? socialNoAccount(res) : socialEmailInUse(res);
-    }
+    if (err.code === "P2002") return res.status(409).json({ error: DUPLICATE_ACCOUNT });
     throw err;
   }
-  await recordSecurityEvent(req, EVENTS.SOCIAL_LOGIN_SUCCEEDED, { userId: user.id, detail: { provider: "apple" } });
-  res.json(await sessionFor(user.id));
+
+  await recordSecurityEvent(req, EVENTS.REGISTER_STARTED, {
+    userId: user.id,
+    identifier: phone.e164,
+    detail: { provider: step.provider },
+  });
+  const result = await sendCode(phone.e164, "patient_register", phone.countryCode);
+  if (result.throttled) return throttledResponse(res, result);
+  res.json(codeStep(signTicket({ step: "register_otp", sub: user.id, dest: phone.e164 }), phone.e164));
 }
 
 // Step 1 of corporate login: password gets you an OTP, not a token — the actual
@@ -656,26 +784,23 @@ async function requestContactChange(req, res) {
     });
   }
 
-  const result = await issueOtp(dest, kind === "mobile" ? "patient_change_mobile" : "patient_change_email", countryCode);
+  const result = await sendCode(dest, kind === "mobile" ? "patient_change_mobile" : "patient_change_email", countryCode);
   if (result.throttled) return throttledResponse(res, result);
-  res.json({
-    ticket: signTicket({ step: "change_contact_otp", sub: user.id, kind, dest, countryCode, tv: user.tokenVersion }),
-    maskedContact: maskContact(dest),
-  });
+  res.json(codeStep(signTicket({ step: "change_contact_otp", sub: user.id, kind, dest, countryCode, tv: user.tokenVersion }), dest));
 }
 
 // Change mobile/email, step 2: the code from the new number/inbox. Needs the same signed-in
 // account that started it, and a ticket from before a password reset no longer works.
 async function verifyContactChange(req, res) {
-  const { ticket, code } = req.body;
-  if (!ticket || !code) return res.status(400).json({ error: "ticket and code are required" });
+  const { ticket } = req.body;
+  if (!ticket || !hasProof(req.body)) return res.status(400).json({ error: "ticket and code are required" });
 
   const step = readTicket(ticket, "change_contact_otp");
   if (!step || step.sub !== req.user.id) return ticketFailure(res);
   const current = await prisma.user.findUnique({ where: { id: req.user.id } });
   if (!current || !current.isVerified || current.tokenVersion !== step.tv) return ticketFailure(res);
 
-  const result = await verifyOtp(step.dest, purposeFor(step), code);
+  const result = await checkCode(step.dest, purposeFor(step), req.body);
   if (!result.ok) return otpFailure(req, res, result, { userId: req.user.id, step: "contact_change" });
 
   // A half-finished sign-up holding this number/email would otherwise trip the unique index.
@@ -808,6 +933,7 @@ module.exports = {
   resendOtp,
   googleLogin,
   appleLogin,
+  socialRegister,
   corporateLogin,
   corporateVerifyOtp,
   refreshAccessToken,

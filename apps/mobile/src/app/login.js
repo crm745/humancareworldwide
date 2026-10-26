@@ -9,7 +9,7 @@ import { PasswordField, Select } from '../components/widgets';
 import { navReplace } from '../lib/nav';
 import { apiPost } from '../lib/api';
 import { saveTokens } from '../lib/session';
-import { setAuthStep } from '../lib/authFlow';
+import { codeStepFrom, setAuthStep } from '../lib/authFlow';
 import { profileFromUser } from '../lib/profile';
 import { useSocialAuth } from '../lib/useSocialAuth';
 import { isValidEmail, isValidMobileNumber } from '../lib/validators';
@@ -40,7 +40,7 @@ export default function Login() {
     try {
       const body = mode === 'phone' ? { mobile: phone.trim(), countryCode: cc, password } : { email: email.trim(), password };
       const data = await apiPost('/auth/login', body);
-      setAuthStep('login-otp', { ticket: data.ticket, contact: data.maskedContact, setup: !!data.needsPasswordSetup });
+      setAuthStep('login-otp', codeStepFrom(data, { setup: !!data.needsPasswordSetup }));
       router.push('/login-otp');
     } catch (err) {
       if (err.code === 'invalid_credentials' || err.code === 'account_locked') setFormError(err.message);

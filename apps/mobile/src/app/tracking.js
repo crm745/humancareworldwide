@@ -8,6 +8,7 @@ import { downloadAndShare } from '../lib/download';
 import { toUiStatus, formatDisplayDate } from '../lib/requestShape';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Card, InfoRow, Pill, Spacer, Text } from '../components/ui';
+import { LoadError, LoadingState } from '../components/LoadingState';
 import { DocRow } from '../components/widgets';
 
 function stageEventsToTimeline(stageEvents, status) {
@@ -86,17 +87,25 @@ export default function Tracking() {
   const isCase = params.kind === 'case';
   const [tab, setTab] = useState(params.tab || 'overview');
   const [item, setItem] = useState(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (!params.id) return;
     const path = isCase ? `/corporate/cases/${params.id}` : `/requests/me/${params.id}`;
     apiGet(path)
       .then((data) => setItem(isCase ? fromCase(data.case) : fromRequest(data.request)))
-      .catch((err) => toast(err.message));
+      .catch((err) => { setFailed(true); toast(err.message); });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once per id/kind
   }, [params.id, isCase]);
 
-  if (!item) return <Screen><TopBar title={t('tracking_details_title')} /></Screen>;
+  if (!item) {
+    return (
+      <Screen>
+        <TopBar title={t('tracking_details_title')} />
+        {failed || !params.id ? <LoadError message="Couldn't load tracking details. Please go back and try again." /> : <LoadingState />}
+      </Screen>
+    );
+  }
 
   return (
     <Screen>

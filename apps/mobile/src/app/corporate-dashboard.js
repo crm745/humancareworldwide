@@ -10,6 +10,7 @@ import { Body, BottomNav, Screen, TopBar } from '../components/layout';
 import { Button, Card, Pill, Spacer, Text } from '../components/ui';
 import { FilterSheet } from '../components/FilterSheet';
 import { SearchHeader } from '../components/SearchHeader';
+import { LoadingState } from '../components/LoadingState';
 
 const STAGES = ['all', 'submitted', 'progress', 'scheduled'];
 const FILTER_SERVICES = [
@@ -48,11 +49,13 @@ export default function CorporateDashboard() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [sheet, setSheet] = useState(false);
   const [rawCases, setRawCases] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     apiGet('/corporate/cases')
       .then(({ cases: rows }) => setRawCases(rows.map(toListItem)))
-      .catch((err) => toast(err.message));
+      .catch((err) => toast(err.message))
+      .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
   }, []);
 
@@ -76,6 +79,8 @@ export default function CorporateDashboard() {
         onChange={setStage}
       />
       <Body withNav contentClassName="px-[18px] pt-4">
+        {loading ? <LoadingState /> : (
+        <>
         <View className="mb-3.5 flex-row gap-2">
           <Stat value={String(rawCases.length)} label={t('lbl_total')} />
           <Stat value={String(rawCases.filter((c) => c.stage === 'submitted' || c.stage === 'progress' || c.stage === 'scheduled').length)} label={t('lbl_active')} tone="active" />
@@ -94,6 +99,8 @@ export default function CorporateDashboard() {
           ))}
         </View>
         {cases.length === 0 && <Text className="py-[30px] text-center text-[13.5px] text-faint">{t('empty_no_cases')}</Text>}
+        </>
+        )}
         <Spacer min={16} />
         <Button icon={<Plus size={16} color="#fff" strokeWidth={2.4} />} title={t('btn_initiate_new_case')} onPress={() => router.push('/corporate-new-case')} className="mt-3.5" />
       </Body>

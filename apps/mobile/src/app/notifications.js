@@ -6,6 +6,7 @@ import { apiGet, apiPost } from '../lib/api';
 import { goBack } from '../lib/nav';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Button, Card, Spacer, Text } from '../components/ui';
+import { LoadingState } from '../components/LoadingState';
 
 const KIND = {
   stage_update: { bg: 'bg-primary-soft', color: '#1A5FC4', Icon: Loader },
@@ -26,11 +27,13 @@ function timeAgo(iso) {
 export default function Notifications() {
   const { t, toast } = useApp();
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const load = () => {
     apiGet('/notifications')
       .then(({ notifications }) => setItems(notifications))
-      .catch((err) => toast(err.message));
+      .catch((err) => toast(err.message))
+      .finally(() => setLoading(false));
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
@@ -53,6 +56,7 @@ export default function Notifications() {
         right={<Text className="font-inter-bold text-[13px] text-primary" onPress={markAllRead}>{t('btn_mark_read')}</Text>}
       />
       <Body contentClassName="gap-2.5 px-[18px] py-4">
+        {loading && <LoadingState />}
         {items.map((n) => {
           const { bg, color, Icon } = KIND[n.kind] || KIND.system;
           const read = !!n.readAt;
@@ -69,7 +73,7 @@ export default function Notifications() {
             </Card>
           );
         })}
-        {items.length === 0 && (
+        {!loading && items.length === 0 && (
           <View className="items-center px-5 py-[50px]"><Text className="text-[12.5px] text-faint">No notifications yet.</Text></View>
         )}
         <Spacer min={16} />

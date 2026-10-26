@@ -1,4 +1,4 @@
-// Mock the OTP delivery service so tests never hit real Twilio/SendGrid — and so we
+// Mock the OTP delivery service so tests never send real email — and so we
 // can read back the plaintext code a test triggered (it's only ever stored bcrypt-hashed).
 jest.mock('../src/modules/auth/otp-delivery.service', () => ({
   deliverOtp: jest.fn().mockResolvedValue(undefined),
@@ -527,29 +527,110 @@ describe('Google/Apple sign-in', () => {
     expect(after.googleId).toBeNull();
   });
 
-  it('answers a brand-new Google user at POST /auth/google with "please sign up first"', async () => {
-    // A separate copy of the app where only the Google token check is faked, so the
-    // real endpoint can be called without a real Google token.
-    const email = uniqueEmail();
-    let isolatedApp;
-    let isolatedPrisma;
+  // A separate copy of the app where only the Google token check is faked (it returns
+  // `google`), so the real endpoints can be called without a real Google token.
+  async function withFakeGoogle(google, fn) {
+    let ctx;
     jest.isolateModules(() => {
       jest.doMock('../src/modules/auth/auth.service', () => ({
         ...jest.requireActual('../src/modules/auth/auth.service'),
-        verifyGoogleIdToken: async () => ({ providerId: providerId(), email, emailVerified: true, name: 'New Person' }),
+        verifyGoogleIdToken: async () => google,
       }));
-      isolatedApp = require('../src/app').app;
-      isolatedPrisma = require('../src/db/prisma').prisma;
+      ctx = {
+        app: require('../src/app').app,
+        prisma: require('../src/db/prisma').prisma,
+        deliverOtp: require('../src/modules/auth/otp-delivery.service').deliverOtp,
+      };
     });
     try {
-      const res = await request(isolatedApp).post('/auth/google').send({ idToken: 'fake' });
+      await fn(ctx);
+    } finally {
+      await ctx.prisma.$disconnect();
+    }
+  }
+
+  const newGoogleUser = () => ({ providerId: providerId(), email: uniqueEmail(), emailVerified: true, name: 'New Person' });
+  const socialBody = (signupTicket, overrides = {}) => ({
+    signupTicket, name: 'New Person', mobile: uniqueMobile(), countryCode: '+91',
+    consents: { termsPrivacy: true, medicalDisclaimer: true, marketing: true },
+    ...overrides,
+  });
+
+  it('gives a brand-new Google user a sign-up ticket with their Google name and email, and creates nothing', async () => {
+    const google = newGoogleUser();
+    await withFakeGoogle(google, async ({ app: gApp }) => {
+      const res = await request(gApp).post('/auth/google').send({ idToken: 'fake' });
       expect(res.status).toBe(404);
       expect(res.body.code).toBe('no_account');
-      expect(res.body.error).toMatch(/sign up first/i);
-      expect(await prisma.user.findFirst({ where: { email } })).toBeNull();
-    } finally {
-      await isolatedPrisma.$disconnect();
-    }
+      expect(res.body.signupTicket).toEqual(expect.any(String));
+      expect(res.body.profile).toEqual({ name: 'New Person', email: google.email });
+      expect(await prisma.user.findFirst({ where: { email: google.email } })).toBeNull();
+    });
+  });
+
+  it('gives no sign-up ticket when Google has not verified the email', async () => {
+    await withFakeGoogle({ ...newGoogleUser(), emailVerified: false }, async ({ app: gApp }) => {
+      const res = await request(gApp).post('/auth/google').send({ idToken: 'fake' });
+      expect(res.status).toBe(404);
+      expect(res.body.signupTicket).toBeUndefined();
+    });
+  });
+
+  it('signs a new Google user up with mobile + OTP + consents, then signs them straight in next time', async () => {
+    const google = newGoogleUser();
+    await withFakeGoogle(google, async ({ app: gApp, deliverOtp: sent }) => {
+      const first = await request(gApp).post('/auth/google').send({ idToken: 'fake' });
+      const body = socialBody(first.body.signupTicket);
+      const started = await request(gApp).post('/auth/social/register').send(body);
+      expect(started.status).toBe(200);
+      expect(started.body.ticket).toEqual(expect.any(String));
+
+      // Nothing can sign in before the mobile is proven.
+      expect((await request(gApp).post('/auth/google').send({ idToken: 'fake' })).status).toBe(404);
+
+      const mobile = `+91${body.mobile}`;
+      const code = sent.mock.calls.filter((c) => c[0] === mobile).pop()[1];
+      const done = await request(gApp).post('/auth/register/verify-otp').send({ ticket: started.body.ticket, code });
+      expect(done.status).toBe(201);
+      expect(done.body.token).toEqual(expect.any(String));
+      expect(done.body.user).toMatchObject({ name: 'New Person', email: google.email, mobile, hasPassword: false });
+
+      const user = await prisma.user.findFirst({ where: { email: google.email }, include: { consents: true } });
+      expect(user.googleId).toBe(google.providerId);
+      expect(user.emailVerifiedAt).not.toBeNull();
+      expect(user.consents.map((c) => [c.type, c.accepted]).sort()).toEqual([
+        ['marketing', true], ['medical_disclaimer', true], ['terms_privacy', true],
+      ]);
+
+      const again = await request(gApp).post('/auth/google').send({ idToken: 'fake' });
+      expect(again.status).toBe(200);
+      expect(again.body.user.id).toBe(user.id);
+    });
+  });
+
+  it('refuses the Google sign-up without the required consents or with a made-up ticket', async () => {
+    await withFakeGoogle(newGoogleUser(), async ({ app: gApp }) => {
+      const { body } = await request(gApp).post('/auth/google').send({ idToken: 'fake' });
+      const noConsent = await request(gApp).post('/auth/social/register')
+        .send(socialBody(body.signupTicket, { consents: { termsPrivacy: true } }));
+      expect(noConsent.status).toBe(400);
+      expect(noConsent.body.code).toBe('consent_required');
+
+      const forged = await request(gApp).post('/auth/social/register').send(socialBody('not-a-real-ticket'));
+      expect(forged.status).toBe(401);
+      expect(forged.body.code).toBe('ticket_invalid');
+    });
+  });
+
+  it('refuses a Google sign-up with a mobile number that already has an account', async () => {
+    const patient = await createPatient();
+    await withFakeGoogle(newGoogleUser(), async ({ app: gApp }) => {
+      const { body } = await request(gApp).post('/auth/google').send({ idToken: 'fake' });
+      const res = await request(gApp).post('/auth/social/register')
+        .send(socialBody(body.signupTicket, { mobile: patient.mobile.replace('+91', '') }));
+      expect(res.status).toBe(409);
+      expect(res.body.code).toBe('mobile_in_use');
+    });
   });
 });
 

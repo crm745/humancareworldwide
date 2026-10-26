@@ -10,11 +10,17 @@ import { clearTokens } from '../lib/session';
 import { Body, BottomNav, IconButton, Screen, TopBar } from '../components/layout';
 import { Button, Card, InfoRow, Text } from '../components/ui';
 import { Sheet } from '../components/widgets';
+import { Spinner } from '../components/Spinner';
 
+// `value` null = still loading: a small spinner instead of a misleading "0".
 function Stat({ value, label, color, onPress, middle }) {
   return (
     <Pressable onPress={onPress} className={`flex-1 items-center ${middle ? 'border-x border-line' : ''}`}>
-      <Text className={`font-inter-black text-[22px] ${color}`}>{value}</Text>
+      {value === null ? (
+        <View className="h-[30px] justify-center"><Spinner size={20} color="#1A73E8" trackColor="#E7F0FE" /></View>
+      ) : (
+        <Text className={`font-inter-black text-[22px] ${color}`}>{value}</Text>
+      )}
       <Text className="mt-1 text-[11px] text-faint">{label}</Text>
     </Pressable>
   );
@@ -52,7 +58,7 @@ function LanguageSheet({ visible, onClose }) {
 export default function Profile() {
   const { t, isCorporate, profile, lang, toast } = useApp();
   const [langSheet, setLangSheet] = useState(false);
-  const [counts, setCounts] = useState({ total: 0, active: 0, done: 0 });
+  const [counts, setCounts] = useState(null); // null until loaded
 
   useEffect(() => {
     const path = isCorporate ? '/corporate/cases' : '/requests/me';
@@ -64,16 +70,21 @@ export default function Profile() {
         const done = rows.filter((r) => r.status === 'completed').length;
         setCounts({ total: rows.length, active, done });
       })
-      .catch((err) => toast(err.message));
+      .catch((err) => {
+        toast(err.message);
+        setCounts({ total: '–', active: '–', done: '–' }); // stop the spinners; the toast says why
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
   }, [isCorporate]);
 
+  const shown = (n) => (counts ? String(n) : null);
   const stats = isCorporate
-    ? { total: String(counts.total), active: String(counts.active), done: String(counts.done), totalLbl: t('lbl_total'), doneLbl: t('lbl_done') }
-    : { total: String(counts.total), active: String(counts.active), done: String(counts.done), totalLbl: t('lbl_total_requests'), doneLbl: t('status_completed') };
+    ? { total: shown(counts?.total), active: shown(counts?.active), done: shown(counts?.done), totalLbl: t('lbl_total'), doneLbl: t('lbl_done') }
+    : { total: shown(counts?.total), active: shown(counts?.active), done: shown(counts?.done), totalLbl: t('lbl_total_requests'), doneLbl: t('status_completed') };
   const openStat = (status) => (isCorporate ? navReplace('/corporate-dashboard') : navReplace(`/my-requests?status=${status}`));
   const langLabel = LANGUAGES.find((l) => l.code === lang).label;
-  const signOut = async () => { await clearTokens(); navReplace('/welcome'); };
+  // Signed-out people already have an account, so they land on their login screen.
+  const signOut = async () => { await clearTokens(); navReplace(isCorporate ? '/corporate-login' : '/login'); };
 
   return (
     <Screen>

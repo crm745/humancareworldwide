@@ -1,13 +1,12 @@
 jest.mock('../src/modules/auth/otp-delivery.service', () => ({
   deliverOtp: jest.fn().mockResolvedValue(undefined),
 }));
-jest.mock('@sendgrid/mail', () => ({
-  setApiKey: jest.fn(),
-  send: jest.fn().mockResolvedValue(undefined),
+jest.mock('../src/lib/mailer', () => ({
+  sendMail: jest.fn().mockResolvedValue(undefined),
 }));
 
 const request = require('supertest');
-const sgMail = require('@sendgrid/mail');
+const { sendMail } = require('../src/lib/mailer');
 const { app } = require('../src/app');
 const { prisma } = require('../src/db/prisma');
 const { createAdminAndLogin, uniqueEmail } = require('./helpers');
@@ -17,7 +16,7 @@ afterAll(async () => {
 });
 
 beforeEach(() => {
-  sgMail.send.mockClear();
+  sendMail.mockClear();
 });
 
 function sampleCompany(email) {
@@ -57,7 +56,7 @@ async function submitRegistration(email = uniqueEmail('acme'), { withDocument = 
 }
 
 function tokenFromLastEmail() {
-  const html = sgMail.send.mock.calls.at(-1)[0].html;
+  const html = sendMail.mock.calls.at(-1)[0].html;
   return new URL(html.match(/href="([^"]+)"/)[1]).searchParams.get('token');
 }
 
@@ -70,8 +69,8 @@ describe('POST /corporates/register', () => {
     expect(res.body.status).toBe('Pending Verification');
     expect(res.body.emailVerified).toBe(false);
     expect(res.body.approved).toBe(false);
-    expect(sgMail.send).toHaveBeenCalledTimes(1);
-    expect(sgMail.send.mock.calls[0][0].to).toBe(email);
+    expect(sendMail).toHaveBeenCalledTimes(1);
+    expect(sendMail.mock.calls[0][0].to).toBe(email);
   });
 
   it('masks the bank account number in the public response', async () => {
@@ -130,7 +129,7 @@ describe('email verification', () => {
     await prisma.corporateRegistration.update({ where: { id: created.id }, data: { updatedAt: new Date(Date.now() - 60_000) } });
     const res = await request(app).post(`/corporates/registrations/${created.id}/resend-verification`);
     expect(res.status).toBe(200);
-    expect(sgMail.send).toHaveBeenCalledTimes(2); // initial submit + this resend
+    expect(sendMail).toHaveBeenCalledTimes(2); // initial submit + this resend
   });
 
   it('changing the email resets verification and sends a new link', async () => {

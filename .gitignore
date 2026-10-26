@@ -16,3 +16,7 @@ backend/generated/
 
 # Uploaded files (medical reports/documents) — real user data, not code
 backend/uploads/
+
+# Firebase service-account keys (secret; the backend reads one via FIREBASE_SERVICE_ACCOUNT_PATH)
+*-firebase-adminsdk-*.json
+serviceAccountKey*.json
