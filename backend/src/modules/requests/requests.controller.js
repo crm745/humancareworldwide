@@ -5,9 +5,14 @@ const {
   listDocumentsForUser,
 } = require('./requests.service');
 const { addDocumentToCase } = require('../documents/documents.service');
+const { sendMedicalReportToBitrix } = require('../bitrix/bitrix.service');
 const { streamRequestSummaryPdf } = require('./request-summary.pdf');
 
 const REQUIRED_FIELDS = ['serviceType', 'patientName', 'origin', 'destination'];
+const { REQUIRED_SERVICE_BY_KEY } = require('../bitrix/bitrix-lead');
+// Service keys the app may send (see mobile src/data/mock.js SERVICE_TILES). Optional,
+// since older app builds don't send one; "hospital" has no Bitrix service mapped yet.
+const SERVICE_KEYS = new Set([...Object.keys(REQUIRED_SERVICE_BY_KEY), 'hospital', 'air']);
 
 //the function for submitting the request
 async function submitRequest(req, res, next) {
@@ -15,6 +20,9 @@ async function submitRequest(req, res, next) {
     const missing = REQUIRED_FIELDS.filter((field) => !req.body[field]);
     if (missing.length) {
       return res.status(400).json({ error: `Missing required field(s): ${missing.join(', ')}` });
+    }
+    if (req.body.serviceKey !== undefined && !SERVICE_KEYS.has(req.body.serviceKey)) {
+      return res.status(400).json({ error: 'Unknown serviceKey' });
     }
     const request = await createRequest(req.user.id, req.body);
     res.status(201).json({ request });
@@ -68,6 +76,7 @@ async function uploadRequestDocument(req, res, next) {
       fileUrl: `/uploads/${req.file.filename}`,
       fileSizeBytes: req.file.size,
     });
+    await sendMedicalReportToBitrix(request.bitrixLeadId, document);
     res.status(201).json({ document });
   } catch (err) {
     next(err);

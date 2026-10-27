@@ -6,13 +6,14 @@ jest.mock('../src/modules/auth/otp-delivery.service', () => ({
 // mocking it out just keeps tests fast and offline, not changing what's under test.
 jest.mock('../src/modules/bitrix/bitrix.service', () => ({
   createLead: jest.fn().mockResolvedValue(12345),
+  sendMedicalReportToBitrix: jest.fn().mockResolvedValue(true),
 }));
 
 const request = require('supertest');
 const { app } = require('../src/app');
 const { prisma } = require('../src/db/prisma');
 const { createPatient } = require('./helpers');
-const { createLead } = require('../src/modules/bitrix/bitrix.service');
+const { createLead, sendMedicalReportToBitrix } = require('../src/modules/bitrix/bitrix.service');
 const { retryFailedBitrixSyncs } = require('../src/modules/bitrix/bitrix-retry.service');
 
 afterAll(async () => {
@@ -83,6 +84,45 @@ describe('Bitrix24 on/off switch', () => {
     const off = await prisma.serviceRequest.findUnique({ where: { id: whileOff.body.request.id } });
     expect(off.bitrixLeadId).toBeNull();
     expect(createLead).toHaveBeenCalledTimes(1);
+  });
+  it('saves the app service key and sends it with the lead', async () => {
+    createLead.mockClear();
+    process.env.BITRIX_SYNC_ENABLED = 'true';
+    const { token } = await createPatient();
+    const res = await request(app).post('/requests').set('Authorization', `Bearer ${token}`)
+      .send({ ...baseRequestBody, serviceType: 'Commercial Airlines — Wheelchair (CAW)', serviceKey: 'commercialair_wheelchair' });
+    expect(res.status).toBe(201);
+    expect(res.body.request.serviceKey).toBe('commercialair_wheelchair');
+    expect(createLead.mock.calls[0][0]).toMatchObject({ serviceKey: 'commercialair_wheelchair', industry: 712, origin: 'Mumbai, India' });
+  });
+
+  it('saves "any additional information" in our database but never sends it to Bitrix', async () => {
+    createLead.mockClear();
+    process.env.BITRIX_SYNC_ENABLED = 'true';
+    const { token } = await createPatient();
+    const res = await request(app).post('/requests').set('Authorization', `Bearer ${token}`)
+      .send({ ...baseRequestBody, additionalInfo: 'Prefers a female nurse' });
+    const saved = await prisma.serviceRequest.findUnique({ where: { id: res.body.request.id } });
+    expect(saved.additionalInfo).toBe('Prefers a female nurse');
+    const { buildLeadFields } = jest.requireActual('../src/modules/bitrix/bitrix-lead');
+    expect(JSON.stringify(buildLeadFields(createLead.mock.calls[0][0]))).not.toContain('female nurse');
+  });
+
+  it('sends an uploaded medical report to the Bitrix lead of the request', async () => {
+    sendMedicalReportToBitrix.mockClear();
+    process.env.BITRIX_SYNC_ENABLED = 'true';
+    const { token } = await createPatient();
+    const created = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send(baseRequestBody);
+    const upload = await request(app).post(`/requests/me/${created.body.request.id}/documents`).set('Authorization', `Bearer ${token}`)
+      .attach('file', Buffer.from('%PDF-1.4 test'), { filename: 'report.pdf', contentType: 'application/pdf' });
+    expect(upload.status).toBe(201);
+    expect(sendMedicalReportToBitrix).toHaveBeenCalledWith(12345, expect.objectContaining({ type: 'Medical Report', name: 'report.pdf' }));
+  });
+
+  it('refuses a service key the app does not have', async () => {
+    const { token } = await createPatient();
+    const res = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send({ ...baseRequestBody, serviceKey: 'spaceship' });
+    expect(res.status).toBe(400);
   });
 });
 

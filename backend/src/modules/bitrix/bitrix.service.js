@@ -6,6 +6,10 @@
 // database. Callers should wrap these in try/catch and log-and-continue.
 
 const { isBitrixSyncEnabled } = require('./bitrix-config');
+const fs = require('fs/promises');
+const path = require('path');
+const { buildLeadFields, medicalReportFields } = require('./bitrix-lead');
+const { UPLOAD_DIR } = require('../../middleware/upload.middleware');
 
 const WEBHOOK_URL = process.env.BITRIX24_WEBHOOK_URL;
 const REQUEST_TIMEOUT_MS = 15000; // Bitrix webhooks normally respond in well under a second.
@@ -52,22 +56,33 @@ async function callBitrix(method, payload) {
   return data.result;
 }
 
-// Creates a Lead in Bitrix24 for a newly-submitted patient request.
-// Returns the numeric Bitrix24 lead id (store it as ServiceRequest.bitrixLeadId).
-async function createLead({ name, mobile, email, serviceType, origin, destination, referenceNumber }) {
-  const fields = {
-    TITLE: `${serviceType} — ${referenceNumber}`,
-    NAME: name,
-    PHONE: mobile ? [{ VALUE: mobile, VALUE_TYPE: 'WORK' }] : undefined,
-    EMAIL: email ? [{ VALUE: email, VALUE_TYPE: 'WORK' }] : undefined,
-    COMMENTS: `Origin: ${origin || '—'}\nDestination: ${destination || '—'}\nReference: ${referenceNumber}`,
-    // "Other" in this Bitrix24 account's own Source list — confirmed via a live
-    // crm.status.list(SOURCE) lookup, not Bitrix's generic default code, since this
-    // account's source list is fully custom. Revisit once dedicated sources exist
-    // for mobile-app and corporate-portal leads (see bitrix.service.js discussion).
-    SOURCE_ID: 'UC_8HLHOF',
-  };
-  return callBitrix('crm.lead.add', { fields });
+// Creates a Lead in Bitrix24 for a newly-submitted request or case (build the input
+// with leadInputFromRequest / leadInputFromCase in bitrix-lead.js). Returns the numeric Bitrix24 lead id
+// (store it as bitrixLeadId).
+async function createLead(input) {
+  return callBitrix('crm.lead.add', { fields: buildLeadFields(input) });
 }
 
-module.exports = { createLead };
+// Puts an uploaded medical report (a Document row: name + /uploads/<file>) into the
+// lead's "Medical Report" field. Throws like createLead; callers treat it as best-effort.
+async function attachMedicalReport(leadId, document) {
+  const content = await fs.readFile(path.join(UPLOAD_DIR, path.basename(document.fileUrl)));
+  return callBitrix('crm.lead.update', { id: leadId, fields: medicalReportFields(document.name, content) });
+}
+
+// Best-effort wrapper for the upload endpoints and the retry sweep: the file is already
+// saved in our system, so a Bitrix problem is logged, never passed on to the uploader.
+// Nothing happens while the switch is off or before the lead exists (the retry sweep
+// sends the latest report once it creates the lead).
+async function sendMedicalReportToBitrix(leadId, document) {
+  if (!leadId || !isBitrixSyncEnabled()) return false;
+  try {
+    await attachMedicalReport(leadId, document);
+    return true;
+  } catch (err) {
+    console.error(`Bitrix24 medical report upload failed for lead ${leadId}:`, err.message);
+    return false;
+  }
+}
+
+module.exports = { createLead, attachMedicalReport, sendMedicalReportToBitrix };

@@ -25,7 +25,7 @@ describe('bitrix.service#createLead', () => {
 
   const call = () => {
     const { createLead } = require('../src/modules/bitrix/bitrix.service');
-    return createLead({ name: 'Rakesh Sharma', mobile: '9876543210', email: 'a@b.com', serviceType: 'Air Ambulance', origin: 'Mumbai', destination: 'Dubai', referenceNumber: 'REQ-1' });
+    return createLead({ contactName: 'Rakesh Sharma', mobile: '9876543210', email: 'a@b.com', origin: 'Mumbai', destination: 'Dubai', referenceNumber: 'REQ-1' });
   };
 
   it('returns the lead id on a normal successful response', async () => {
@@ -79,5 +79,65 @@ describe('bitrix.service#createLead', () => {
     await jest.advanceTimersByTimeAsync(15000);
     await assertion;
     jest.useRealTimers();
+  });
+});
+
+describe('bitrix.service medical report upload', () => {
+  const fs = require('fs');
+  const path = require('path');
+  let fileName;
+
+  beforeEach(() => {
+    jest.resetModules();
+    process.env.BITRIX24_WEBHOOK_URL = 'https://example.bitrix24.com/rest/1/testtoken/';
+    process.env.BITRIX_SYNC_ENABLED = 'true';
+    const { UPLOAD_DIR } = require('../src/middleware/upload.middleware');
+    fileName = `test-report-${Date.now()}.pdf`;
+    fs.writeFileSync(path.join(UPLOAD_DIR, fileName), 'PDF-BYTES');
+  });
+
+  afterEach(() => {
+    const { UPLOAD_DIR } = require('../src/middleware/upload.middleware');
+    fs.rmSync(path.join(UPLOAD_DIR, fileName), { force: true });
+  });
+
+  afterAll(() => {
+    process.env.BITRIX24_WEBHOOK_URL = ORIGINAL_ENV;
+    delete process.env.BITRIX_SYNC_ENABLED;
+    global.fetch = ORIGINAL_FETCH;
+  });
+
+  const doc = () => ({ name: 'report.pdf', fileUrl: `/uploads/${fileName}` });
+
+  it('puts the file into the Medical Report field of the lead with crm.lead.update', async () => {
+    global.fetch = jest.fn().mockResolvedValue(jsonResponse(200, { result: true }));
+    const { sendMedicalReportToBitrix } = require('../src/modules/bitrix/bitrix.service');
+    await expect(sendMedicalReportToBitrix(77, doc())).resolves.toBe(true);
+    const [url, init] = global.fetch.mock.calls[0];
+    expect(url).toMatch(/crm\.lead\.update\.json$/);
+    expect(JSON.parse(init.body)).toEqual({
+      id: 77,
+      fields: { UF_CRM_1768194664955: { fileData: ['report.pdf', Buffer.from('PDF-BYTES').toString('base64')] } },
+    });
+  });
+
+  it('does nothing without a lead or while the switch is off', async () => {
+    global.fetch = jest.fn();
+    let { sendMedicalReportToBitrix } = require('../src/modules/bitrix/bitrix.service');
+    await expect(sendMedicalReportToBitrix(null, doc())).resolves.toBe(false);
+    process.env.BITRIX_SYNC_ENABLED = 'false';
+    jest.resetModules();
+    ({ sendMedicalReportToBitrix } = require('../src/modules/bitrix/bitrix.service'));
+    await expect(sendMedicalReportToBitrix(77, doc())).resolves.toBe(false);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it('never throws when Bitrix refuses the file (the upload has already been saved)', async () => {
+    global.fetch = jest.fn().mockResolvedValue(jsonResponse(200, { error: 'ACCESS_DENIED', error_description: 'nope' }));
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const { sendMedicalReportToBitrix } = require('../src/modules/bitrix/bitrix.service');
+    await expect(sendMedicalReportToBitrix(77, doc())).resolves.toBe(false);
+    expect(log).toHaveBeenCalled();
+    log.mockRestore();
   });
 });

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { needsCareLevel, useApp } from '../../state/AppContext';
 import SERVICES from '../../data/services.json';
-import { SOURCE_OTHER } from '../../data/mock';
+import { SOURCE_OTHER, requestService } from '../../data/mock';
 import { navReplace } from '../../lib/nav';
 import { apiPost, apiUpload } from '../../lib/api';
 import { Body, Screen, TopBar } from '../../components/layout';
@@ -39,13 +39,14 @@ export default function RequestReview() {
   // null while not uploading, 0–1 once the attachment upload starts.
   const [uploadProgress, setUploadProgress] = useState(null);
   const source = d.source === SOURCE_OTHER && d.sourceOther.trim() ? `${SOURCE_OTHER}: ${d.sourceOther.trim()}` : d.source;
-  const serviceTitle = (SERVICES[d.service] || SERVICES.air).title;
+  const { title: serviceTitle, key: serviceKey } = requestService(d, SERVICES);
 
   const submit = async () => {
     setBusy(true);
     try {
       const { request } = await apiPost('/requests', {
         serviceType: serviceTitle,
+        serviceKey,
         patientName: d.name,
         patientAge: d.age || undefined,
         patientGender: d.gender,
@@ -57,6 +58,7 @@ export default function RequestReview() {
         preferredDate: d.date || undefined,
         careLevel: needsCareLevel(d.service) && d.care ? t(d.care) : undefined,
         description: d.desc || undefined,
+        additionalInfo: d.extra || undefined, // kept in our database only, not sent to Bitrix
         specialRequirements: d.special || undefined,
         referralSource: source || undefined,
       });
@@ -90,7 +92,7 @@ export default function RequestReview() {
         <Section
           title={t('step1_heading')}
           rows={[
-            [t('lbl_name'), d.name],
+            [t('lbl_patient_name'), d.name],
             [t('lbl_age_gender'), `${d.age || '—'} Y / ${d.gender}`],
             [t('lbl_location'), d.location],
             [t('field_country'), d.country],
@@ -102,7 +104,7 @@ export default function RequestReview() {
           className="mt-3"
           title={t('lbl_request_details')}
           rows={[
-            [t('lbl_service'), (SERVICES[d.service] || SERVICES.air).title],
+            [t('lbl_service'), serviceTitle],
             [t('lbl_requirement'), d.desc],
             [t('field_destination'), d.dest],
             [t('field_preferred_date'), d.date],

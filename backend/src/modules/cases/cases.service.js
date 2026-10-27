@@ -1,6 +1,7 @@
 const { prisma } = require('../../db/prisma');
 const { sendExpoPush } = require('../../lib/expo-push.service');
 const { createLead } = require('../bitrix/bitrix.service');
+const { leadInputFromCase } = require('../bitrix/bitrix-lead');
 const { isBitrixSyncEnabled } = require('../bitrix/bitrix-config');
 
 const VALID_CASE_STATUSES = ['submitted', 'scheduled', 'in_progress', 'completed', 'cancelled'];
@@ -106,14 +107,7 @@ async function createCaseByCorporate(corporateId, data) {
   // sent and nothing is recorded as failed (see bitrix-config.js).
   if (!isBitrixSyncEnabled()) return caseRecord;
   try {
-    const leadId = await createLead({
-      name: caseRecord.patientName,
-      mobile: caseRecord.patientContact,
-      serviceType: caseRecord.serviceType,
-      origin: caseRecord.origin,
-      destination: caseRecord.destination,
-      referenceNumber: caseRecord.referenceNumber,
-    });
+    const leadId = await createLead(leadInputFromCase(caseRecord));
     await prisma.case.update({ where: { id: caseRecord.id }, data: { bitrixLeadId: leadId } });
   } catch (err) {
     console.error(`Bitrix24 lead creation failed for ${caseRecord.referenceNumber}:`, err.message);

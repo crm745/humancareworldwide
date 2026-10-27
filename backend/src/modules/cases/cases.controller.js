@@ -4,6 +4,7 @@ const {
   createCaseByCorporate,
 } = require('./cases.service');
 const { addDocumentToCase } = require('../documents/documents.service');
+const { sendMedicalReportToBitrix } = require('../bitrix/bitrix.service');
 
 async function listMyCases(req, res, next) {
   try {
@@ -52,6 +53,8 @@ async function uploadCaseDocument(req, res, next) {
       fileUrl: `/uploads/${req.file.filename}`,
       fileSizeBytes: req.file.size,
     });
+    // Other document types (passport, ID…) have their own Bitrix fields; only the report is mapped so far.
+    if (document.type === 'Medical Report') await sendMedicalReportToBitrix(caseRecord.bitrixLeadId, document);
     res.status(201).json({ document });
   } catch (err) {
     next(err);

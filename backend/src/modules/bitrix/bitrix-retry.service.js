@@ -7,7 +7,8 @@
 // plain interval inside the API process instead (see server.js) — good enough at
 // this scale, and avoids adding infrastructure nobody asked for.
 const { prisma } = require('../../db/prisma');
-const { createLead } = require('./bitrix.service');
+const { createLead, sendMedicalReportToBitrix } = require('./bitrix.service');
+const { leadInputFromRequest, leadInputFromCase } = require('./bitrix-lead');
 const { isBitrixSyncEnabled } = require('./bitrix-config');
 
 const MAX_ATTEMPTS = 5;
@@ -23,7 +24,11 @@ const PENDING_WHERE = {
 
 // `label` is just for log lines; `model` is the Prisma delegate (prisma.serviceRequest
 // or prisma.case) so the same retry/backoff/alert logic isn't duplicated per source.
-async function retryModel(model, label, findCandidates, buildLeadInput) {
+// The newest uploaded medical report, if any: it was uploaded while the lead didn't exist
+// yet, so it goes across once the lead is made.
+const LATEST_REPORT = { where: { type: 'Medical Report' }, orderBy: { uploadedAt: 'desc' }, take: 1 };
+
+async function retryModel(model, label, findCandidates, buildLeadInput, latestReport) {
   const candidates = await findCandidates();
   for (const record of candidates) {
     try {
@@ -33,6 +38,8 @@ async function retryModel(model, label, findCandidates, buildLeadInput) {
         data: { bitrixLeadId: leadId, bitrixLastError: null, bitrixSyncFailedAt: null },
       });
       console.log(`Bitrix24 retry succeeded for ${label} ${record.referenceNumber} (attempt ${record.bitrixSyncAttempts + 1}).`);
+      const report = latestReport(record);
+      if (report) await sendMedicalReportToBitrix(leadId, report);
     } catch (err) {
       const attempts = record.bitrixSyncAttempts + 1;
       await model.update({
@@ -56,30 +63,17 @@ async function retryFailedBitrixSyncs() {
   const requestsRetried = await retryModel(
     prisma.serviceRequest,
     'request',
-    () => prisma.serviceRequest.findMany({ where: PENDING_WHERE, include: { user: true } }),
-    (request) => ({
-      name: request.patientName,
-      mobile: request.patientContact || request.user?.mobile,
-      email: request.user?.email,
-      serviceType: request.serviceType,
-      origin: request.origin,
-      destination: request.destination,
-      referenceNumber: request.referenceNumber,
-    }),
+    () => prisma.serviceRequest.findMany({ where: PENDING_WHERE, include: { user: true, case: { include: { documents: LATEST_REPORT } } } }),
+    (request) => leadInputFromRequest(request, request.user),
+    (request) => request.case?.documents[0],
   );
 
   const casesRetried = await retryModel(
     prisma.case,
     'case',
-    () => prisma.case.findMany({ where: PENDING_WHERE }),
-    (caseRecord) => ({
-      name: caseRecord.patientName,
-      mobile: caseRecord.patientContact,
-      serviceType: caseRecord.serviceType,
-      origin: caseRecord.origin,
-      destination: caseRecord.destination,
-      referenceNumber: caseRecord.referenceNumber,
-    }),
+    () => prisma.case.findMany({ where: PENDING_WHERE, include: { documents: LATEST_REPORT } }),
+    (caseRecord) => leadInputFromCase(caseRecord),
+    (caseRecord) => caseRecord.documents[0],
   );
 
   return requestsRetried + casesRetried;

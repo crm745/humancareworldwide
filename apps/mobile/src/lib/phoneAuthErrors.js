@@ -12,6 +12,9 @@ const BY_FIREBASE_CODE = {
   // Phone sign-in turned off, or SMS not allowed for this country (Firebase console >
   // Authentication > Settings > SMS region policy).
   'auth/operation-not-allowed': ['sms_not_allowed', "We can't send codes to this country's numbers yet. Please contact support."],
+  // The Firebase project is on the free (Spark) plan: only the console's test numbers get
+  // codes. Real SMS needs the Blaze plan (Firebase console > Usage and billing).
+  'auth/billing-not-enabled': ['sms_not_allowed', "We can't send SMS codes right now. Please try again later or contact support."],
 };
 
 export function phoneAuthError(err, fallback = 'Something went wrong with the code. Please try again.') {

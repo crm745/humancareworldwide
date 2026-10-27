@@ -29,6 +29,7 @@ export const INITIAL_DRAFT = {
   cc: '+91',
   phone: '',
   care: '', // single-select; only asked for air & ground ambulance (see needsCareLevel)
+  airlineMode: '', // 'stretcher' | 'wheelchair'; only asked for Commercial Airlines
   desc: '',
   dest: '',
   date: '',

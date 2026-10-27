@@ -6,6 +6,7 @@ jest.mock('../src/modules/auth/otp-delivery.service', () => ({
 }));
 jest.mock('../src/modules/bitrix/bitrix.service', () => ({
   createLead: jest.fn().mockResolvedValue(12345),
+  sendMedicalReportToBitrix: jest.fn().mockResolvedValue(true),
 }));
 
 const request = require('supertest');

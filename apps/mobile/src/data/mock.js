@@ -16,6 +16,22 @@ export const SERVICE_TILES = [
   { key: 'corporate', img: 'IMG_CORPORATE', title: 'svc_corporate', sub: 'svc_corporate_sub' },
 ];
 
+// Commercial Airlines is booked either way; each is its own service in Bitrix
+// (Commercial Airline Stretcher (CAS) / Wheelchair (CAW)), so the request has to say which.
+export const AIRLINE_MODES = ['stretcher', 'wheelchair'];
+export const AIRLINE_MODE_LABELS = { stretcher: 'Stretcher (CAS)', wheelchair: 'Wheelchair (CAW)' };
+export const needsAirlineMode = (serviceKey) => serviceKey === 'commercialair';
+
+// What a request is submitted as: the name people see, and the key the backend maps to
+// Bitrix's "Required Service" (backend src/modules/bitrix/bitrix-lead.js).
+export function requestService(draft, services) {
+  const title = (services[draft.service] || services.air).title;
+  if (needsAirlineMode(draft.service) && draft.airlineMode) {
+    return { title: `${title} — ${AIRLINE_MODE_LABELS[draft.airlineMode]}`, key: `${draft.service}_${draft.airlineMode}` };
+  }
+  return { title, key: draft.service };
+}
+
 // Label keys for each service filter value.
 export const SERVICE_LABELS = {
   air: 'svc_air',

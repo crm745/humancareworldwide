@@ -1,5 +1,6 @@
 const { prisma } = require('../../db/prisma');
 const { createLead } = require('../bitrix/bitrix.service');
+const { leadInputFromRequest } = require('../bitrix/bitrix-lead');
 const { isBitrixSyncEnabled } = require('../bitrix/bitrix-config');
 
 const VALID_STATUSES = ['submitted', 'in_progress', 'completed', 'cancelled'];
@@ -7,6 +8,7 @@ const VALID_STATUSES = ['submitted', 'in_progress', 'completed', 'cancelled'];
 async function createRequest(userId, data) {
   const {
     serviceType,
+    serviceKey,
     patientName,
     patientAge,
     patientGender,
@@ -19,6 +21,7 @@ async function createRequest(userId, data) {
     careLevel,
     description,
     medicalSummary,
+    additionalInfo,
     specialRequirements,
     referralSource,
     documentUrl,
@@ -29,6 +32,7 @@ async function createRequest(userId, data) {
     data: {
       userId,
       serviceType,
+      serviceKey: serviceKey || null,
       patientName,
       patientAge: patientAge != null ? Number(patientAge) : null,
       patientGender: patientGender || null,
@@ -41,6 +45,7 @@ async function createRequest(userId, data) {
       careLevel: careLevel || null,
       description: description || null,
       medicalSummary: medicalSummary || null,
+      additionalInfo: additionalInfo || null,
       specialRequirements: specialRequirements || null,
       referralSource: referralSource || null,
       documentUrl: documentUrl || null,
@@ -82,15 +87,7 @@ async function createRequest(userId, data) {
   if (!isBitrixSyncEnabled()) return request;
   try {
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    const leadId = await createLead({
-      name: request.patientName,
-      mobile: request.patientContact || user?.mobile,
-      email: user?.email,
-      serviceType: request.serviceType,
-      origin: request.origin,
-      destination: request.destination,
-      referenceNumber: request.referenceNumber,
-    });
+    const leadId = await createLead(leadInputFromRequest(request, user));
     await prisma.serviceRequest.update({ where: { id: request.id }, data: { bitrixLeadId: leadId } });
   } catch (err) {
     console.error(`Bitrix24 lead creation failed for ${request.referenceNumber}:`, err.message);

@@ -231,6 +231,9 @@ model ServiceRequest {
   userId            Int      @map("user_id")
   user              User     @relation(fields: [userId], references: [id])
   serviceType       String   @map("service_type")
+  // The app's own id for the chosen service (e.g. "commercialair_stretcher"); the
+  // Bitrix "Required Service" is looked up from this, never from the display name.
+  serviceKey        String?  @map("service_key")
   patientName       String   @map("patient_name")
   patientAge        Int?     @map("patient_age")
   patientGender     String?  @map("patient_gender")

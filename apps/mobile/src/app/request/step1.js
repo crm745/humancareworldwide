@@ -4,7 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar, Check, FileText, Upload } from 'lucide-react-native';
 import { needsCareLevel, useApp } from '../../state/AppContext';
-import { COUNTRY_CODES, COUNTRY_CODE_LABELS, COUNTRY_NAMES } from '../../data/mock';
+import { AIRLINE_MODES, AIRLINE_MODE_LABELS, COUNTRY_CODES, COUNTRY_CODE_LABELS, COUNTRY_NAMES, needsAirlineMode } from '../../data/mock';
 import { isValidAge, isValidDateString, isValidName, isValidPhoneForCountry } from '../../lib/validators';
 import { RequestStep } from '../../components/RequestStep';
 import { CareLevelGrid, Field, FieldLabel, Input, Text } from '../../components/ui';
@@ -171,7 +171,8 @@ export default function RequestStep1() {
   const { t, draft, updateDraft } = useApp();
   const ready = isValidName(draft.name) && draft.age.trim() !== '' && isValidAge(draft.age) && draft.gender
     && draft.location.trim() && draft.country && isValidPhoneForCountry(draft.phone, draft.cc)
-    && draft.dest.trim() && isValidDateString(draft.date);
+    && draft.dest.trim() && isValidDateString(draft.date)
+    && (!needsAirlineMode(draft.service) || draft.airlineMode);
   // Flips true the first time Next is tapped while something required is still
   // blank — before that, an untouched required field shows no error (nobody wants
   // red borders on a form they haven't started filling in yet).
@@ -229,6 +230,16 @@ export default function RequestStep1() {
       )}
 
       <SectionHeading>{t('step2_heading')}</SectionHeading>
+      {needsAirlineMode(draft.service) && (
+        <View>
+          <FieldLabel required>{t('field_airline_mode')}</FieldLabel>
+          <Select
+            value={draft.airlineMode} options={AIRLINE_MODES} labels={AIRLINE_MODE_LABELS}
+            onChange={(airlineMode) => updateDraft({ airlineMode })} title={t('field_airline_mode')} placeholder="Stretcher or wheelchair"
+          />
+          {attempted && !draft.airlineMode ? <Text className="mt-1 text-[12px] text-danger">This field is required.</Text> : null}
+        </View>
+      )}
       <Field multiline label={t('field_requirement_desc')} placeholder="e.g. Patient needs a stable transfer to a cardiac hospital" value={draft.desc} onChangeText={(desc) => updateDraft({ desc })} />
       <View>
         <FieldLabel>{t('field_upload_report')}</FieldLabel>

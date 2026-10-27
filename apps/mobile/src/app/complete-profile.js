@@ -55,11 +55,11 @@ export default function CompleteProfile() {
         <Text className="mb-7 mt-2.5 text-center text-[16.5px] text-muted">{t('complete_profile_sub')}</Text>
         <View className="gap-[18px]">
           <Field
-            large label={t('field_email_address')} value={step.email} editable={false} className="opacity-70"
-          />
-          <Field
             large required label={t('field_full_name')} placeholder="Your full name" value={name} onChangeText={setName}
             error={name && !isValidName(name) ? 'Enter a valid name.' : undefined}
+          />
+          <Field
+            large label={t('field_email_address')} value={step.email} editable={false} className="opacity-70"
           />
           <View>
             <FieldLabel large required>{t('field_mobile_number')}</FieldLabel>

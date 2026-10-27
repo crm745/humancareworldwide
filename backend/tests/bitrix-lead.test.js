@@ -1,0 +1,99 @@
+// What a Bitrix24 lead built from the app/portal contains. Pure functions: no network,
+// no database. Field codes are this Bitrix account's own (see bitrix-lead.js).
+const { buildLeadFields, leadInputFromRequest, leadInputFromCase } = require('../src/modules/bitrix/bitrix-lead');
+
+const request = {
+  referenceNumber: 'REQ-1042',
+  serviceType: 'Commercial Airlines — Stretcher (CAS)',
+  serviceKey: 'commercialair_stretcher',
+  patientName: 'Gouri Patil',
+  patientAge: 64,
+  patientGender: 'Female',
+  patientContact: '+91 9876543210',
+  origin: 'Mumbai',
+  destination: 'Delhi',
+  country: 'India',
+  preferredDate: new Date('2026-11-02T00:00:00Z'),
+  careLevel: 'Basic',
+  description: 'Needs oxygen on board',
+  specialRequirements: 'Oxygen support',
+  referralSource: 'Google Search',
+};
+const user = { name: 'Rohan Patil', mobile: '+919000000000', email: 'rohan@example.com' };
+
+describe('Bitrix lead from a patient request', () => {
+  const fields = buildLeadFields(leadInputFromRequest(request, user));
+
+  it('looks like the leads Operations make by hand', () => {
+    expect(fields.TITLE).toBe('Mumbai to Delhi');
+    expect(fields.STATUS_ID).toBe('IN_PROCESS'); // Case in Progress
+    expect(fields.SOURCE_ID).toBe('UC_8HLHOF'); // Other
+    expect(fields.UF_CRM_1775717843808).toBe(712); // Industry: B2C
+    expect(fields.UF_CRM_1781505417891).toEqual([2824]); // Commercial Airline Stretcher (CAS)
+  });
+
+  it('puts the account holder as the contact and the patient in the patient fields', () => {
+    expect(fields.NAME).toBe('Rohan Patil');
+    expect(fields.EMAIL).toEqual([{ VALUE: 'rohan@example.com', VALUE_TYPE: 'WORK' }]);
+    expect(fields.PHONE).toEqual([{ VALUE: '+91 9876543210', VALUE_TYPE: 'WORK' }]);
+    expect(fields.UF_CRM_1775637387862).toBe('Gouri Patil'); // Patient Name
+    expect(fields.UF_CRM_1768195253912).toBe(64); // Patient Age
+    expect(fields.UF_CRM_1775637565398).toBe(364); // Gender: Female
+    expect(fields.UF_CRM_1768195061660).toBe('REQ-1042'); // Reference No.
+    expect(fields.UF_CRM_1775637683789).toBe('2026-11-02'); // Date Of Service
+    expect(fields.UF_CRM_1775637732390).toBe('Mumbai'); // Current Location
+    expect(fields.UF_CRM_1775637753105).toBe('Delhi'); // Destination Location
+    expect(fields.UF_CRM_1768812307305).toBe('Mumbai'); // Pickup City
+    expect(fields.UF_CRM_1768812329423).toBe('Delhi'); // Drop City
+  });
+
+  it('puts special requirements in Current Medical Conditions and never sends "heard about us"', () => {
+    expect(fields.UF_CRM_1784283904).toBe('Oxygen support');
+    expect(JSON.stringify(fields)).not.toContain('Google Search');
+  });
+
+  it('keeps the comment to the requirement and care level', () => {
+    expect(fields.COMMENTS).toBe('Requirement: Needs oxygen on board\nCare level: Basic');
+  });
+
+  it('names the service in the comment only when Required Service cannot', () => {
+    const hospital = buildLeadFields(leadInputFromRequest({ ...request, serviceKey: 'hospital', serviceType: 'Hospitalization Assistance' }, user));
+    expect(hospital.COMMENTS).toBe('Requirement: Needs oxygen on board\nCare level: Basic\nService: Hospitalization Assistance');
+  });
+
+  it.each([
+    ['privatecharter', 2820], ['commercialair_wheelchair', 2826], ['ground', 2830], ['mortal', 2828],
+    ['homecare', 2834], ['tele', 2836], ['corporate', 2930],
+  ])('maps the app service %s to Bitrix service %i', (serviceKey, id) => {
+    expect(buildLeadFields(leadInputFromRequest({ ...request, serviceKey }, user)).UF_CRM_1781505417891).toEqual([id]);
+  });
+
+  it('sends no Required Service (and no empty fields) when there is nothing to map', () => {
+    const bare = buildLeadFields(leadInputFromRequest({ referenceNumber: 'REQ-1', patientName: 'A B', origin: 'X', destination: 'Y', serviceKey: 'hospital' }, null));
+    expect(bare.UF_CRM_1781505417891).toBeUndefined();
+    expect(bare.UF_CRM_1775637565398).toBeUndefined();
+    expect(bare.EMAIL).toBeUndefined();
+    expect(Object.values(bare)).not.toContain(null);
+  });
+});
+
+describe('Bitrix lead from a corporate case', () => {
+  it('is B2B, carries the urgency, and says it came from the portal', () => {
+    const fields = buildLeadFields(leadInputFromCase({
+      referenceNumber: 'CASE-7', patientName: 'Asha Rao', patientGender: 'male', origin: 'Pune', destination: 'Dubai',
+      urgency: 'critical', serviceType: 'Air Ambulance',
+    }));
+    expect(fields.TITLE).toBe('Pune to Dubai');
+    expect(fields.UF_CRM_1775717843808).toBe(710); // Industry: B2B
+    expect(fields.UF_CRM_1775637825406).toBe(380); // Transfer Urgency: Urgent
+    expect(fields.UF_CRM_1775637565398).toBe(362); // Gender: Male
+    expect(fields.COMMENTS).toBe('Service: Air Ambulance');
+  });
+});
+
+describe('Bitrix lead comment with nothing to say', () => {
+  it('shows "-" when there is no requirement or care level', () => {
+    const fields = buildLeadFields(leadInputFromRequest({ referenceNumber: 'REQ-2', patientName: 'A B', origin: 'X', destination: 'Y', serviceKey: 'mortal' }, null));
+    expect(fields.COMMENTS).toBe('-');
+  });
+});
