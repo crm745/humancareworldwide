@@ -23,6 +23,10 @@ const FIELD = {
   REQUIRED_SERVICE: 'UF_CRM_1781505417891', // Required Service (list, multiple)
   CURRENT_MEDICAL_CONDITIONS: 'UF_CRM_1784283904', // Current Medical Conditions (on the form's Patient details)
   MEDICAL_REPORT: 'UF_CRM_1768194664955', // Medical Report (file, on the form's Documents)
+  // Mortal Remains: Operations fill "Deceased Name" on HMR leads; on conversion the deal's
+  // own "Deceased Name" is fed from Patient Name, so a deceased's name goes in both.
+  DECEASED_NAME: 'UF_CRM_1780912350541', // Deceased Name
+  RELATION: 'UF_CRM_1775637464857', // Relation to the Patient (list)
 };
 
 // The app's service keys (mobile src/data/mock.js SERVICE_TILES, plus the Commercial
@@ -34,7 +38,9 @@ const REQUIRED_SERVICE_BY_KEY = {
   commercialair_stretcher: 2824, // Commercial Airline Stretcher (CAS)
   commercialair_wheelchair: 2826, // Commercial Airline Wheelchair (CAW)
   ground: 2830, // Ground Ambulance (GA)
-  mortal: 2828, // Human Mortal Remains (HMR)
+  mortal: 2828, // Human Mortal Remains (HMR); older app builds, before "Within India / International"
+  mortal_domestic: 2828, // Human Mortal Remains (HMR), within India
+  mortal_international: 2828, // Human Mortal Remains (HMR), international
   homecare: 2834, // Home Health Care (HHC)
   tele: 2836, // Telemedicine
   corporate: 2930, // Corporate Medical Solution
@@ -43,6 +49,10 @@ const REQUIRED_SERVICE_BY_KEY = {
 const GENDER = { male: 362, female: 364, other: 366 }; // Male | Female | Others
 const INDUSTRY = { patientApp: 712, corporatePortal: 710 }; // B2C | B2B
 const URGENCY = { urgent: 380, critical: 380, routine: 382 }; // Urgent | Planned
+// The lead's Relation list has only these; any other relation goes in the comment.
+const RELATION = { father: 352, mother: 354, brother: 356, spouse: 358, friend: 360 };
+const MORTAL_TRANSFER = { mortal_domestic: 'Within India', mortal_international: 'International' };
+const isMortal = (serviceKey) => /^mortal(_|$)/.test(serviceKey || '');
 
 // "Other" in this account's own Source list (confirmed with crm.status.list SOURCE);
 // there's no app/portal source yet, and the user chose to keep "Other".
@@ -81,6 +91,8 @@ function buildLeadFields(input) {
     [FIELD.TRANSFER_URGENCY]: URGENCY[input.urgency],
     [FIELD.INDUSTRY]: input.industry,
     [FIELD.CURRENT_MEDICAL_CONDITIONS]: input.specialRequirements,
+    [FIELD.DECEASED_NAME]: input.deceasedName,
+    [FIELD.RELATION]: RELATION[String(input.relation || '').toLowerCase()],
     [FIELD.REQUIRED_SERVICE]: REQUIRED_SERVICE_BY_KEY[input.serviceKey] ? [REQUIRED_SERVICE_BY_KEY[input.serviceKey]] : undefined,
   };
   // Bitrix would store an explicit null as "cleared"; leave unknown fields out instead.
@@ -90,6 +102,7 @@ function buildLeadFields(input) {
 // A patient's request from the mobile app. `user` is the account that submitted it
 // (the contact Operations call back); the patient may be someone else.
 function leadInputFromRequest(request, user) {
+  if (isMortal(request.serviceKey)) return mortalLeadInput(request, user);
   return {
     contactName: user?.name || request.patientName,
     mobile: request.patientContact || user?.mobile,
@@ -109,6 +122,36 @@ function leadInputFromRequest(request, user) {
       ['Care level', request.careLevel],
       // Only when "Required Service" can't say it (no Bitrix service mapped yet).
       ['Service', REQUIRED_SERVICE_BY_KEY[request.serviceKey] ? null : request.serviceType],
+    ]),
+  };
+}
+
+// A Mortal Remains request: patientName is the deceased, and the lead has no fields for
+// the transfer type or the place and date of death, so those go in the comment.
+function mortalLeadInput(request, user) {
+  const relation = request.deceasedRelation;
+  return {
+    contactName: user?.name,
+    mobile: request.patientContact || user?.mobile,
+    email: user?.email,
+    referenceNumber: request.referenceNumber,
+    patientName: request.patientName,
+    deceasedName: request.patientName,
+    patientAge: request.patientAge,
+    patientGender: request.patientGender,
+    relation,
+    origin: request.origin,
+    destination: request.destination,
+    dateOfService: request.preferredDate,
+    serviceKey: request.serviceKey,
+    specialRequirements: request.specialRequirements,
+    industry: INDUSTRY.patientApp,
+    comments: commentLines([
+      ['Requirement', request.description],
+      ['Transfer', MORTAL_TRANSFER[request.serviceKey]],
+      ['Relation to the deceased', RELATION[String(relation || '').toLowerCase()] ? null : relation],
+      ['Place of death', request.placeOfDeath],
+      ['Date of death', dateOnly(request.dateOfDeath)],
     ]),
   };
 }
@@ -142,4 +185,4 @@ function medicalReportFields(fileName, content) {
   return { [FIELD.MEDICAL_REPORT]: { fileData: [fileName, content.toString('base64')] } };
 }
 
-module.exports = { buildLeadFields, leadInputFromRequest, leadInputFromCase, medicalReportFields, REQUIRED_SERVICE_BY_KEY };
+module.exports = { buildLeadFields, leadInputFromRequest, leadInputFromCase, medicalReportFields, isMortal, REQUIRED_SERVICE_BY_KEY };

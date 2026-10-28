@@ -248,6 +248,11 @@ model ServiceRequest {
   medicalSummary    String?   @db.Text @map("medical_summary")
   additionalInfo    String?   @map("additional_info")
   specialRequirements String? @db.Text @map("special_requirements")
+  // Mortal Remains only (patientName then holds the deceased's name): who is asking,
+  // and where and when the death happened.
+  deceasedRelation  String?   @map("deceased_relation")
+  placeOfDeath      String?   @map("place_of_death")
+  dateOfDeath       DateTime? @map("date_of_death")
   referralSource    String?   @map("referral_source")
   documentUrl       String?   @map("document_url")
   referenceNumber   String    @unique @map("reference_number")

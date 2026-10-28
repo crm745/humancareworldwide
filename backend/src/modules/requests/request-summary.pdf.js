@@ -12,7 +12,7 @@ function streamRequestSummaryPdf(res, request) {
   res.setHeader('Content-Disposition', `attachment; filename="${request.referenceNumber}-summary.pdf"`);
   doc.pipe(res);
 
-  doc.fontSize(18).fillColor('#1A73E8').text('HumanCare WorldWide');
+  doc.fontSize(18).fillColor('#1A73E8').text('HumanCare World Wide');
   doc.fontSize(10).fillColor('#5B6B84').text('Global Medical Assistance Company');
   doc.moveDown(1.5);
 
@@ -20,12 +20,18 @@ function streamRequestSummaryPdf(res, request) {
   doc.fontSize(9).fillColor('#97A4B8').text(`Generated ${new Date().toLocaleString()}`);
   doc.moveDown(1);
 
-  row(doc, 'Patient Name:', request.patientName);
+  // Mortal Remains: the name on the request is the deceased's.
+  const mortal = /^mortal(_|$)/.test(request.serviceKey || '');
+  const day = (value) => (value ? new Date(value).toDateString() : null);
+  row(doc, mortal ? 'Deceased Name:' : 'Patient Name:', request.patientName);
   row(doc, 'Age / Gender:', [request.patientAge, request.patientGender].filter(Boolean).join(' / '));
+  row(doc, 'Relation to the deceased:', request.deceasedRelation);
+  row(doc, 'Place of death:', request.placeOfDeath);
+  row(doc, 'Date of death:', day(request.dateOfDeath));
   row(doc, 'Service:', request.serviceType);
   row(doc, 'From:', request.origin);
   row(doc, 'To:', request.destination);
-  row(doc, 'Preferred Date:', request.preferredDate ? new Date(request.preferredDate).toDateString() : null);
+  row(doc, mortal ? 'Preferred transfer date:' : 'Date Of Service:', day(request.preferredDate));
   row(doc, 'Status:', request.status);
   row(doc, 'Submitted:', new Date(request.createdAt).toLocaleString());
   if (request.description) row(doc, 'Description:', request.description);

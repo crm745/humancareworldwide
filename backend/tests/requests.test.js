@@ -27,6 +27,17 @@ const baseRequestBody = {
   destination: 'Dubai, UAE',
 };
 
+const mortalBody = {
+  serviceType: 'Mortal Remains Transportation — Within India',
+  serviceKey: 'mortal_domestic',
+  patientName: 'Late Suresh Kale',
+  origin: 'Pune',
+  destination: 'Nagpur',
+  deceasedRelation: 'Brother',
+  placeOfDeath: 'Pune',
+  dateOfDeath: '2026-10-20',
+};
+
 describe('POST /requests', () => {
   it('requires authentication', async () => {
     const res = await request(app).post('/requests').send(baseRequestBody);
@@ -119,9 +130,46 @@ describe('Bitrix24 on/off switch', () => {
     expect(sendMedicalReportToBitrix).toHaveBeenCalledWith(12345, expect.objectContaining({ type: 'Medical Report', name: 'report.pdf' }));
   });
 
+  it('keeps a death certificate with us and does not send it to the lead as a medical report', async () => {
+    sendMedicalReportToBitrix.mockClear();
+    process.env.BITRIX_SYNC_ENABLED = 'true';
+    const { token } = await createPatient();
+    const created = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send(mortalBody);
+    expect(created.status).toBe(201);
+    const upload = await request(app).post(`/requests/me/${created.body.request.id}/documents`).set('Authorization', `Bearer ${token}`)
+      .attach('file', Buffer.from('%PDF-1.4 test'), { filename: 'death-certificate.pdf', contentType: 'application/pdf' });
+    expect(upload.status).toBe(201);
+    expect(upload.body.document.type).toBe('Death Certificate');
+    expect(sendMedicalReportToBitrix).not.toHaveBeenCalled();
+  });
+
   it('refuses a service key the app does not have', async () => {
     const { token } = await createPatient();
     const res = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send({ ...baseRequestBody, serviceKey: 'spaceship' });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('Mortal Remains requests', () => {
+  it('saves the deceased details', async () => {
+    const { token } = await createPatient();
+    const res = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send(mortalBody);
+    expect(res.status).toBe(201);
+    const saved = await prisma.serviceRequest.findUnique({ where: { id: res.body.request.id } });
+    expect(saved).toMatchObject({ serviceKey: 'mortal_domestic', deceasedRelation: 'Brother', placeOfDeath: 'Pune' });
+    expect(saved.dateOfDeath.toISOString().slice(0, 10)).toBe('2026-10-20');
+  });
+
+  it.each(['deceasedRelation', 'placeOfDeath', 'dateOfDeath'])('requires %s', async (field) => {
+    const { token } = await createPatient();
+    const res = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send({ ...mortalBody, [field]: '' });
+    expect(res.status).toBe(400);
+  });
+
+  it('refuses a date of death in the future', async () => {
+    const { token } = await createPatient();
+    const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const res = await request(app).post('/requests').set('Authorization', `Bearer ${token}`).send({ ...mortalBody, dateOfDeath: nextWeek });
     expect(res.status).toBe(400);
   });
 });

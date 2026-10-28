@@ -1,4 +1,5 @@
-const { toUiStatus, formatDisplayDate, serviceKeyFromTitle, toListItem } = require('../requestShape');
+const { toUiStatus, formatDisplayDate, serviceKeyFromTitle, toListItem, isMortalRequest } = require('../requestShape');
+const { requestService } = require('../../data/mock');
 
 describe('toUiStatus', () => {
   it('maps in_progress to progress', () => expect(toUiStatus('in_progress')).toBe('progress'));
@@ -29,5 +30,20 @@ describe('toListItem', () => {
       createdAt: '2026-09-25T00:00:00.000Z',
     });
     expect(item).toMatchObject({ id: 'REQ-1007', rawId: 7, status: 'progress', date: '2026-09-25' });
+  });
+});
+
+describe('Mortal Remains requests', () => {
+  const services = { mortal: { title: 'Mortal Remains Transportation' }, air: { title: 'Air Ambulance' } };
+  it('names the transfer type and sends its own service key', () => {
+    expect(requestService({ service: 'mortal', mortalTransfer: 'international' }, services))
+      .toEqual({ title: 'Mortal Remains Transportation — International', key: 'mortal_international' });
+    expect(requestService({ service: 'mortal', mortalTransfer: 'domestic' }, services).key).toBe('mortal_domestic');
+  });
+  it('recognises old and new Mortal Remains requests', () => {
+    expect(isMortalRequest({ serviceKey: 'mortal' })).toBe(true);
+    expect(isMortalRequest({ serviceKey: 'mortal_domestic' })).toBe(true);
+    expect(isMortalRequest({ serviceKey: 'ground' })).toBe(false);
+    expect(isMortalRequest({})).toBe(false);
   });
 });

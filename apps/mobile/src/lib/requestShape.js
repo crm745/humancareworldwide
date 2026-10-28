@@ -4,6 +4,10 @@ import SERVICES from '../data/services.json';
 const STATUS_TO_UI = { submitted: 'submitted', in_progress: 'progress', completed: 'completed', cancelled: 'cancelled' };
 const TITLE_TO_KEY = Object.fromEntries(Object.entries(SERVICES).map(([key, s]) => [s.title, key]));
 
+// Mortal Remains requests name the deceased, not a patient ("mortal" from older builds,
+// "mortal_domestic" / "mortal_international" now).
+export const isMortalRequest = (request) => /^mortal(_|$)/.test(request?.serviceKey || '');
+
 export function toUiStatus(backendStatus) {
   return STATUS_TO_UI[backendStatus] || backendStatus;
 }

@@ -22,12 +22,22 @@ export const AIRLINE_MODES = ['stretcher', 'wheelchair'];
 export const AIRLINE_MODE_LABELS = { stretcher: 'Stretcher (CAS)', wheelchair: 'Wheelchair (CAW)' };
 export const needsAirlineMode = (serviceKey) => serviceKey === 'commercialair';
 
+// Mortal Remains asks about the deceased instead of a patient, and whether the transfer
+// stays within India or crosses borders (two separate pipelines in Bitrix).
+export const isMortal = (serviceKey) => serviceKey === 'mortal';
+export const MORTAL_TRANSFERS = ['domestic', 'international'];
+export const MORTAL_TRANSFER_LABELS = { domestic: 'Within India', international: 'International' };
+export const DECEASED_RELATIONS = ['Father', 'Mother', 'Brother', 'Sister', 'Spouse', 'Son', 'Daughter', 'Friend', 'Other'];
+
 // What a request is submitted as: the name people see, and the key the backend maps to
 // Bitrix's "Required Service" (backend src/modules/bitrix/bitrix-lead.js).
 export function requestService(draft, services) {
   const title = (services[draft.service] || services.air).title;
   if (needsAirlineMode(draft.service) && draft.airlineMode) {
     return { title: `${title} — ${AIRLINE_MODE_LABELS[draft.airlineMode]}`, key: `${draft.service}_${draft.airlineMode}` };
+  }
+  if (isMortal(draft.service) && draft.mortalTransfer) {
+    return { title: `${title} — ${MORTAL_TRANSFER_LABELS[draft.mortalTransfer]}`, key: `${draft.service}_${draft.mortalTransfer}` };
   }
   return { title, key: draft.service };
 }

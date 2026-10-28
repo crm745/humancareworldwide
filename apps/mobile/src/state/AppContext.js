@@ -30,6 +30,11 @@ export const INITIAL_DRAFT = {
   phone: '',
   care: '', // single-select; only asked for air & ground ambulance (see needsCareLevel)
   airlineMode: '', // 'stretcher' | 'wheelchair'; only asked for Commercial Airlines
+  // Mortal Remains only (see isMortal); `name`/`age`/`gender` are then the deceased's.
+  mortalTransfer: '', // 'domestic' | 'international'
+  relation: '', // the requester's relation to the deceased
+  deathPlace: '',
+  deathDate: '', // YYYY-MM-DD
   desc: '',
   dest: '',
   date: '',

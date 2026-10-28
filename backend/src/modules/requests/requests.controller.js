@@ -13,6 +13,21 @@ const { REQUIRED_SERVICE_BY_KEY } = require('../bitrix/bitrix-lead');
 // Service keys the app may send (see mobile src/data/mock.js SERVICE_TILES). Optional,
 // since older app builds don't send one; "hospital" has no Bitrix service mapped yet.
 const SERVICE_KEYS = new Set([...Object.keys(REQUIRED_SERVICE_BY_KEY), 'hospital', 'air']);
+// Mortal Remains as the app asks it now ("Within India / International"); older builds
+// sent plain "mortal" with the ordinary patient form.
+const MORTAL_KEYS = ['mortal_domestic', 'mortal_international'];
+const MORTAL_FIELDS = ['deceasedRelation', 'placeOfDeath', 'dateOfDeath'];
+
+// The deceased's details: all three given, and a date of death that isn't in the future.
+function mortalFieldsError(body) {
+  if (!MORTAL_KEYS.includes(body.serviceKey)) return null;
+  const missing = MORTAL_FIELDS.filter((field) => !body[field]);
+  if (missing.length) return `Missing required field(s): ${missing.join(', ')}`;
+  // A day's slack: "today" in the family's time zone (up to UTC+14) can be tomorrow in UTC.
+  const date = new Date(body.dateOfDeath);
+  if (Number.isNaN(date.getTime()) || date.getTime() > Date.now() + 24 * 60 * 60 * 1000) return 'Invalid dateOfDeath';
+  return null;
+}
 
 //the function for submitting the request
 async function submitRequest(req, res, next) {
@@ -24,6 +39,8 @@ async function submitRequest(req, res, next) {
     if (req.body.serviceKey !== undefined && !SERVICE_KEYS.has(req.body.serviceKey)) {
       return res.status(400).json({ error: 'Unknown serviceKey' });
     }
+    const mortalError = mortalFieldsError(req.body);
+    if (mortalError) return res.status(400).json({ error: mortalError });
     const request = await createRequest(req.user.id, req.body);
     res.status(201).json({ request });
   } catch (err) {
@@ -68,15 +85,17 @@ async function uploadRequestDocument(req, res, next) {
     if (!req.file) return res.status(400).json({ error: 'file is required' });
     const request = await getRequestForUser(req.user.id, req.params.id);
     if (!request.case) return res.status(409).json({ error: 'This request has no case yet.' });
-    // Always a medical report in this flow — this is specifically the "Upload Medical
-    // Report" field on the initial request form, in both the mobile app and corporate-portal.
+    // This is the request form's one upload: "Upload Medical Report", or for Mortal
+    // Remains "Upload Death Certificate". The lead has no death-certificate field, so
+    // that one stays with us (Bitrix has it on the deal; sent once deals are synced).
+    const mortal = MORTAL_KEYS.includes(request.serviceKey);
     const document = await addDocumentToCase(request.case.id, {
-      type: 'Medical Report',
+      type: mortal ? 'Death Certificate' : 'Medical Report',
       name: req.file.originalname,
       fileUrl: `/uploads/${req.file.filename}`,
       fileSizeBytes: req.file.size,
     });
-    await sendMedicalReportToBitrix(request.bitrixLeadId, document);
+    if (!mortal) await sendMedicalReportToBitrix(request.bitrixLeadId, document);
     res.status(201).json({ document });
   } catch (err) {
     next(err);

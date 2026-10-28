@@ -5,7 +5,7 @@ import { Check } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
 import { apiGet } from '../lib/api';
 import { downloadAndShare } from '../lib/download';
-import { toUiStatus, formatDisplayDate } from '../lib/requestShape';
+import { isMortalRequest, toUiStatus, formatDisplayDate } from '../lib/requestShape';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Card, InfoRow, Pill, Spacer, Text } from '../components/ui';
 import { LoadError, LoadingState } from '../components/LoadingState';
@@ -62,6 +62,7 @@ function fromRequest(request) {
     origin: request.origin,
     destination: request.destination,
     status: request.status,
+    mortal: isMortalRequest(request),
     patientLabel: `${request.patientName}${request.patientAge ? `, ${request.patientAge}` : ''}${request.patientGender ? ` / ${request.patientGender}` : ''}`,
     stageEvents: c?.stageEvents || [],
     documents: c?.documents || [],
@@ -129,7 +130,7 @@ export default function Tracking() {
             <InfoRow className="py-[13px]" label={t('lbl_service')} value={item.serviceType} />
             <InfoRow className="py-[13px]" label={t('lbl_from')} value={item.origin} />
             <InfoRow className="py-[13px]" label={t('lbl_to')} value={item.destination} />
-            <InfoRow className="py-[13px]" label={t('lbl_patient')} value={item.patientLabel} />
+            <InfoRow className="py-[13px]" label={t(item.mortal ? 'lbl_deceased' : 'lbl_patient')} value={item.patientLabel} />
             <InfoRow className="py-[13px]" last label={t('lbl_reference_number')} value={item.referenceNumber} />
           </Card>
         </Body>

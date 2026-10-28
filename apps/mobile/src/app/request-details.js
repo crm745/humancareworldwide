@@ -5,7 +5,7 @@ import { Check, Download, Phone, Share2 } from 'lucide-react-native';
 import { useApp } from '../state/AppContext';
 import { apiGet } from '../lib/api';
 import { downloadAndShare } from '../lib/download';
-import { toUiStatus, formatDisplayDate } from '../lib/requestShape';
+import { isMortalRequest, toUiStatus, formatDisplayDate } from '../lib/requestShape';
 import { Body, Screen, TopBar } from '../components/layout';
 import { Button, Card, InfoRow, Pill, Spacer, Text } from '../components/ui';
 import { LoadError, LoadingState } from '../components/LoadingState';
@@ -123,12 +123,12 @@ export default function RequestDetails() {
         </View>
         <Card>
           <InfoRow label={t('lbl_request_date')} value={formatDisplayDate(request.createdAt)} />
-          <InfoRow label={t('lbl_patient_name')} value={request.patientName} />
+          <InfoRow label={t(isMortalRequest(request) ? 'lbl_deceased_name' : 'lbl_patient_name')} value={request.patientName} />
           <InfoRow label={t('field_care_level')} value={request.careLevel || '—'} />
           <InfoRow label={t('lbl_service')} value={request.serviceType} />
           <InfoRow label={t('lbl_from')} value={request.origin} />
           <InfoRow label={t('lbl_to')} value={request.destination} />
-          <InfoRow label={t('lbl_expected_date')} value={request.preferredDate ? formatDisplayDate(request.preferredDate) : '—'} />
+          <InfoRow label={t(isMortalRequest(request) ? 'field_transfer_date' : 'lbl_expected_date')} value={request.preferredDate ? formatDisplayDate(request.preferredDate) : '—'} />
           <InfoRow last label={t('lbl_documents')} value={docsLabel} valueClassName="text-primary" onPress={() => router.push({ pathname: '/tracking', params: { id: request.id, tab: 'docs' } })} />
         </Card>
         <Card className="mt-5">

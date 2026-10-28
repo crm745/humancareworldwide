@@ -97,3 +97,53 @@ describe('Bitrix lead comment with nothing to say', () => {
     expect(fields.COMMENTS).toBe('-');
   });
 });
+
+describe('Bitrix lead from a Mortal Remains request', () => {
+  const mortal = {
+    referenceNumber: 'REQ-1050',
+    serviceType: 'Mortal Remains Transportation — International',
+    serviceKey: 'mortal_international',
+    patientName: 'Late Ramesh Iyer',
+    patientAge: 71,
+    patientGender: 'Male',
+    patientContact: '+971 501234567',
+    origin: 'Dubai',
+    destination: 'Chennai',
+    preferredDate: new Date('2026-11-01T00:00:00Z'),
+    description: 'Transfer to hometown for last rites',
+    deceasedRelation: 'Son',
+    placeOfDeath: 'Rashid Hospital, Dubai',
+    dateOfDeath: new Date('2026-10-27T00:00:00Z'),
+  };
+  const fields = buildLeadFields(leadInputFromRequest(mortal, user));
+
+  it('puts the name in both Deceased Name and Patient Name, and the account holder as the contact', () => {
+    expect(fields.UF_CRM_1780912350541).toBe('Late Ramesh Iyer'); // Deceased Name
+    expect(fields.UF_CRM_1775637387862).toBe('Late Ramesh Iyer'); // Patient Name (the deal's "Deceased Name")
+    expect(fields.NAME).toBe('Rohan Patil');
+    expect(fields.UF_CRM_1781505417891).toEqual([2828]); // Human Mortal Remains (HMR)
+    expect(fields.UF_CRM_1775637683789).toBe('2026-11-01'); // Date Of Service = preferred transfer date
+  });
+
+  it('notes the transfer type, place and date of death, and a relation Bitrix has no item for', () => {
+    expect(fields.UF_CRM_1775637464857).toBeUndefined();
+    expect(fields.COMMENTS).toBe([
+      'Requirement: Transfer to hometown for last rites',
+      'Transfer: International',
+      'Relation to the deceased: Son',
+      'Place of death: Rashid Hospital, Dubai',
+      'Date of death: 2026-10-27',
+    ].join('\n'));
+  });
+
+  it('uses the Relation list when Bitrix has the relation, and leaves it out of the comment', () => {
+    const spouse = buildLeadFields(leadInputFromRequest({ ...mortal, serviceKey: 'mortal_domestic', deceasedRelation: 'Spouse' }, user));
+    expect(spouse.UF_CRM_1775637464857).toBe(358); // Spouse
+    expect(spouse.COMMENTS).toContain('Transfer: Within India');
+    expect(spouse.COMMENTS).not.toContain('Relation');
+  });
+
+  it('never makes the deceased the contact when the account has no name', () => {
+    expect(buildLeadFields(leadInputFromRequest(mortal, null)).NAME).toBeUndefined();
+  });
+});

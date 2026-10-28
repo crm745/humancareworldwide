@@ -4,7 +4,10 @@ import * as DocumentPicker from 'expo-document-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar, Check, FileText, Upload } from 'lucide-react-native';
 import { needsCareLevel, useApp } from '../../state/AppContext';
-import { AIRLINE_MODES, AIRLINE_MODE_LABELS, COUNTRY_CODES, COUNTRY_CODE_LABELS, COUNTRY_NAMES, needsAirlineMode } from '../../data/mock';
+import {
+  AIRLINE_MODES, AIRLINE_MODE_LABELS, COUNTRY_CODES, COUNTRY_CODE_LABELS, COUNTRY_NAMES, DECEASED_RELATIONS, MORTAL_TRANSFERS, MORTAL_TRANSFER_LABELS,
+  isMortal, needsAirlineMode,
+} from '../../data/mock';
 import { isValidAge, isValidDateString, isValidName, isValidPhoneForCountry } from '../../lib/validators';
 import { RequestStep } from '../../components/RequestStep';
 import { CareLevelGrid, Field, FieldLabel, Input, Text } from '../../components/ui';
@@ -24,9 +27,11 @@ function dateObjToString(date) {
   return `${y}-${m}-${d}`;
 }
 
-// A transfer can't be scheduled for a date that's already passed.
+// A transfer can't be scheduled for a date that's already passed; a date of death
+// (`past` fields) can't be in the future.
 const TODAY = new Date();
 TODAY.setHours(0, 0, 0, 0);
+const isNotFuture = (value) => isValidDateString(value) && value <= dateObjToString(new Date());
 
 // Replaces free-typed "YYYY-MM-DD" (easy to fumble mid-emergency — "20/11/2026"
 // trips the validator) with a native calendar. Android shows its own picker dialog
@@ -36,7 +41,7 @@ TODAY.setHours(0, 0, 0, 0);
 // all), so on web its spinner silently renders nothing — just an empty sheet. The
 // browser already has a perfectly good native date input, so we use that there
 // instead of pulling in a whole separate calendar-widget dependency just for web.
-function WebDateField({ label, required, value, onChange, error }) {
+function WebDateField({ label, required, value, onChange, error, past }) {
   return (
     <View>
       <FieldLabel required={required}>{label}</FieldLabel>
@@ -45,7 +50,8 @@ function WebDateField({ label, required, value, onChange, error }) {
         type="date"
         required={required}
         value={value || ''}
-        min={dateObjToString(TODAY)}
+        min={past ? undefined : dateObjToString(TODAY)}
+        max={past ? dateObjToString(TODAY) : undefined}
         onChange={(e) => onChange(e.target.value)}
         style={{
           width: '100%',
@@ -64,11 +70,12 @@ function WebDateField({ label, required, value, onChange, error }) {
   );
 }
 
-function DateField({ label, required, value, onChange, error }) {
+function DateField({ label, required, value, onChange, error, past }) {
   const [open, setOpen] = useState(false);
+  const limits = past ? { maximumDate: TODAY } : { minimumDate: TODAY };
 
   if (Platform.OS === 'web') {
-    return <WebDateField label={label} required={required} value={value} onChange={onChange} error={error} />;
+    return <WebDateField label={label} required={required} value={value} onChange={onChange} error={error} past={past} />;
   }
 
   const handleAndroidChange = (event, selected) => {
@@ -90,7 +97,7 @@ function DateField({ label, required, value, onChange, error }) {
       {error ? <Text className="mt-1 text-[12px] text-danger">{error}</Text> : null}
 
       {Platform.OS === 'android' && open && (
-        <DateTimePicker value={dateStringToObj(value)} mode="date" minimumDate={TODAY} onChange={handleAndroidChange} />
+        <DateTimePicker value={dateStringToObj(value)} mode="date" {...limits} onChange={handleAndroidChange} />
       )}
 
       {Platform.OS !== 'android' && (
@@ -99,7 +106,7 @@ function DateField({ label, required, value, onChange, error }) {
             value={dateStringToObj(value)}
             mode="date"
             display="spinner"
-            minimumDate={TODAY}
+            {...limits}
             onChange={(_event, selected) => selected && onChange(dateObjToString(selected))}
           />
           <Pressable onPress={() => setOpen(false)} className="mt-4 items-center rounded-xl bg-primary py-3.5">
@@ -166,13 +173,16 @@ function UploadBox({ file, onPick, onRemove }) {
   );
 }
 
-// Step 1 of 3: patient details and request details on one page.
+// Step 1 of 3: patient details and request details on one page. For Mortal Remains the
+// same page asks about the deceased instead, in calmer wording.
 export default function RequestStep1() {
   const { t, draft, updateDraft } = useApp();
+  const mortal = isMortal(draft.service);
   const ready = isValidName(draft.name) && draft.age.trim() !== '' && isValidAge(draft.age) && draft.gender
     && draft.location.trim() && draft.country && isValidPhoneForCountry(draft.phone, draft.cc)
     && draft.dest.trim() && isValidDateString(draft.date)
-    && (!needsAirlineMode(draft.service) || draft.airlineMode);
+    && (!needsAirlineMode(draft.service) || draft.airlineMode)
+    && (!mortal || (draft.relation && draft.deathPlace.trim() && isNotFuture(draft.deathDate) && draft.mortalTransfer));
   // Flips true the first time Next is tapped while something required is still
   // blank — before that, an untouched required field shows no error (nobody wants
   // red borders on a form they haven't started filling in yet).
@@ -180,14 +190,15 @@ export default function RequestStep1() {
 
   return (
     <RequestStep step={1} ready={ready} onInvalidNext={() => setAttempted(true)}>
-      <SectionHeading first>{t('step1_heading')}</SectionHeading>
+      <SectionHeading first>{t(mortal ? 'step1_heading_mortal' : 'step1_heading')}</SectionHeading>
       <Field
-        required label={t('field_patient_name')} placeholder="Enter patient's full name" value={draft.name} onChangeText={(name) => updateDraft({ name })}
+        required label={t(mortal ? 'field_deceased_name' : 'field_patient_name')} placeholder={mortal ? 'Full name of the deceased' : "Enter patient's full name"}
+        value={draft.name} onChangeText={(name) => updateDraft({ name })}
         error={(attempted || draft.name) && !isValidName(draft.name) ? 'Enter a valid name.' : undefined}
       />
       <View className="flex-row gap-2.5">
         <Field
-          required className="flex-1" label={t('field_age')} placeholder="Age" keyboardType="number-pad" value={draft.age} onChangeText={(age) => updateDraft({ age })}
+          required className="flex-1" label={t(mortal ? 'field_deceased_age' : 'field_age')} placeholder="Age" keyboardType="number-pad" value={draft.age} onChangeText={(age) => updateDraft({ age })}
           error={(attempted || draft.age) && (!draft.age.trim() || !isValidAge(draft.age)) ? 'Enter a valid age.' : undefined}
         />
         <View className="flex-1">
@@ -196,6 +207,23 @@ export default function RequestStep1() {
           {attempted && !draft.gender ? <Text className="mt-1 text-[12px] text-danger">This field is required.</Text> : null}
         </View>
       </View>
+      {mortal && (
+        <>
+          <View>
+            <FieldLabel required>{t('field_relation')}</FieldLabel>
+            <Select value={draft.relation} options={DECEASED_RELATIONS} onChange={(relation) => updateDraft({ relation })} title={t('field_relation')} placeholder="Select relation" />
+            {attempted && !draft.relation ? <Text className="mt-1 text-[12px] text-danger">This field is required.</Text> : null}
+          </View>
+          <Field
+            required label={t('field_place_of_death')} placeholder="Hospital or place, City, Country" value={draft.deathPlace} onChangeText={(deathPlace) => updateDraft({ deathPlace })}
+            error={attempted && !draft.deathPlace.trim() ? 'This field is required.' : undefined}
+          />
+          <DateField
+            required past label={t('field_date_of_death')} value={draft.deathDate} onChange={(deathDate) => updateDraft({ deathDate })}
+            error={(attempted || draft.deathDate) && !isNotFuture(draft.deathDate) ? 'Enter a valid date.' : undefined}
+          />
+        </>
+      )}
       <Field
         required label={t('field_location')} placeholder="City, Country" value={draft.location} onChangeText={(location) => updateDraft({ location })}
         error={attempted && !draft.location.trim() ? 'This field is required.' : undefined}
@@ -218,7 +246,7 @@ export default function RequestStep1() {
         {(attempted || draft.phone) && !isValidPhoneForCountry(draft.phone, draft.cc) ? <Text className="mt-1 text-[12px] text-danger">{draft.phone ? 'Enter a valid number for the selected country.' : 'This field is required.'}</Text> : null}
       </View>
       <DateField
-        required label={t('field_preferred_date')} value={draft.date} onChange={(date) => updateDraft({ date })}
+        required label={t(mortal ? 'field_transfer_date' : 'field_preferred_date')} value={draft.date} onChange={(date) => updateDraft({ date })}
         error={(attempted || draft.date) && !isValidDateString(draft.date) ? 'Enter a valid date.' : undefined}
       />
       {needsCareLevel(draft.service) && (
@@ -240,9 +268,23 @@ export default function RequestStep1() {
           {attempted && !draft.airlineMode ? <Text className="mt-1 text-[12px] text-danger">This field is required.</Text> : null}
         </View>
       )}
-      <Field multiline label={t('field_requirement_desc')} placeholder="e.g. Patient needs a stable transfer to a cardiac hospital" value={draft.desc} onChangeText={(desc) => updateDraft({ desc })} />
+      {mortal && (
+        <View>
+          <FieldLabel required>{t('field_mortal_transfer')}</FieldLabel>
+          <Select
+            value={draft.mortalTransfer} options={MORTAL_TRANSFERS} labels={MORTAL_TRANSFER_LABELS}
+            onChange={(mortalTransfer) => updateDraft({ mortalTransfer })} title={t('field_mortal_transfer')} placeholder="Within India or International"
+          />
+          {attempted && !draft.mortalTransfer ? <Text className="mt-1 text-[12px] text-danger">This field is required.</Text> : null}
+        </View>
+      )}
+      <Field
+        multiline label={t('field_requirement_desc')}
+        placeholder={mortal ? 'e.g. Transfer to the hometown for the last rites' : 'e.g. Patient needs a stable transfer to a cardiac hospital'}
+        value={draft.desc} onChangeText={(desc) => updateDraft({ desc })}
+      />
       <View>
-        <FieldLabel>{t('field_upload_report')}</FieldLabel>
+        <FieldLabel>{t(mortal ? 'field_upload_death_cert' : 'field_upload_report')}</FieldLabel>
         <UploadBox file={draft.uploadedFile} onPick={(uploadedFile) => updateDraft({ uploadedFile })} onRemove={() => updateDraft({ uploadedFile: null })} />
       </View>
     </RequestStep>

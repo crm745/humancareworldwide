@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { needsCareLevel, useApp } from '../../state/AppContext';
 import SERVICES from '../../data/services.json';
-import { SOURCE_OTHER, requestService } from '../../data/mock';
+import { SOURCE_OTHER, isMortal, requestService } from '../../data/mock';
 import { navReplace } from '../../lib/nav';
 import { apiPost, apiUpload } from '../../lib/api';
 import { Body, Screen, TopBar } from '../../components/layout';
@@ -11,14 +11,14 @@ import { StepWizard } from '../../components/widgets';
 
 // Shown while the medical-report attachment is uploading — without this, a big PDF
 // on a slow connection is 10-15s of total silence that reads as a frozen app.
-function UploadProgressBar({ progress }) {
+function UploadProgressBar({ progress, label }) {
   const pct = Math.round(progress * 100);
   return (
     <View className="mt-3">
       <View className="h-2 overflow-hidden rounded-full bg-line">
         <View className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
       </View>
-      <Text className="mt-1.5 text-center text-[12.5px] text-faint">Uploading medical report… {pct}%</Text>
+      <Text className="mt-1.5 text-center text-[12.5px] text-faint">Uploading {label}… {pct}%</Text>
     </View>
   );
 }
@@ -40,6 +40,7 @@ export default function RequestReview() {
   const [uploadProgress, setUploadProgress] = useState(null);
   const source = d.source === SOURCE_OTHER && d.sourceOther.trim() ? `${SOURCE_OTHER}: ${d.sourceOther.trim()}` : d.source;
   const { title: serviceTitle, key: serviceKey } = requestService(d, SERVICES);
+  const mortal = isMortal(d.service);
 
   const submit = async () => {
     setBusy(true);
@@ -60,6 +61,7 @@ export default function RequestReview() {
         description: d.desc || undefined,
         additionalInfo: d.extra || undefined, // kept in our database only, not sent to Bitrix
         specialRequirements: d.special || undefined,
+        ...(mortal ? { deceasedRelation: d.relation, placeOfDeath: d.deathPlace, dateOfDeath: d.deathDate } : {}),
         referralSource: source || undefined,
       });
 
@@ -90,10 +92,11 @@ export default function RequestReview() {
       <Body contentClassName="p-[18px]">
         <Text className="mb-3.5 text-center text-[13.5px] text-muted">{t('review_sub')}</Text>
         <Section
-          title={t('step1_heading')}
+          title={t(mortal ? 'step1_heading_mortal' : 'step1_heading')}
           rows={[
-            [t('lbl_patient_name'), d.name],
-            [t('lbl_age_gender'), `${d.age || '—'} Y / ${d.gender}`],
+            [t(mortal ? 'lbl_deceased_name' : 'lbl_patient_name'), d.name],
+            [t(mortal ? 'lbl_age_gender_plain' : 'lbl_age_gender'), `${d.age || '—'} Y / ${d.gender}`],
+            ...(mortal ? [[t('lbl_relation'), d.relation], [t('field_place_of_death'), d.deathPlace], [t('field_date_of_death'), d.deathDate]] : []),
             [t('lbl_location'), d.location],
             [t('field_country'), d.country],
             [t('field_contact_number'), d.phone && `${d.cc} ${d.phone}`],
@@ -107,8 +110,8 @@ export default function RequestReview() {
             [t('lbl_service'), serviceTitle],
             [t('lbl_requirement'), d.desc],
             [t('field_destination'), d.dest],
-            [t('field_preferred_date'), d.date],
-            [t('lbl_medical_report'), d.uploadedFile ? d.uploadedFile.name : 'Not attached'],
+            [t(mortal ? 'field_transfer_date' : 'field_preferred_date'), d.date],
+            [t(mortal ? 'lbl_death_certificate' : 'lbl_medical_report'), d.uploadedFile ? d.uploadedFile.name : 'Not attached'],
           ]}
         />
         <Section
@@ -121,7 +124,7 @@ export default function RequestReview() {
           ]}
         />
         <Button title={t('submit_request_btn')} onPress={submit} dimmed={busy} loading={busy} className="mt-5" />
-        {uploadProgress !== null && <UploadProgressBar progress={uploadProgress} />}
+        {uploadProgress !== null && <UploadProgressBar progress={uploadProgress} label={mortal ? 'death certificate' : 'medical report'} />}
       </Body>
     </Screen>
   );
