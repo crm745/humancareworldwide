@@ -20,3 +20,6 @@ backend/uploads/
 # Firebase service-account keys (secret; the backend reads one via FIREBASE_SERVICE_ACCOUNT_PATH)
 *-firebase-adminsdk-*.json
 serviceAccountKey*.json
+
+# Internal docs, design files and task sheets: kept on this machine only
+docs/
